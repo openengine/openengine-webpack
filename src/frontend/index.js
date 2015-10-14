@@ -1,22 +1,33 @@
+import 'babel/polyfill';
+import createBrowserHistory from 'history/lib/createBrowserHistory';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Relay from 'react-relay';
+import {Router} from 'react-router';
+import ReactRouterRelay from 'react-router-relay';
+import RelayLocalSchema from 'relay-local-schema';
 
-// purposefully calling Relay 'routes' roots (as in Query Root)
-import ExampleRoot from './roots/ExampleRoot';
-import Application from './containers/Application';
+import routes from './routes';
+// Should the data dir be in app ala relay-todomvc?
+import schema from '../server/data/schema';
 
-class Root extends React.Component {
-  render() {
-    return (
-      <Relay.RootContainer
-        Component={ Application }
-        route={ new ExampleRoot() } />
-    );
-  }
-}
+Relay.injectNetworkLayer(
+  new RelayLocalSchema.NetworkLayer({schema})
+);
+
+const history = createBrowserHistory({queryKey: false});
+
+const mountNode = document.createElement('div');
+document.body.appendChild(mountNode);
 
 ReactDOM.render(
-  <Root />,
-  document.getElementById('container')
+  <Router
+    createElement={ReactRouterRelay.createElement}
+    history={history}
+    routes={routes}
+  />,
+  mountNode
 );
+
+// Needed for dev console
+window.React = React;
