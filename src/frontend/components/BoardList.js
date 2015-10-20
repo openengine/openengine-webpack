@@ -6,7 +6,7 @@ class BoardList extends React.Component {
     const {viewer} = this.props;
 
     return viewer.boards.edges.map(({node}) =>
-      <h2>{node.text}</h2>
+      <h2 key={node.id}>{node.text}</h2>
     );
   }
 
