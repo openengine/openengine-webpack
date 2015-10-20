@@ -3,7 +3,7 @@ import webpack from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 import nodemon from 'nodemon';
 import path from 'path';
-import { Schema } from './src/server/data/schema';
+import Schema from './src/server/data/schema';
 import { introspectionQuery } from 'graphql/utilities';
 import { graphql } from 'graphql';
 import fs from 'fs';
@@ -29,7 +29,7 @@ function recompile() {
 
 // run the webpack dev server
 //  must generate the schema.json first as compiler relies on it for babel-relay-plugin
-gulp.task('webpack', ['generate-schema'], () => {
+gulp.task('webpack', ['generate-schema', 'watch-schema'], () => {
   compiler = webpack(frontendConfig);
   let server = new WebpackDevServer(compiler, {
     contentBase: path.join(__dirname, 'build', 'public'),
@@ -101,4 +101,4 @@ gulp.task('server', ['backend-watch', 'watch-schema'], () => {
   });
 });
 
-gulp.task('default', ['webpack', 'server']);
+gulp.task('default', ['webpack']);
