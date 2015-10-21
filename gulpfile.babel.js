@@ -29,7 +29,7 @@ function recompile() {
 
 // run the webpack dev server
 //  must generate the schema.json first as compiler relies on it for babel-relay-plugin
-gulp.task('webpack', ['generate-schema', 'watch-schema'], () => {
+gulp.task('webpack', ['assets','generate-schema', 'watch-schema'], () => {
   compiler = webpack(frontendConfig);
   let server = new WebpackDevServer(compiler, {
     contentBase: path.join(__dirname, 'build', 'public'),
@@ -47,6 +47,11 @@ gulp.task('webpack', ['generate-schema', 'watch-schema'], () => {
     console.log('[webpackDevServer]: listening on localhost:3000');
   });
 });
+
+// Copy all static assets
+gulp.task('assets', () => {
+  gulp.src(path.join(__dirname, './src/frontend/assets/img/**')).pipe(gulp.dest(path.join(__dirname,'build','public','img')));
+  });
 
 // restart the backend server whenever a required file from backend is updated
 gulp.task('backend-watch', () => {
