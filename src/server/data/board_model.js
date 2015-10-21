@@ -1,15 +1,7 @@
 export class Board extends Object {}
-export class User extends Object {}
 
 // Mock authenticated ID.
 const VIEWER_ID = 'me';
-
-// Mock user data.
-const viewer = new User();
-viewer.id = VIEWER_ID;
-const usersById = {
-  [VIEWER_ID]: viewer
-};
 
 const boardsById = {};
 const boardIdsByUser = {
@@ -31,10 +23,6 @@ export function addBoard(title, complete) {
   return board.id;
 }
 
-// Mock board data.
-addBoard('Taste JavaScript', true);
-addBoard('Buy a unicorn', false);
-
 export function getBoard(id) {
   return boardsById[id];
 }
@@ -51,14 +39,6 @@ export function getBoards(status = 'any') {
   }
 
   return boards.filter(board => board.complete === (status === 'completed'));
-}
-
-export function getUser() {
-  return usersById[VIEWER_ID];
-}
-
-export function getViewer() {
-  return getUser(VIEWER_ID);
 }
 
 export function markAllBoards(complete) {
@@ -90,3 +70,7 @@ export function renameBoard(id, title) {
   const board = getBoard(id);
   board.title = title;
 }
+
+// Mock board data.
+addBoard('Product');
+addBoard('Engineering');

@@ -1,3 +1,5 @@
+/* eslint-disable no-use-before-define */
+
 import {
   GraphQLBoolean,
   GraphQLID,
@@ -21,22 +23,28 @@ import {
   toGlobalId,
 } from 'graphql-relay';
 
+////////////////////////////////////////////////////////////////////
+//
+// Database
+//
+////////////////////////////////////////////////////////////////////
+import {
+  User,
+  getUser,
+  getViewer,
+} from './user_model';
+
 import {
   Board,
-  User,
   addBoard,
   changeBoardStatus,
   getBoard,
   getBoards,
-  getUser,
-  getViewer,
   markAllBoards,
   removeCompletedBoards,
   removeBoard,
   renameBoard,
-} from './database';
-
-/* eslint-disable no-use-before-define */
+} from './board_model';
 
 const {nodeInterface, nodeField} = nodeDefinitions(
   globalId => {
@@ -56,6 +64,11 @@ const {nodeInterface, nodeField} = nodeDefinitions(
   }
 );
 
+////////////////////////////////////////////////////////////////////
+//
+// Objects & Connections
+//
+////////////////////////////////////////////////////////////////////
 const GraphQLBoard = new GraphQLObjectType({
   name: 'Board',
   fields: {
@@ -108,17 +121,11 @@ const GraphQLUser = new GraphQLObjectType({
   interfaces: [nodeInterface]
 });
 
-const GraphQLRoot = new GraphQLObjectType({
-  name: 'Root',
-  fields: {
-    viewer: {
-      type: GraphQLUser,
-      resolve: getViewer
-    },
-    node: nodeField
-  }
-});
-
+////////////////////////////////////////////////////////////////////
+//
+// Mutations
+//
+////////////////////////////////////////////////////////////////////
 const GraphQLAddBoardMutation = mutationWithClientMutationId({
   name: 'AddBoard',
   inputFields: {
@@ -247,6 +254,22 @@ const GraphQLRenameBoardMutation = mutationWithClientMutationId({
     const {id: boardId} = fromGlobalId(id);
     renameBoard(boardId, title);
     return {boardId};
+  }
+});
+
+////////////////////////////////////////////////////////////////////
+//
+// Schema
+//
+////////////////////////////////////////////////////////////////////
+const GraphQLRoot = new GraphQLObjectType({
+  name: 'Root',
+  fields: {
+    viewer: {
+      type: GraphQLUser,
+      resolve: getViewer
+    },
+    node: nodeField
   }
 });
 
