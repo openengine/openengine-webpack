@@ -6,7 +6,7 @@ class BoardList extends React.Component {
     const {viewer} = this.props;
 
     return viewer.boards.edges.map(({node}) =>
-      <h2 key={node.id}>{node.text}</h2>
+      <h2 key={node.id}>{node.title}</h2>
     );
   }
 
@@ -51,7 +51,7 @@ export default Relay.createContainer(BoardList, {
           edges {
             node {
               id,
-              text
+              title
             }
           }
         },

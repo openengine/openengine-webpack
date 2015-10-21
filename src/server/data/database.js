@@ -17,12 +17,12 @@ const boardIdsByUser = {
 };
 let nextBoardId = 0;
 
-export function addBoard(text, complete) {
+export function addBoard(title, complete) {
   const board = new Board();
   Object.assign(board, {
     complete: Boolean(complete),
     id: `${nextBoardId++}`,
-    text
+    title
   });
 
   boardsById[board.id] = board;
@@ -86,7 +86,7 @@ export function removeCompletedBoards() {
   return boardsToRemove.map(board => board.id);
 }
 
-export function renameBoard(id, text) {
+export function renameBoard(id, title) {
   const board = getBoard(id);
-  board.text = text;
+  board.title = title;
 }

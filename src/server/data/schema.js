@@ -60,9 +60,9 @@ const GraphQLBoard = new GraphQLObjectType({
   name: 'Board',
   fields: {
     id: globalIdField('Board'),
-    text: {
+    title: {
       type: GraphQLString,
-      resolve: obj => obj.text
+      resolve: obj => obj.title
     },
     complete: {
       type: GraphQLBoolean,
@@ -122,7 +122,7 @@ const GraphQLRoot = new GraphQLObjectType({
 const GraphQLAddBoardMutation = mutationWithClientMutationId({
   name: 'AddBoard',
   inputFields: {
-    text: {type: new GraphQLNonNull(GraphQLString)}
+    title: {type: new GraphQLNonNull(GraphQLString)}
   },
   outputFields: {
     viewer: {
@@ -140,8 +140,8 @@ const GraphQLAddBoardMutation = mutationWithClientMutationId({
       }
     }
   },
-  mutateAndGetPayload: ({text}) => {
-    const boardId = addBoard(text);
+  mutateAndGetPayload: ({title}) => {
+    const boardId = addBoard(title);
     return {boardId};
   }
 });
@@ -235,7 +235,7 @@ const GraphQLRenameBoardMutation = mutationWithClientMutationId({
   name: 'RenameBoard',
   inputFields: {
     id: {type: new GraphQLNonNull(GraphQLID)},
-    text: {type: new GraphQLNonNull(GraphQLString)}
+    title: {type: new GraphQLNonNull(GraphQLString)}
   },
   outputFields: {
     board: {
@@ -243,9 +243,9 @@ const GraphQLRenameBoardMutation = mutationWithClientMutationId({
       resolve: ({boardId}) => getBoard(boardId)
     }
   },
-  mutateAndGetPayload: ({id, text}) => {
+  mutateAndGetPayload: ({id, title}) => {
     const {id: boardId} = fromGlobalId(id);
-    renameBoard(boardId, text);
+    renameBoard(boardId, title);
     return {boardId};
   }
 });
