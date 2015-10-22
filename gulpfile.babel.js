@@ -7,6 +7,7 @@ import Schema from './src/server/data/schema';
 import { introspectionQuery } from 'graphql/utilities';
 import { graphql } from 'graphql';
 import fs from 'fs';
+import concatCss from 'gulp-concat-css';
 
 import configs from './webpack.config';
 const [ frontendConfig, backendConfig ] = configs;
@@ -29,14 +30,14 @@ function recompile() {
 
 // run the webpack dev server
 //  must generate the schema.json first as compiler relies on it for babel-relay-plugin
-gulp.task('webpack', ['assets','generate-schema', 'watch-schema'], () => {
+gulp.task('webpack', ['copy-assets','generate-schema', 'watch-schema'], () => {
   compiler = webpack(frontendConfig);
   let server = new WebpackDevServer(compiler, {
     contentBase: path.join(__dirname, 'build', 'public'),
     hot: true,
     noInfo: true,
     stats: { colors: true },
-    historyApiFallback: true,
+    historyApiFallback: true
     proxy: {
       '/graphql': 'http://localhost:8080'
     }
@@ -48,9 +49,10 @@ gulp.task('webpack', ['assets','generate-schema', 'watch-schema'], () => {
   });
 });
 
-// Copy all static assets
-gulp.task('assets', () => {
+// Copy all static assets, also concatinates css files into 1 file
+gulp.task('copy-assets', () => {
   gulp.src(path.join(__dirname, './src/frontend/assets/img/**')).pipe(gulp.dest(path.join(__dirname,'build','public','img')));
+  // gulp.src(path.join(__dirname, './src/frontend/assets/styles/**')).pipe(concatCss("engine.css")).pipe(gulp.dest(path.join(__dirname,'build','public','css')));
   });
 
 // restart the backend server whenever a required file from backend is updated
@@ -89,6 +91,11 @@ gulp.task('generate-schema', () => {
 gulp.task('watch-schema', () => {
   gulp.watch(path.join(__dirname, './src/server/data', '**/*.js'), ['generate-schema']);
 });
+
+// rebundle the asset files if they are updated
+// gulp.task('watch-assets', () => {
+//   gulp.watch(path.join(__dirname, './src/frontend/assets', '**/*.css'), ['copy-assets']);
+// });
 
 gulp.task('server', ['backend-watch', 'watch-schema'], () => {
   nodemon({

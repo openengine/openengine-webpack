@@ -2,9 +2,11 @@ import React from 'react';
 import {IndexRoute, Route} from 'react-router';
 
 import ViewerQueries from './queries/ViewerQueries';
+import BoardQueries from './queries/BoardQueries';
 
 import Main from './components/Main';
 import BoardList from './components/BoardList';
+import Board from './components/Board';
 
 export default (
   <Route
@@ -18,9 +20,14 @@ export default (
       prepareParams={() => ({status: 'any'})}
     />
     <Route
+      path="board/:boardId"
+      component={Board}
+      queries={BoardQueries}
+    />
+    <Route
       path=":status"
       component={BoardList}
       queries={ViewerQueries}
-    />
+    /> 
   </Route>
 );

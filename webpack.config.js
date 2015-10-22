@@ -15,7 +15,7 @@ var defaultConfig = {
 var frontendConfig = assign({}, defaultConfig, {
   entry: [
     'webpack-dev-server/client?http://localhost:3000',
-    'webpack/hot/only-dev-server',
+    'webpack/hot/dev-server',
     './src/frontend/index.js'
   ],
 
@@ -43,8 +43,8 @@ var frontendConfig = assign({}, defaultConfig, {
         loaders: ['react-hot', 'babel?stage=0&plugins[]=' + path.join(__dirname, 'relayPlugin')]
       },
       {
-        test: /\.scss$/,
-        include: path.join(__dirname, 'src', 'frontend', 'scss'),
+        test: /\.css$/,
+        include: path.join(__dirname, 'src', 'frontend','assets','styles'),
         loaders: ['style', 'css', 'sass']
       }
     ]

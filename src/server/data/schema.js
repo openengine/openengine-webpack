@@ -269,6 +269,16 @@ const GraphQLRoot = new GraphQLObjectType({
       type: GraphQLUser,
       resolve: getViewer
     },
+    board: {
+      type: GraphQLBoard,
+      args: {
+        id: {
+          description: 'id of the board',
+          type: new GraphQLNonNull(GraphQLString)
+        }
+      },
+      resolve: (root, { id }) => getBoard(fromGlobalId(id).id)
+    },
     node: nodeField
   }
 });

@@ -7,6 +7,8 @@ import {Router} from 'react-router';
 import ReactRouterRelay from 'react-router-relay';
 import RelayLocalSchema from 'relay-local-schema';
 
+import styles from "./assets/styles/engine.css";
+
 import routes from './routes';
 // Should the data dir be in app ala relay-todomvc?
 import schema from '../server/data/schema';
