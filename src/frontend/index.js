@@ -11,10 +11,10 @@ import styles from "./assets/styles/engine.css";
 
 import routes from './routes';
 // Should the data dir be in app ala relay-todomvc?
-import { Schema } from '../server/data/schema';
+import schema from '../server/data/schema';
 
 Relay.injectNetworkLayer(
-  new RelayLocalSchema.NetworkLayer({Schema})
+  new RelayLocalSchema.NetworkLayer({schema})
 );
 
 const history = createBrowserHistory({queryKey: false});

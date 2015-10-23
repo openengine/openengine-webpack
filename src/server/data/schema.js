@@ -54,7 +54,7 @@ const RootMutation = new GraphQLObjectType({
   }
 });
 
-export const Schema = new GraphQLSchema({
+export default new GraphQLSchema({
   query: RootQuery,
   mutation: RootMutation
 });

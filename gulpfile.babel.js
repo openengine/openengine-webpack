@@ -3,7 +3,7 @@ import webpack from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 import nodemon from 'nodemon';
 import path from 'path';
-import { Schema } from './src/server/data/schema';
+import schema from './src/server/data/schema';
 import { introspectionQuery } from 'graphql/utilities';
 import { graphql } from 'graphql';
 import fs from 'fs';
@@ -75,7 +75,7 @@ gulp.task('backend-watch', () => {
 
 // Regenerate the graphql schema and recompile the frontend code that relies on schema.json
 gulp.task('generate-schema', () => {
-  return graphql(Schema, introspectionQuery)
+  return graphql(schema, introspectionQuery)
     .then(result => {
       if (result.errors)
         return console.error('[schema]: ERROR --', JSON.stringify(result.errors, null, 2), result);

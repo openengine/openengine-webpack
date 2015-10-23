@@ -1,9 +1,10 @@
 import express from 'express';
-import { Schema } from './data/schema';
+import schema from './data/schema';
 import graphQLHTTP from 'express-graphql';
 
+console.log('aaaaaaa', schema);
 const app = express();
-app.use('/', graphQLHTTP({ schema: Schema, pretty: true }));
+app.use('/', graphQLHTTP({ schema: { schema }, pretty: true }));
 app.listen(8080, (err) => {
   if (err)
     return console.error(err);
