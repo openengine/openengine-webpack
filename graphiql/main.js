@@ -1,4 +1,4 @@
 import graphqlServer from './server';
-import { Schema } from '../src/server/data/schema.js';
+import schema from '../src/server/data/schema.js';
 
-graphqlServer(Schema, 8080);
+graphqlServer(schema, 8080);
