@@ -36,7 +36,10 @@ const RootQuery = new GraphQLObjectType({
           type: new GraphQLNonNull(GraphQLString)
         }
       },
-      resolve: (root, { id }) => getBoard(fromGlobalId(id).id)
+      resolve: (root, { id }) => {
+        const goodId = fromGlobalId(id).id;
+        return db.getBoard(id);
+      }
     },
     node: nodeField
   }

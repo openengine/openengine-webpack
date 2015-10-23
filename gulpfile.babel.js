@@ -3,7 +3,7 @@ import webpack from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 import nodemon from 'nodemon';
 import path from 'path';
-import Schema from './src/server/data/schema';
+import { Schema } from './src/server/data/schema';
 import { introspectionQuery } from 'graphql/utilities';
 import { graphql } from 'graphql';
 import fs from 'fs';
@@ -78,7 +78,7 @@ gulp.task('generate-schema', () => {
   return graphql(Schema, introspectionQuery)
     .then(result => {
       if (result.errors)
-        return console.error('[schema]: ERROR --', JSON.stringify(result.errors, null, 2));
+        return console.error('[schema]: ERROR --', JSON.stringify(result.errors, null, 2), result);
       fs.writeFileSync(
         path.join(__dirname, './src/server/data/schema.json'),
         JSON.stringify(result, null, 2)

@@ -2,12 +2,12 @@ import {
   connectionDefinitions,
 } from 'graphql-relay';
 
-import boardType from './boardType';
+import BoardType from './BoardType';
 
 export const {
   connectionType: BoardConnection,
   edgeType: BoardEdge,
 } = connectionDefinitions({
   name: 'Board',
-  nodeType: boardType
+  nodeType: BoardType
 });

@@ -19,8 +19,9 @@ import { BoardConnection } from './BoardConnection';
 const UserType = new GraphQLObjectType({
   name: 'User',
   description: 'A user',
-  fields: {
+  fields: () => ({
     id: globalIdField('User'),
+    name: { type: GraphQLString },
     boards: {
       type: BoardConnection,
       args: {
@@ -31,11 +32,11 @@ const UserType = new GraphQLObjectType({
         ...connectionArgs
       },
       resolve: (obj, {status, ...args}) => {
-        connectionFromArray(db.getBoards(), args)
+        return connectionFromArray(db.getBoards(), args)
       }
-    }
-  },
-  isTypeOf: db.User,
+    },
+  }),
+  isTypeOf: (value) => value instanceof db.User,
   interfaces: [nodeInterface]
 });
 
