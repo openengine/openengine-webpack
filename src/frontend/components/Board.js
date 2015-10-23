@@ -1,7 +1,6 @@
 import React from 'react';
 import Relay from 'react-relay';
 import TextField from 'material-ui/lib/text-field'
-import Colors from 'material-ui/lib/styles/colors'
 import Paper from 'material-ui/lib/paper';
 import FontIcon from 'material-ui/lib/font-icon';
 import Card from './Card'

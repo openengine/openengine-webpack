@@ -14,19 +14,13 @@ class BoardList extends React.Component {
   renderBoards() {
     const {viewer} = this.props;
 
-    const paperStyle = {
-
-    }
-
     return viewer.boards.edges.map(({node}) =>
-
-       <Link to={`/board/${node.id}`}>
-            <Paper zDepth={1} rounded={false} className="boardListing">
-                  <Avatar color={Colors.amber800} backgroundColor={Colors.green100}>{node.title.charAt(0)}</Avatar>
-                  <h2 className="boardListTitle">{node.title}</h2>
-            </Paper>
-        </Link>
-
+      <Link to={`/board/${node.id}`}>
+         <Paper zDepth={1} rounded={false} className="boardListing">
+           <Avatar color={Colors.amber800} backgroundColor={Colors.green100}>{node.title.charAt(0)}</Avatar>
+           <h2 className="boardListTitle">{node.title}</h2>
+         </Paper>
+       </Link>
     );
   }
 

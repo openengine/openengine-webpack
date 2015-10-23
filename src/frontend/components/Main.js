@@ -8,9 +8,15 @@ let Main = (props) => {
   return (
     <div>
       <Navigation projectName="Engine" />
-      <ReactCSSTransitionGroup component="div" transitionName="board" transitionEnterTimeout={500} transitionLeaveTimeout={300} transitionLeave={false}>
+      <ReactCSSTransitionGroup
+        component="div"
+        transitionName="board"
+        transitionEnterTimeout={500}
+        transitionLeaveTimeout={300}
+        transitionLeave={false}
+       >
         {React.cloneElement(props.children || <div />, { key: pathname })}
-        </ReactCSSTransitionGroup>
+      </ReactCSSTransitionGroup>
     </div>
   );
 }
