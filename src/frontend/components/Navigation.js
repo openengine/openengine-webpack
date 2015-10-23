@@ -7,7 +7,7 @@ export default function Navigation(props) {
     <AppBar
       title={<h1><IndexLink className="appBarTitle" to="/">{props.projectName}</IndexLink></h1>}
       iconElementLeft={<IndexLink to="/"><img src={'/img/engine_logo.svg'} /></IndexLink>}
-      style={{background: 'none',  'box-shadow': 'none'}}
+      style={{background: 'none',  boxShadow: 'none'}}
     />
   );
 }
