@@ -37,7 +37,7 @@ gulp.task('webpack', ['copy-assets','generate-schema', 'watch-schema'], () => {
     hot: true,
     noInfo: true,
     stats: { colors: true },
-    historyApiFallback: true
+    historyApiFallback: true,
     proxy: {
       '/graphql': 'http://localhost:8080'
     }

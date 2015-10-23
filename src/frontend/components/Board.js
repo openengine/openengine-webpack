@@ -1,39 +1,52 @@
 import React from 'react';
 import Relay from 'react-relay';
-import Card from 'material-ui/lib/card/card';
-import CardHeader from 'material-ui/lib/card/card-header';
-import CardText from 'material-ui/lib/card/card-text';
-import CardActions from 'material-ui/lib/card/card-actions';
-import Avatar from 'material-ui/lib/avatar'
-import FlatButton from 'material-ui/lib/flat-button'
+import TextField from 'material-ui/lib/text-field'
 import Colors from 'material-ui/lib/styles/colors'
+import Paper from 'material-ui/lib/paper';
+import FontIcon from 'material-ui/lib/font-icon';
+import Card from './Card'
 
 class Board extends React.Component {
   render() {
     const board = this.props.board;
 
     return (
-      <div>
-        <div className="container-fluid">               
-            <Card initiallyExpanded={true}>
-              <CardHeader
-                title={board.title}
-                subtitle= "A Nice Board"
-                avatar={<Avatar color={Colors.amber800} backgroundColor={Colors.green100}>{board.title.charAt(0)}</Avatar>}
-                actAsExpander={true}
-                showExpandableButton={true}>
-              </CardHeader>
-              <CardText expandable={true}>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                Donec mattis pretium massa. Aliquam erat volutpat. Nulla facilisi.
-                Donec vulputate interdum sollicitudin. Nunc lacinia auctor quam sed pellentesque.
-                Aliquam dui mauris, mattis quis lacus id, pellentesque lobortis odio.
-              </CardText>
-              <CardActions expandable={true}>
-                <FlatButton label="Action1"/>
-                <FlatButton label="Action2"/>
-              </CardActions>
-            </Card>
+      <div className="flex-board">
+        <div className="flex-column-container">
+          <div className="flex-header-row-container">
+            <div className="flex-board-header">
+               <h2 className="board-title">{board.title}</h2>
+              </div>
+              <div className="flex-board-header flex-board-searchbox">
+                  <TextField
+                    hintText={<span><i className="material-icons board-search-icon">search</i>Search...</span>}
+                    hintStyle={{paddingBottom: 5}}
+                    type="search" />
+              </div>
+          </div>
+          <div className="flex-header-row-container">
+            <div className="flex-board-header">
+              To Do
+            </div>
+            <div className="flex-board-header">
+              Doing
+            </div>
+            <div className="flex-board-header">
+              Done
+            </div>
+          </div>
+          <div className="flex-row-container">
+            <Paper className="flex-board-column" zDepth={0} rounded={false}>
+                <Card />
+                 <Card />
+            </Paper>
+             <Paper className="flex-board-column" zDepth={0} rounded={false}>
+              <Card />
+            </Paper>
+             <Paper className="flex-board-column" zDepth={0} rounded={false}>
+          
+            </Paper>
+          </div>
         </div>
       </div>
     );
