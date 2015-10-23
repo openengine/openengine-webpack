@@ -295,7 +295,7 @@ const GraphQLMutation = new GraphQLObjectType({
   }
 });
 
-export default new GraphQLSchema({
+export const Schema = new GraphQLSchema({
   query: GraphQLRoot,
   mutation: GraphQLMutation
 });
