@@ -1,276 +1,35 @@
-/* eslint-disable no-use-before-define */
-
 import {
-  GraphQLBoolean,
-  GraphQLID,
-  GraphQLInt,
-  GraphQLList,
-  GraphQLNonNull,
   GraphQLObjectType,
   GraphQLSchema,
+  GraphQLNonNull,
   GraphQLString,
 } from 'graphql';
 
 import {
-  connectionArgs,
   connectionDefinitions,
-  connectionFromArray,
-  cursorForObjectInConnection,
+  nodeDefinitions,
   fromGlobalId,
   globalIdField,
-  mutationWithClientMutationId,
-  nodeDefinitions,
-  toGlobalId,
 } from 'graphql-relay';
 
-////////////////////////////////////////////////////////////////////
-//
-// Database
-//
-////////////////////////////////////////////////////////////////////
-import {
-  User,
-  getUser,
-  getViewer,
-} from './user_model';
+import * as db from './database';
 
-import {
-  Board,
-  addBoard,
-  changeBoardStatus,
-  getBoard,
-  getBoards,
-  markAllBoards,
-  removeCompletedBoards,
-  removeBoard,
-  renameBoard,
-} from './board_model';
+import UserType from './UserType';
+import BoardType from './BoardType';
+import AddBoardMutation from './AddBoardMutation';
+import RemoveBoardMutation from './RemoveBoardMutation';
+import RenameBoardMutation from './RenameBoardMutation';
+import { nodeField } from './nodeInterface';
 
-const {nodeInterface, nodeField} = nodeDefinitions(
-  globalId => {
-    const {type, id} = fromGlobalId(globalId);
-    if (type === 'Board') {
-      return getBoard(id);
-    } else if (type === 'User') {
-      return getUser(id);
-    }
-  },
-  obj => {
-    if (obj instanceof Board) {
-      return GraphQLBoard;
-    } else if (obj instanceof User) {
-      return GraphQLUser;
-    }
-  }
-);
-
-////////////////////////////////////////////////////////////////////
-//
-// Objects & Connections
-//
-////////////////////////////////////////////////////////////////////
-const GraphQLBoard = new GraphQLObjectType({
-  name: 'Board',
-  fields: {
-    id: globalIdField('Board'),
-    title: {
-      type: GraphQLString,
-      resolve: obj => obj.title
-    },
-    complete: {
-      type: GraphQLBoolean,
-      resolve: obj => obj.complete
-    }
-  },
-  interfaces: [nodeInterface]
-});
-
-const {
-  connectionType: BoardsConnection,
-  edgeType: GraphQLBoardEdge,
-} = connectionDefinitions({
-  name: 'Board',
-  nodeType: GraphQLBoard
-});
-
-const GraphQLUser = new GraphQLObjectType({
-  name: 'User',
-  fields: {
-    id: globalIdField('User'),
-    boards: {
-      type: BoardsConnection,
-      args: {
-        status: {
-          type: GraphQLString,
-          defaultValue: 'any'
-        },
-        ...connectionArgs
-      },
-      resolve: (obj, {status, ...args}) =>
-        connectionFromArray(getBoards(status), args)
-    },
-    numBoards: {
-      type: GraphQLInt,
-      resolve: () => getBoards().length
-    },
-    numCompletedBoards: {
-      type: GraphQLInt,
-      resolve: () => getBoards('completed').length
-    }
-  },
-  interfaces: [nodeInterface]
-});
-
-////////////////////////////////////////////////////////////////////
-//
-// Mutations
-//
-////////////////////////////////////////////////////////////////////
-const GraphQLAddBoardMutation = mutationWithClientMutationId({
-  name: 'AddBoard',
-  inputFields: {
-    title: {type: new GraphQLNonNull(GraphQLString)}
-  },
-  outputFields: {
-    viewer: {
-      type: GraphQLUser,
-      resolve: getViewer
-    },
-    boardEdge: {
-      type: GraphQLBoardEdge,
-      resolve: ({boardId}) => {
-        const board = getBoard(boardId);
-        return {
-          cursor: cursorForObjectInConnection(getBoards(), board),
-          node: board
-        };
-      }
-    }
-  },
-  mutateAndGetPayload: ({title}) => {
-    const boardId = addBoard(title);
-    return {boardId};
-  }
-});
-
-const GraphQLChangeBoardStatusMutation = mutationWithClientMutationId({
-  name: 'ChangeBoardStatus',
-  inputFields: {
-    id: {type: new GraphQLNonNull(GraphQLID)},
-    complete: {type: new GraphQLNonNull(GraphQLBoolean)}
-  },
-  outputFields: {
-    viewer: {
-      type: GraphQLUser,
-      resolve: getViewer
-    },
-    board: {
-      type: GraphQLBoard,
-      resolve: ({boardId}) => getBoard(boardId)
-    }
-  },
-  mutateAndGetPayload: ({id, complete}) => {
-    const {id: boardId} = fromGlobalId(id);
-    changeBoardStatus(boardId, complete);
-    return {boardId};
-  }
-});
-
-const GraphQLMarkAllBoardsMutation = mutationWithClientMutationId({
-  name: 'MarkAllBoards',
-  inputFields: {
-    complete: {type: new GraphQLNonNull(GraphQLBoolean)}
-  },
-  outputFields: {
-    viewer: {
-      type: GraphQLUser,
-      resolve: getViewer
-    },
-    changedBoards: {
-      type: new GraphQLList(GraphQLBoard),
-      resolve: ({changedBoardIds}) => changedBoardIds.map(getBoard)
-    }
-  },
-  mutateAndGetPayload: ({complete}) => {
-    const changedBoardIds = markAllBoards(complete);
-    return {changedBoardIds};
-  }
-});
-
-const GraphQLRemoveCompletedBoardsMutation = mutationWithClientMutationId({
-  name: 'RemoveCompletedBoards',
-  outputFields: {
-    viewer: {
-      type: GraphQLUser,
-      resolve: getViewer
-    },
-    deletedIds: {
-      type: new GraphQLList(GraphQLString),
-      resolve: ({deletedIds}) => deletedIds
-    }
-  },
-  mutateAndGetPayload: () => {
-    const deletedBoardIds = removeCompletedBoards();
-    const deletedIds = deletedBoardIds.map(toGlobalId.bind(null, 'Board'));
-    return {deletedIds};
-  }
-});
-
-const GraphQLRemoveBoardMutation = mutationWithClientMutationId({
-  name: 'RemoveBoard',
-  inputFields: {
-    id: {type: new GraphQLNonNull(GraphQLID)}
-  },
-  outputFields: {
-    viewer: {
-      type: GraphQLUser,
-      resolve: getViewer
-    },
-    deletedId: {
-      type: GraphQLID,
-      resolve: ({id}) => id
-    }
-  },
-  mutateAndGetPayload: ({id}) => {
-    const {id: boardId} = fromGlobalId(id);
-    removeBoard(boardId);
-    return {id};
-  }
-});
-
-const GraphQLRenameBoardMutation = mutationWithClientMutationId({
-  name: 'RenameBoard',
-  inputFields: {
-    id: {type: new GraphQLNonNull(GraphQLID)},
-    title: {type: new GraphQLNonNull(GraphQLString)}
-  },
-  outputFields: {
-    board: {
-      type: GraphQLBoard,
-      resolve: ({boardId}) => getBoard(boardId)
-    }
-  },
-  mutateAndGetPayload: ({id, title}) => {
-    const {id: boardId} = fromGlobalId(id);
-    renameBoard(boardId, title);
-    return {boardId};
-  }
-});
-
-////////////////////////////////////////////////////////////////////
-//
-// Schema
-//
-////////////////////////////////////////////////////////////////////
-const GraphQLRoot = new GraphQLObjectType({
+const RootQuery = new GraphQLObjectType({
   name: 'Root',
   fields: {
     viewer: {
-      type: GraphQLUser,
-      resolve: getViewer
+      type: UserType,
+      resolve: db.getViewer
     },
     board: {
-      type: GraphQLBoard,
+      type: BoardType,
       args: {
         id: {
           description: 'id of the board',
@@ -283,20 +42,16 @@ const GraphQLRoot = new GraphQLObjectType({
   }
 });
 
-const GraphQLMutation = new GraphQLObjectType({
+const RootMutation = new GraphQLObjectType({
   name: 'Mutation',
   fields: {
-    addBoard: GraphQLAddBoardMutation,
-    changeBoardStatus: GraphQLChangeBoardStatusMutation,
-    markAllBoards: GraphQLMarkAllBoardsMutation,
-    removeCompletedBoards: GraphQLRemoveCompletedBoardsMutation,
-    removeBoard: GraphQLRemoveBoardMutation,
-    renameBoard: GraphQLRenameBoardMutation
+    addBoard: AddBoardMutation,
+    removeBoard: RemoveBoardMutation,
+    renameBoard: RenameBoardMutation
   }
 });
 
 export const Schema = new GraphQLSchema({
-  query: GraphQLRoot,
-  mutation: GraphQLMutation
+  query: RootQuery,
+  mutation: RootMutation
 });
-
