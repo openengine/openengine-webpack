@@ -12,7 +12,6 @@ import {
 } from 'graphql-relay';
 
 import * as db from './database';
-
 import { nodeInterface } from './nodeInterface';
 import { BoardConnection } from './BoardConnection';
 
