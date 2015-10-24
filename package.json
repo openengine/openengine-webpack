@@ -1,10 +1,12 @@
 {
-  "name": "relay-skeleton",
+  "name": "openengine-webpack",
   "version": "0.0.1",
-  "description": "A minimal React, Relay, GraphQL skeleton.",
+  "description": "Engine.",
   "main": "gulpfile.babel.js",
   "scripts": {
-    "start": "gulp",
+    "postinstall": "webpack --config ./webpack-prod.config.js --progress --colors",
+    "start": "babel-node ./src/server/index.js",
+    "start-dev": "gulp",
     "start-graphiql": "babel-node graphiql/main.js"
   },
   "dependencies": {
