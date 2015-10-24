@@ -19,7 +19,7 @@ const CardType = new GraphQLObjectType({
   description: 'A card',
   fields: () => ({
     id: globalIdField('Card'),
-    name: { type: GraphQLString },
+    title: { type: GraphQLString },
   }),
   isTypeOf: (value) => value instanceof db.Card,
   interfaces: [nodeInterface]
