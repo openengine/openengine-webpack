@@ -14,7 +14,7 @@ export function Board(title) {
 
 export function Card(boardId, title, description, attendees) {
   this.id = 'card' + (cardId++);
-  this.board = boardId;
+  this.boardId = boardId;
   this.title = title;
   this.description = description;
 }
@@ -31,6 +31,8 @@ var boards = [
 ];
 
 var cards = [
+  new Card('board0', 'Slack Integration', 'Customers would like to integrate with Slack to make their lives easier.'),
+  new Card('board0', 'Onboarding', 'We have a core value around education and our onboarding flow is a great place to bring that to life.'),
   new Card('board1', 'Slack Integration', 'Customers would like to integrate with Slack to make their lives easier.'),
   new Card('board1', 'Onboarding', 'We have a core value around education and our onboarding flow is a great place to bring that to life.'),
   new Card('board2', 'Slack Oauth integration', 'Setup the core oauth flow for users to connect their account.'),
@@ -66,6 +68,12 @@ export function renameBoard(id, title) {
 }
 
 export function removeBoard(id) {
-  boards = boards.filter((board) => board.id != id);
+  boards = boards.filter(board => board.id !== id);
   return id;
 }
+
+export function getCards(boardId) {
+  let boardCards = cards.filter(card => card.boardId === boardId);
+  return boardCards;
+}
+
