@@ -6,8 +6,18 @@ import FontIcon from 'material-ui/lib/font-icon';
 import Card from './Card'
 
 class Board extends React.Component {
+  renderCards() {
+    const {board} = this.props;
+
+    return board.cards.edges.map(({node})=> {
+      return (
+        <Card card={node} />
+      );
+    });
+  }
+
   render() {
-    const board = this.props.board;
+    const {board} = this.props;
 
     return (
       <div className="flex-board">
@@ -36,14 +46,13 @@ class Board extends React.Component {
           </div>
           <div className="flex-row-container">
             <Paper className="flex-board-column" zDepth={0} rounded={false}>
-                <Card />
-                 <Card />
+              {this.renderCards()}
             </Paper>
-             <Paper className="flex-board-column" zDepth={0} rounded={false}>
-              <Card />
+            <Paper className="flex-board-column" zDepth={0} rounded={false}>
+              {this.renderCards()}
             </Paper>
-             <Paper className="flex-board-column" zDepth={0} rounded={false}>
-          
+            <Paper className="flex-board-column" zDepth={0} rounded={false}>
+              {this.renderCards()}
             </Paper>
           </div>
         </div>
@@ -53,10 +62,24 @@ class Board extends React.Component {
 };
 
 export default Relay.createContainer(Board, {
+  prepareVariables({status}) {
+    return {
+      limit: Number.MAX_SAFE_INTEGER || 9007199254740991
+    };
+  },
+
   fragments: {
     board: () => Relay.QL`
       fragment on Board {
         title
+        cards(first: $limit) {
+          edges {
+            node {
+              id
+              title
+            }
+          }
+        }
       }
     `,
   },
