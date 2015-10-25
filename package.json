@@ -4,6 +4,7 @@
   "description": "Engine.",
   "main": "gulpfile.babel.js",
   "scripts": {
+    "postinstall": "npm start",
     "start": "gulp production",
     "start-dev": "gulp",
     "start-graphiql": "babel-node graphiql/main.js"
