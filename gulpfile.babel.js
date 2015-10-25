@@ -8,9 +8,16 @@ import { introspectionQuery } from 'graphql/utilities';
 import { graphql } from 'graphql';
 import fs from 'fs';
 import concatCss from 'gulp-concat-css';
+import gls from 'gulp-live-server';
+import clean from 'gulp-clean';
+import babel from 'gulp-babel';
 
 import configs from './webpack.config';
+import prodConfigs from './webpack-prod.config';
+
 const [ frontendConfig, backendConfig ] = configs;
+const [ prodFrontendConfig, prodBackendConfig ] = prodConfigs;
+
 
 let compiler;
 
@@ -27,6 +34,11 @@ function recompile() {
     });
   });
 }
+
+// Cleans out build folder prior to compiling and copying assets
+gulp.task('clean-build', () => {
+  return gulp.src(path.join(__dirname,'build','public'), {read: false}).pipe(clean());
+});
 
 // run the webpack dev server
 //  must generate the schema.json first as compiler relies on it for babel-relay-plugin
@@ -50,28 +62,43 @@ gulp.task('webpack', ['copy-assets','generate-schema', 'watch-schema'], () => {
 });
 
 // Copy all static assets, also concatinates css files into 1 file
-gulp.task('copy-assets', () => {
+gulp.task('copy-assets', ['clean-build'], () => {
   gulp.src(path.join(__dirname, './src/frontend/assets/img/**')).pipe(gulp.dest(path.join(__dirname,'build','public','img')));
   // gulp.src(path.join(__dirname, './src/frontend/assets/styles/**')).pipe(concatCss("engine.css")).pipe(gulp.dest(path.join(__dirname,'build','public','css')));
   });
 
-// restart the backend server whenever a required file from backend is updated
-gulp.task('backend-watch', () => {
-  return new Promise((resolve, reject) => {
-    let compiled = false;
-    webpack(backendConfig).watch(100, (err, stats) => {
-      if (err)
-        return reject(err);
-      // trigger task completion after first compile
-      if (!compiled) {
-        compiled = true;
-        resolve();
-      } else {
-        nodemon.restart();
-      }
-    });
+
+// Runs our combined production tasks using the webpack-prod.config.js file
+gulp.task('production', ['production-front','copy-assets','generate-schema'], () => {
+
+// run webpack backend server (will start server after all assets are ready)
+  webpack(prodBackendConfig, function(err, stats) {
+    if(err) throw new gutil.PluginError("webpack:build", err);
+
+    //1. run your script as a server
+     var server = gls(path.join(__dirname,'build','server.js'), undefined, false);
+     server.start();
+
   });
 });
+
+// Run the frontend production webpack tasks using the webpack-prod.config.js file
+gulp.task('production-front', ['copy-assets','generate-schema'], () => {
+
+ return new Promise((resolve, reject) => {
+
+    webpack(prodFrontendConfig, (err, stats) => {
+      
+          if (err)
+          return reject(err);
+
+          resolve();
+    });
+
+  });
+
+});
+
 
 // Regenerate the graphql schema and recompile the frontend code that relies on schema.json
 gulp.task('generate-schema', () => {
@@ -92,25 +119,43 @@ gulp.task('watch-schema', () => {
   gulp.watch(path.join(__dirname, './src/server/data', '**/*.js'), ['generate-schema']);
 });
 
+// restart the backend server whenever a required file from backend is updated
+gulp.task('backend-watch', () => {
+  return new Promise((resolve, reject) => {
+    let compiled = false;
+    webpack(backendConfig).watch(100, (err, stats) => {
+      if (err)
+        return reject(err);
+      // trigger task completion after first compile
+      if (!compiled) {
+        compiled = true;
+        resolve();
+      } else {
+        nodemon.restart();
+      }
+    });
+  });
+});
+
 // rebundle the asset files if they are updated
 // gulp.task('watch-assets', () => {
 //   gulp.watch(path.join(__dirname, './src/frontend/assets', '**/*.css'), ['copy-assets']);
 // });
 
-gulp.task('server', ['backend-watch', 'watch-schema'], () => {
-  nodemon({
-    execMap: {
-      js: 'node'
-    },
-    script: path.join(__dirname, 'build', 'server.js'),
-    // do not watch any directory/files to refresh
-    // all refreshes should be manual
-    watch: ['foo/'],
-    ext: 'noop',
-    ignore: ['*']
-  }).on('restart', () => {
-    console.log('[nodemon]: restart');
-  });
-});
+// gulp.task('server', ['backend-watch', 'watch-schema'], () => {
+//   nodemon({
+//     execMap: {
+//       js: 'node'
+//     },
+//     script: path.join(__dirname, 'build', 'server.js'),
+//     // do not watch any directory/files to refresh
+//     // all refreshes should be manual
+//     watch: ['foo/'],
+//     ext: 'noop',
+//     ignore: ['*']
+//   }).on('restart', () => {
+//     console.log('[nodemon]: restart');
+//   });
+// });
 
 gulp.task('default', ['webpack']);

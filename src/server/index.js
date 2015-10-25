@@ -3,10 +3,9 @@ import schema from './data/schema';
 import path from "path"
 import graphQLHTTP from 'express-graphql';
 
-// This "app" configuraiton is for Heroku deployment of static assets
+// This "app" configuraiton is for Heroku deployment of static
 const app = express();
-const static_path = path.join(__dirname, '../../build', 'public');
-console.log(static_path);
+const static_path = path.join(__dirname, '../build', 'public');
 app.use(express.static(static_path))
   .get('/*', function (req, res) {
     res.sendFile('index.html', {

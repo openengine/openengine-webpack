@@ -4,8 +4,7 @@
   "description": "Engine.",
   "main": "gulpfile.babel.js",
   "scripts": {
-    "postinstall": "webpack --config ./webpack-prod.config.js --progress --colors",
-    "start": "babel-node ./src/server/index.js",
+    "start": "gulp production",
     "start-dev": "gulp",
     "start-graphiql": "babel-node graphiql/main.js"
   },
@@ -29,7 +28,10 @@
     "css-loader": "^0.21.0",
     "express": "^4.13.3",
     "gulp": "^3.9.0",
+    "gulp-babel": "^5.3.0",
+    "gulp-clean": "^0.3.1",
     "gulp-concat-css": "^2.2.0",
+    "gulp-live-server": "0.0.29",
     "html-webpack-plugin": "^1.6.0",
     "material-ui": "^0.13.0",
     "nodemon": "^1.4.0",
