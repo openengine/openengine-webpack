@@ -38,11 +38,11 @@ var frontendConfig = assign({}, defaultConfig, {
   module: {
     loaders: [
       { test: /\.jsx$/,
-        loaders: ['babel?stage=0&plugins[]=' + path.join(__dirname, 'relayPlugin')],
+        loaders: ['babel?stage=2&plugins[]=' + path.join(__dirname, 'relayPlugin')],
         include: [path.join(__dirname, 'src', 'frontend'), path.join(__dirname, 'src', 'server/data')],
       },
       { test: /\.js$/,
-        loaders: ['babel?stage=0&plugins[]=' + path.join(__dirname, 'relayPlugin')],
+        loaders: ['babel?stage=2&plugins[]=' + path.join(__dirname, 'relayPlugin')],
         include: [path.join(__dirname, 'src', 'frontend'), path.join(__dirname, 'src', 'server/data')],
       },
       {
@@ -89,7 +89,7 @@ var serverConfig = assign({}, defaultConfig, {
         // transpile all .js files using babel
         test: /\.js$/,
         exclude: /node_modules/,
-        loader: 'babel?stage=0'
+        loader: 'babel?stage=2'
       }
     ]
   }
