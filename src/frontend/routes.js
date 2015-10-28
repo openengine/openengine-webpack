@@ -3,10 +3,12 @@ import {IndexRoute, Route} from 'react-router';
 
 import ViewerQueries from './queries/ViewerQueries';
 import BoardQueries from './queries/BoardQueries';
+import CardQueries from './queries/CardQueries';
 
 import Main from './components/Main';
 import BoardList from './components/BoardList';
 import Board from './components/Board';
+import FullCard from './components/FullCard';
 
 export default (
   <Route
@@ -23,6 +25,11 @@ export default (
       path="board/:boardId"
       component={Board}
       queries={BoardQueries}
+    />
+     <Route
+      path="card/:cardId"
+      component={FullCard}
+      queries={CardQueries}
     />
     <Route
       path=":status"

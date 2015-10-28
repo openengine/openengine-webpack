@@ -4,6 +4,7 @@ import MaterialCard from 'material-ui/lib/card/card';
 import CardHeader from 'material-ui/lib/card/card-header';
 import Avatar from 'material-ui/lib/avatar'
 import FontIcon from 'material-ui/lib/font-icon';
+import { Link } from 'react-router'
 import { DragItemTypes } from "../constants"
 import { DragSource, DropTarget } from 'react-dnd';
 
@@ -79,7 +80,7 @@ static propTypes = {
   };
 
   render() {
-    const { text, isDragging, connectDragSource, connectDropTarget } = this.props;
+    const { text, isDragging, connectDragSource, connectDropTarget, id } = this.props;
     const opacity = isDragging ? 0 : 1;
 
     return connectDragSource(connectDropTarget(
@@ -89,7 +90,8 @@ static propTypes = {
         }}>
         <MaterialCard initiallyExpanded={false}>
           <CardHeader
-            title={text}
+            title={<Link to={`/card/${id}`}>{text}</Link>}
+            titleStyle={{cursor:'pointer'}}
             textStyle = {{display:'block'}}
             avatar={<Avatar src="https://s3.amazonaws.com/uifaces/faces/twitter/sauro/48.jpg" style={{float:'right'}}></Avatar>}
             actAsExpander={false}

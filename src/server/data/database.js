@@ -79,3 +79,9 @@ export function getCards(boardId) {
   return boardCards;
 }
 
+export function getCard(id) {
+  return cards.filter((card) => card.id == id)[0];
+}
+
+
+
