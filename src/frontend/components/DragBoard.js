@@ -5,66 +5,65 @@ import TextField from 'material-ui/lib/text-field'
 import Paper from 'material-ui/lib/paper';
 import FontIcon from 'material-ui/lib/font-icon';
 import Card from './BoardCard'
+import BoardColumn from "./BoardColumn"
 import { DragDropContext } from 'react-dnd';
 import { DragItemTypes } from "../constants"
-import { DragSource, DropTarget } from 'react-dnd';
+import { DropTarget } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 
-const cardTarget = {
-  drop() {
-  }
-};
 
 // Right... so we need to seperate out this component because the Drag and Drop context will only work with the default exported class...
 // And therefore, a Relay Container (as far as I know), will not work directly with React Dnd...
 @DragDropContext(HTML5Backend)
-@DropTarget(DragItemTypes.BOARDCARD, cardTarget, connect => ({
-  connectDropTarget: connect.dropTarget()
-}))
 export default class DragBoard extends React.Component {
   
-  static propTypes = {
-    connectDropTarget: PropTypes.func.isRequired
-  };
-
   constructor(props) {
       super(props);
       this.moveCard = this.moveCard.bind(this);
       this.findCard = this.findCard.bind(this);
       const {board} = this.props;
       this.state = {
-        cards: Array.from(board.cards.edges, ed => ed.node)
+        cards: {
+          todo: Array.from(board.cards.edges, ed => ed.node),
+          doing: [],
+          done: []
+        } 
       };
     }
 
-   moveCard(id, atIndex) {
-    const { card, index } = this.findCard(id);
-    this.setState(update(this.state, {
-      cards: {
-        $splice: [
-          [index, 1],
-          [atIndex, 0, card]
-        ]
-      }
-    }));
+   moveCard(from, to) {
+    const { card, status, index } = this.findCard(from.id, from.status);
+
+    if(card) { 
+      // I know there's a way to consolidate these two calls... but not sure how
+      this.setState(update(this.state, {
+        cards: {[from.status] : {$splice:[[index, 1]]}
+        }
+      }));
+
+      this.setState(update(this.state, {
+        cards: {[to.status]: {$splice:[[to.index, 0, card]]}
+        }
+      }));
+    }
   }
 
-  findCard(id) {
+  findCard(id, status) {
     const { cards } = this.state;
-    const card = cards.filter(c => c.id === id)[0];
+    const card = cards[status].filter(c => c.id === id)[0];
 
     return {
       card,
-      index: cards.indexOf(card)
+      status,
+      index: cards[status].indexOf(card)
     };
   }
 
   render() {
     const {board} = this.props;
-    const { connectDropTarget } = this.props;
     const { cards } = this.state;
 
-    return connectDropTarget(
+    return (
       <div className="flex-board">
         <div className="flex-column-container">
           <div className="flex-header-row-container">
@@ -91,21 +90,16 @@ export default class DragBoard extends React.Component {
           </div>
           <div className="flex-row-container">
             <Paper className="flex-board-column" zDepth={0} rounded={false}>
-               {cards.map(card => {
-                return (
-                  <Card key={card.id}
-                        id={card.id}
-                        text={card.title}
-                        moveCard={this.moveCard}
+              <BoardColumn status = "todo" cards = {cards.todo} moveCard={this.moveCard}
+                        findCard={this.findCard} /> 
+            </Paper>
+            <Paper className="flex-board-column" zDepth={0} rounded={false}>
+                 <BoardColumn status = "doing" cards = {cards.doing} moveCard={this.moveCard}
                         findCard={this.findCard} />
-                        );
-                })}
             </Paper>
             <Paper className="flex-board-column" zDepth={0} rounded={false}>
-            
-            </Paper>
-            <Paper className="flex-board-column" zDepth={0} rounded={false}>
-             
+              <BoardColumn status = "done" cards = {cards.done} moveCard={this.moveCard}
+                        findCard={this.findCard} />
             </Paper>
           </div>
         </div>

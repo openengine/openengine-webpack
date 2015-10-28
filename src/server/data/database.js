@@ -37,6 +37,8 @@ var cards = [
   new Card('board1', 'Onboarding', 'We have a core value around education and our onboarding flow is a great place to bring that to life.'),
   new Card('board2', 'Slack Oauth integration', 'Setup the core oauth flow for users to connect their account.'),
   new Card('board2', 'Integration data service', 'Persist integration information.'),
+  new Card('board2', 'Design Marketing Dashboard', 'Dashboard for all the top marketing analytics.'),
+  new Card('board2', 'Create LowFi Workflow', 'How loFi mockups will get done.'),
   new Card('board2', 'Email notification on successful oauth connection.', 'NodeConf is the longest running community driven conference for the Node community.', [1,2])
 ];
 

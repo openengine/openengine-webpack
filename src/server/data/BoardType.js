@@ -24,7 +24,7 @@ const BoardType = new GraphQLObjectType({
     cards: {
       type: CardConnection,
       args: {
-        ...connectionArgs
+        ... connectionArgs
       },
       resolve: (obj, {...args}) => {
         let cards = db.getCards(obj.id);
