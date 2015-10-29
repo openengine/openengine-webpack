@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import Radium from 'radium';
 import update from 'react/lib/update';
 import Relay from 'react-relay';
 import TextField from 'material-ui/lib/text-field'
@@ -11,10 +12,76 @@ import { DragItemTypes } from "../constants"
 import { DropTarget } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 
+// Inline JS Styles
+const styles = {
+    flexContainer: {
+      fontFamily: 'Roboto, sans-serif',
+      background: '#FFF'
+    },
+
+    flexRowContainer: {
+      display: 'flex',
+      flexFlow: 'row nowrap',
+      justifyContent: 'center',
+      alignItems: 'stretch',
+      overflow: 'hidden',
+      width: '100%',
+      padding: 3,
+      minHeight: 550
+    },
+
+    flexHeaderRowContainer: {
+      display: 'flex',
+      flexFlow: 'row nowrap',
+      justifyContent: 'center',
+      alignItems: 'stretch',
+      overflow: 'hidden',
+      width: '100%',
+      padding: 3
+    },
+
+    flexColumnContainer: {
+      display: 'flex',
+      flexFlow: 'column nowrap',
+      justifyContent: 'center',
+      alignItems: 'stretch'
+    },
+
+    flexBoardColumn: {
+      width:'33%',
+      flex: '1 0 auto',
+      boxShadow: '0 0px 2px rgba(0, 0, 0, 0.15)'
+    },
+
+    flexBoardHeader: {
+      flex: '1 0 auto',
+      fontSize:'1.0rem',
+      fontWeight:100,
+      color: '#9E9E9E'
+    },
+
+    flexBoardSearchbox: {
+      paddingTop: '20px'
+    },
+
+    boardTitle: {
+      fontSize: '1.5rem',
+      fontWeight:100,
+      color: '#9E9E9E',
+      marginBottom: 40
+    },
+
+    boardSearchIcon: {
+      position: 'relative',
+      bottom: -5
+    }
+};
+
 
 // Right... so we need to seperate out this component because the Drag and Drop context will only work with the default exported class...
 // And therefore, a Relay Container (as far as I know), will not work directly with React Dnd...
 @DragDropContext(HTML5Backend)
+@Radium
 export default class DragBoard extends React.Component {
   
   constructor(props) {
@@ -64,46 +131,47 @@ export default class DragBoard extends React.Component {
     const { cards } = this.state;
 
     return (
-      <div className="flex-board">
-        <div className="flex-column-container">
-          <div className="flex-header-row-container">
-            <div className="flex-board-header">
-               <h2 className="board-title">{board.title}</h2>
+
+        <div style={[styles.flexContainer]}>
+          <div style={[styles.flexColumnContainer]}>
+              <div style={[styles.flexHeaderRowContainer]}>
+                  <div style={[styles.flexBoardHeader]}>
+                   <h2 style={[styles.boardTitle]}>{board.title}</h2>
+                  </div>
+                  <div style={[styles.flexBoardHeader, styles.flexBoardSearchbox]}>
+                      <TextField
+                        hintText={<span><i style={[styles.boardSearchIcon]} className="material-icons">search</i>Search...</span>}
+                        hintStyle={{paddingBottom: 5}}
+                        type="search" />
+                  </div>
               </div>
-              <div className="flex-board-header flex-board-searchbox">
-                  <TextField
-                    hintText={<span><i className="material-icons board-search-icon">search</i>Search...</span>}
-                    hintStyle={{paddingBottom: 5}}
-                    type="search" />
+              <div style={[styles.flexHeaderRowContainer]}>
+                 <div style={[styles.flexBoardHeader]}>
+                   To Do
+                  </div>
+                  <div style={[styles.flexBoardHeader]}>
+                  Doing
+                  </div>
+                  <div style={[styles.flexBoardHeader]}>
+                   Done
+                  </div>
+              </div>
+              <div style={[styles.flexRowContainer]}>
+                  <Paper style={styles.flexBoardColumn} zDepth={0} rounded={false}>
+                    <BoardColumn status = "todo" cards = {cards.todo} moveCard={this.moveCard}
+                              findCard={this.findCard} /> 
+                  </Paper>
+                  <Paper style={styles.flexBoardColumn} zDepth={0} rounded={false}>
+                       <BoardColumn status = "doing" cards = {cards.doing} moveCard={this.moveCard}
+                              findCard={this.findCard} />
+                  </Paper>
+                  <Paper style={styles.flexBoardColumn} zDepth={0} rounded={false}>
+                    <BoardColumn status = "done" cards = {cards.done} moveCard={this.moveCard}
+                              findCard={this.findCard} />
+                  </Paper>
               </div>
           </div>
-          <div className="flex-header-row-container">
-            <div className="flex-board-header">
-              To Do
-            </div>
-            <div className="flex-board-header">
-              Doing
-            </div>
-            <div className="flex-board-header">
-              Done
-            </div>
-          </div>
-          <div className="flex-row-container">
-            <Paper className="flex-board-column" zDepth={0} rounded={false}>
-              <BoardColumn status = "todo" cards = {cards.todo} moveCard={this.moveCard}
-                        findCard={this.findCard} /> 
-            </Paper>
-            <Paper className="flex-board-column" zDepth={0} rounded={false}>
-                 <BoardColumn status = "doing" cards = {cards.doing} moveCard={this.moveCard}
-                        findCard={this.findCard} />
-            </Paper>
-            <Paper className="flex-board-column" zDepth={0} rounded={false}>
-              <BoardColumn status = "done" cards = {cards.done} moveCard={this.moveCard}
-                        findCard={this.findCard} />
-            </Paper>
-          </div>
-        </div>
-      </div>
+        </div> 
     );
   }
 };
