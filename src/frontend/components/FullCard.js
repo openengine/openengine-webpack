@@ -10,6 +10,7 @@ import FlatButton from 'material-ui/lib/flat-button'
 import Colors from 'material-ui/lib/styles/colors'
 import Paper from 'material-ui/lib/paper';
 import TextField from 'material-ui/lib/text-field'
+import IconButton from 'material-ui/lib/icon-button';
 import { Link } from 'react-router'
 
 // Inline JS Styles
@@ -79,7 +80,6 @@ const styles = {
 
 @Radium
 class FullCard extends React.Component {
-
   render() {
     const {card} = this.props;
     
@@ -105,8 +105,9 @@ class FullCard extends React.Component {
           <div style={[styles.flexRowContainer]}>
             <div style={[styles.flexRowContainer, {width:'80%'}]} type='Content'>
               <div style={[styles.flexHeaderRowContainer]}>
-                  <div style={[styles.flexBoardHeader]}>
-                   <h2 style={[styles.boardTitle]}>{card.title}</h2>
+                  <IconButton onClick={()=> this.props.history.goBack()} style={{cursor:'pointer'}} iconClassName="material-icons" iconStyle = {{color: Colors.blueGrey100}}>close</IconButton>
+                  <div style={[styles.flexBoardHeader, {marginLeft:20}]}>
+                     <h2 style={[styles.boardTitle]}>{card.title}</h2>
                   </div>
                   <div style={[styles.flexBoardHeader, styles.flexBoardSearchbox]}>
                       <TextField
