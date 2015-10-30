@@ -11,12 +11,12 @@ import { DragItemTypes } from "../constants"
 import { DragSource, DropTarget } from 'react-dnd';
 
 const styles = {
-  flexContainer: {
+  container: {
     fontFamily: 'Roboto, sans-serif',
     background: '#99ccaa'
   },
 
-  flexRowContainer: {
+  rowContainer: {
     display: 'flex',
     flexFlow: 'row nowrap',
     justifyContent: 'center',
@@ -27,7 +27,7 @@ const styles = {
     minHeight: 550
   },
 
-  flexHeaderRowContainer: {
+  headerRowContainer: {
     background: 'pink',
     display: 'flex',
     flexFlow: 'row nowrap',
@@ -38,17 +38,17 @@ const styles = {
     padding: 3
   },
 
-  flexColumnContainer: {
+  columnContainer: {
     background: 'green',
     display: 'flex',
     flexFlow: 'column nowrap',
     justifyContent: 'center',
-    alignItems: 'stretch'
+    alignItems: 'stretch',
+    flex: '1 0 auto',
   },
 
-  flexCardList: {
+  cardList: {
     background: 'blue',
-    width:'33%',
     flex: '1 0 auto',
     boxShadow: '0 0px 2px rgba(0, 0, 0, 0.15)'
   },
@@ -114,18 +114,18 @@ class CardList extends React.Component {
     const cards = cardList.cards.edges;
 
     return connectDropTarget(
-        <div style={[styles.flexColumnContainer]}>
-          <div style={[styles.flexHeaderRowContainer]}>
+        <div style={[styles.columnContainer]}>
+          <div style={[styles.headerRowContainer]}>
             <div style={[styles.cardListName]}>
               {cardList.name}
             </div>
           </div>
-          <div style={[styles.flexRowContainer]}>
+          <div style={[styles.columnContainer]}>
             <div style={[styles.cardListContainer(isOver)]}>
               {cards.map(({node}) => {
                 return (
                   <Paper
-                    style={[styles.flexCardList]}
+                    style={styles.cardList}
                     zDepth={0}
                     rounded={false}
                     key={node.id}

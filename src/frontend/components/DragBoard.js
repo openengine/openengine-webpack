@@ -11,12 +11,12 @@ import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 
 const styles = {
-  flexContainer: {
+  container: {
     fontFamily: 'Roboto, sans-serif',
     background: '#00ccaa'
   },
 
-  flexRowContainer: {
+  rowContainer: {
     display: 'flex',
     flexFlow: 'row nowrap',
     justifyContent: 'center',
@@ -27,7 +27,7 @@ const styles = {
     minHeight: 550
   },
 
-  flexHeaderRowContainer: {
+  headerRowContainer: {
     display: 'flex',
     flexFlow: 'row nowrap',
     justifyContent: 'center',
@@ -37,21 +37,21 @@ const styles = {
     padding: 3
   },
 
-  flexColumnContainer: {
+  columnContainer: {
     display: 'flex',
     flexFlow: 'column nowrap',
     justifyContent: 'center',
     alignItems: 'stretch'
   },
 
-  flexBoardHeader: {
+  boardHeader: {
     flex: '1 0 auto',
     fontSize:'1.0rem',
     fontWeight:100,
     color: '#9E9E9E'
   },
 
-  flexBoardSearchbox: {
+  boardSearchbox: {
     paddingTop: '20px'
   },
 
@@ -122,13 +122,13 @@ export default class DragBoard extends React.Component {
     const { cardLists } = board;
 
     return (
-      <div style={[styles.flexContainer]}>
-        <div style={[styles.flexColumnContainer]}>
-          <div style={[styles.flexHeaderRowContainer]}>
-            <div style={[styles.flexBoardHeader]}>
+      <div style={[styles.container]}>
+        <div style={[styles.columnContainer]}>
+          <div style={[styles.headerRowContainer]}>
+            <div style={[styles.boardHeader]}>
               <h2 style={[styles.boardName]}>{board.name}</h2>
             </div>
-            <div style={[styles.flexBoardHeader, styles.flexBoardSearchbox]}>
+            <div style={[styles.boardHeader, styles.boardSearchbox]}>
               <TextField
                 hintText={<span><i style={[styles.boardSearchIcon]}
                 className="material-icons">search</i>Search...</span>}
@@ -138,13 +138,15 @@ export default class DragBoard extends React.Component {
             </div>
           </div>
         </div>
-        {cardLists.edges.map(({node}) =>
-          <CardList
-            cardList={node}
-            moveCard={this.moveCard}
-            findCard={this.findCard}
-          />
-        )}
+        <div style={[styles.rowContainer]}>
+          {cardLists.edges.map(({node}) =>
+            <CardList
+              cardList={node}
+              moveCard={this.moveCard}
+              findCard={this.findCard}
+            />
+          )}
+        </div>
       </div>
     );
   }
