@@ -122,33 +122,29 @@ export default class DragBoard extends React.Component {
     const { cardLists } = board;
 
     return (
-      <div>
-        <div style={[styles.flexContainer]}>
-          <div style={[styles.flexColumnContainer]}>
-            <div style={[styles.flexHeaderRowContainer]}>
-              <div style={[styles.flexBoardHeader]}>
-                <h2 style={[styles.boardName]}>{board.name}</h2>
-              </div>
-              <div style={[styles.flexBoardHeader, styles.flexBoardSearchbox]}>
-                <TextField
-                  hintText={<span><i style={[styles.boardSearchIcon]}
-                  className="material-icons">search</i>Search...</span>}
-                  hintStyle={{paddingBottom: 5}}
-                  type="search"
-                />
-              </div>
+      <div style={[styles.flexContainer]}>
+        <div style={[styles.flexColumnContainer]}>
+          <div style={[styles.flexHeaderRowContainer]}>
+            <div style={[styles.flexBoardHeader]}>
+              <h2 style={[styles.boardName]}>{board.name}</h2>
+            </div>
+            <div style={[styles.flexBoardHeader, styles.flexBoardSearchbox]}>
+              <TextField
+                hintText={<span><i style={[styles.boardSearchIcon]}
+                className="material-icons">search</i>Search...</span>}
+                hintStyle={{paddingBottom: 5}}
+                type="search"
+              />
             </div>
           </div>
         </div>
-        <div style={[styles.flexContainer]}>
-          {cardLists.edges.map(({node}) =>
-            <CardList
-              cardList={node}
-              moveCard={this.moveCard}
-              findCard={this.findCard}
-            />
-          )}
-        </div>
+        {cardLists.edges.map(({node}) =>
+          <CardList
+            cardList={node}
+            moveCard={this.moveCard}
+            findCard={this.findCard}
+          />
+        )}
       </div>
     );
   }
