@@ -53,7 +53,7 @@ const cardTarget = {
       props.moveCard(from, to);
 
       if(draggedStatus!==overStatus) {
-        // So I think this might actually be frowned upon (mutating here)... but it works for now. 
+        // So I think this might actually be frowned upon (mutating here)... but it works for now.
           monitor.getItem().currentStatus = overStatus;
       }
     }
@@ -112,5 +112,3 @@ static propTypes = {
 //     `,
 //   },
 // });
-
-

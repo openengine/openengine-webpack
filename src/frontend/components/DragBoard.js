@@ -6,75 +6,66 @@ import TextField from 'material-ui/lib/text-field'
 import Paper from 'material-ui/lib/paper';
 import FontIcon from 'material-ui/lib/font-icon';
 import Card from './BoardCard'
-import BoardColumn from "./BoardColumn"
+import CardList from "./CardList"
 import { DragDropContext } from 'react-dnd';
-import { DragItemTypes } from "../constants"
-import { DropTarget } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 
-// Inline JS Styles
 const styles = {
-    flexContainer: {
-      fontFamily: 'Roboto, sans-serif',
-      background: '#FFF'
-    },
+  flexContainer: {
+    fontFamily: 'Roboto, sans-serif',
+    background: '#00ccaa'
+  },
 
-    flexRowContainer: {
-      display: 'flex',
-      flexFlow: 'row nowrap',
-      justifyContent: 'center',
-      alignItems: 'stretch',
-      overflow: 'hidden',
-      width: '100%',
-      padding: 3,
-      minHeight: 550
-    },
+  flexRowContainer: {
+    display: 'flex',
+    flexFlow: 'row nowrap',
+    justifyContent: 'center',
+    alignItems: 'stretch',
+    overflow: 'hidden',
+    width: '100%',
+    padding: 3,
+    minHeight: 550
+  },
 
-    flexHeaderRowContainer: {
-      display: 'flex',
-      flexFlow: 'row nowrap',
-      justifyContent: 'center',
-      alignItems: 'stretch',
-      overflow: 'hidden',
-      width: '100%',
-      padding: 3
-    },
+  flexHeaderRowContainer: {
+    display: 'flex',
+    flexFlow: 'row nowrap',
+    justifyContent: 'center',
+    alignItems: 'stretch',
+    overflow: 'hidden',
+    width: '100%',
+    padding: 3
+  },
 
-    flexColumnContainer: {
-      display: 'flex',
-      flexFlow: 'column nowrap',
-      justifyContent: 'center',
-      alignItems: 'stretch'
-    },
+  flexColumnContainer: {
+    display: 'flex',
+    flexFlow: 'column nowrap',
+    justifyContent: 'center',
+    alignItems: 'stretch'
+  },
 
-    flexBoardColumn: {
-      width:'33%',
-      flex: '1 0 auto',
-      boxShadow: '0 0px 2px rgba(0, 0, 0, 0.15)'
-    },
+  flexBoardHeader: {
+    flex: '1 0 auto',
+    fontSize:'1.0rem',
+    fontWeight:100,
+    color: '#9E9E9E'
+  },
 
-    flexBoardHeader: {
-      flex: '1 0 auto',
-      fontSize:'1.0rem',
-      fontWeight:100,
-      color: '#9E9E9E'
-    },
+  flexBoardSearchbox: {
+    paddingTop: '20px'
+  },
 
-    flexBoardSearchbox: {
-      paddingTop: '20px'
-    },
+  boardNmae: {
+    fontSize: '1.5rem',
+    fontWeight:100,
+    color: '#9E9E9E',
+    marginBottom: 40
+  },
 
-    boardTitle: {
-      fontSize: '1.5rem',
-      fontWeight:100,
-      color: '#9E9E9E',
-      marginBottom: 40
-    },
-
-    boardSearchIcon: {
-      position: 'relative',
-      bottom: -5
-    }
+  boardSearchIcon: {
+    position: 'relative',
+    bottom: -5
+  }
 };
 
 
@@ -83,25 +74,25 @@ const styles = {
 @DragDropContext(HTML5Backend)
 @Radium
 export default class DragBoard extends React.Component {
-  
   constructor(props) {
-      super(props);
-      this.moveCard = this.moveCard.bind(this);
-      this.findCard = this.findCard.bind(this);
-      const {board} = this.props;
-      this.state = {
-        cards: {
-          todo: Array.from(board.cards.edges, ed => ed.node),
-          doing: [],
-          done: []
-        } 
-      };
-    }
+    super(props);
+    this.moveCard = this.moveCard.bind(this);
+    this.findCard = this.findCard.bind(this);
+    const { board } = this.props;
+    const { cardLists } = board;
+    //this.state = {
+      //cards: {
+        //todo: Array.from(board.cardLists.edges, ed => ed.node),
+        //doing: [],
+        //done: []
+      //}
+    //};
+  }
 
-   moveCard(from, to) {
+  moveCard(from, to) {
     const { card, status, index } = this.findCard(from.id, from.status);
 
-    if(card) { 
+    if(card) {
       // I know there's a way to consolidate these two calls... but not sure how
       this.setState(update(this.state, {
         cards: {[from.status] : {$splice:[[index, 1]]}
@@ -127,51 +118,38 @@ export default class DragBoard extends React.Component {
   }
 
   render() {
-    const {board} = this.props;
-    const { cards } = this.state;
+    const { board } = this.props;
+    const { cardLists } = board;
 
     return (
-
+      <div>
         <div style={[styles.flexContainer]}>
           <div style={[styles.flexColumnContainer]}>
-              <div style={[styles.flexHeaderRowContainer]}>
-                  <div style={[styles.flexBoardHeader]}>
-                   <h2 style={[styles.boardTitle]}>{board.title}</h2>
-                  </div>
-                  <div style={[styles.flexBoardHeader, styles.flexBoardSearchbox]}>
-                      <TextField
-                        hintText={<span><i style={[styles.boardSearchIcon]} className="material-icons">search</i>Search...</span>}
-                        hintStyle={{paddingBottom: 5}}
-                        type="search" />
-                  </div>
+            <div style={[styles.flexHeaderRowContainer]}>
+              <div style={[styles.flexBoardHeader]}>
+                <h2 style={[styles.boardName]}>{board.name}</h2>
               </div>
-              <div style={[styles.flexHeaderRowContainer]}>
-                 <div style={[styles.flexBoardHeader]}>
-                   To Do
-                  </div>
-                  <div style={[styles.flexBoardHeader]}>
-                  Doing
-                  </div>
-                  <div style={[styles.flexBoardHeader]}>
-                   Done
-                  </div>
+              <div style={[styles.flexBoardHeader, styles.flexBoardSearchbox]}>
+                <TextField
+                  hintText={<span><i style={[styles.boardSearchIcon]}
+                  className="material-icons">search</i>Search...</span>}
+                  hintStyle={{paddingBottom: 5}}
+                  type="search"
+                />
               </div>
-              <div style={[styles.flexRowContainer]}>
-                  <Paper style={styles.flexBoardColumn} zDepth={0} rounded={false}>
-                    <BoardColumn status = "todo" cards = {cards.todo} moveCard={this.moveCard}
-                              findCard={this.findCard} /> 
-                  </Paper>
-                  <Paper style={styles.flexBoardColumn} zDepth={0} rounded={false}>
-                       <BoardColumn status = "doing" cards = {cards.doing} moveCard={this.moveCard}
-                              findCard={this.findCard} />
-                  </Paper>
-                  <Paper style={styles.flexBoardColumn} zDepth={0} rounded={false}>
-                    <BoardColumn status = "done" cards = {cards.done} moveCard={this.moveCard}
-                              findCard={this.findCard} />
-                  </Paper>
-              </div>
+            </div>
           </div>
-        </div> 
+        </div>
+        <div style={[styles.flexContainer]}>
+          {cardLists.edges.map(({node}) =>
+            <CardList
+              cardList={node}
+              moveCard={this.moveCard}
+              findCard={this.findCard}
+            />
+          )}
+        </div>
+      </div>
     );
   }
 };

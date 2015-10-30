@@ -48,7 +48,7 @@ const styles = {
       alignItems: 'stretch'
     },
 
-    flexBoardColumn: {
+    flexCardList: {
       width:'33%',
       flex: '1 0 auto',
       boxShadow: '0 0px 2px rgba(0, 0, 0, 0.15)'
@@ -65,7 +65,7 @@ const styles = {
       paddingTop: '20px'
     },
 
-    boardTitle: {
+    boardName: {
       fontSize: '1.5rem',
       fontWeight:100,
       color: '#9E9E9E',
@@ -82,7 +82,7 @@ const styles = {
 class FullCard extends React.Component {
   render() {
     const {card} = this.props;
-    
+
     const outerStyle = {
         position: 'absolute',
         width:'100%',
@@ -107,7 +107,7 @@ class FullCard extends React.Component {
               <div style={[styles.flexHeaderRowContainer]}>
                   <IconButton onClick={()=> this.props.history.goBack()} style={{cursor:'pointer'}} iconClassName="material-icons" iconStyle = {{color: Colors.blueGrey100}}>close</IconButton>
                   <div style={[styles.flexBoardHeader, {marginLeft:20}]}>
-                     <h2 style={[styles.boardTitle]}>{card.title}</h2>
+                     <h2 style={[styles.boardName]}>{card.name}</h2>
                   </div>
                   <div style={[styles.flexBoardHeader, styles.flexBoardSearchbox]}>
                       <TextField
@@ -116,19 +116,19 @@ class FullCard extends React.Component {
                         type="search" />
                   </div>
               </div>
-               <div style={[styles.flexColumnContainer]} type='Notes'> 
-                <Paper style={styles.flexBoardColumn} zDepth={0} rounded={false}>
+               <div style={[styles.flexColumnContainer]} type='Notes'>
+                <Paper style={styles.flexCardList} zDepth={0} rounded={false}>
 
                 </Paper>
               </div>
               <div style={[styles.flexColumnContainer]} type='Comments'>
-                <Paper style={styles.flexBoardColumn} zDepth={0} rounded={false}>
+                <Paper style={styles.flexCardList} zDepth={0} rounded={false}>
 
                 </Paper>
                </div>
             </div>
             <div style={[styles.flexColumnContainer, featuresStyle, {width:'20%'}]} type='Features'>
-              
+
             </div>
           </div>
         </div>
@@ -148,7 +148,7 @@ export default Relay.createContainer(FullCard, {
   fragments: {
     card: () => Relay.QL`
       fragment on Card {
-        title
+        name
       }
     `,
   },

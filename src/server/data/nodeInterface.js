@@ -14,22 +14,25 @@ const nodeDefs = nodeDefinitions(
     if (type === 'Board') {
       return db.getBoard(id);
     }
+    if (type === 'CardList') {
+      return db.getCardList(id);
+    }
     if (type === 'Card') {
       return db.getCard(id);
     }
   },
   obj => {
     if (obj instanceof db.User) {
-      var UserType = require('./UserType');
-      return UserType;
+      return require('./UserType');
     }
     if (obj instanceof db.Board) {
-      var BoardType = require('./BoardType');
-      return BoardType;
+      return require('./BoardType');
+    }
+    if (obj instanceof db.CardList) {
+      return require('./CardListType');
     }
     if (obj instanceof db.Card) {
-      var CardType = require('./CardType');
-      return CardType;
+      return require('./CardType');
     }
   }
 );

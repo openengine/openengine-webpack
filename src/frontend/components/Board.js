@@ -1,16 +1,15 @@
 import React from 'react';
 import Relay from 'react-relay';
 import DragBoard from './DragBoard'
+import CardList from './CardList'
 
 class Board extends React.Component {
-
   render() {
     const {board} = this.props;
     return (
-      
-       // Right... so we need to seperate out this component because the Drag and Drop context will only work with the default exported "Component" class...
-       // And therefore, an exported Relay Container (as far as I know), will not work directly with React Dnd...
-        <DragBoard board={board} />
+      // Right... so we need to seperate out this component because the Drag and Drop context will only work with the default exported "Component" class...
+      // And therefore, an exported Relay Container (as far as I know), will not work directly with React Dnd...
+      <DragBoard board={board} />
     );
   }
 };
@@ -25,12 +24,14 @@ export default Relay.createContainer(Board, {
   fragments: {
     board: () => Relay.QL`
       fragment on Board {
-        title
-        cards(first: $limit) {
+        name
+        cardLists(first: $limit) {
           edges {
             node {
               id
-              title
+              name
+              boardRank
+              ${CardList.getFragment('cardList')}
             }
           }
         }
