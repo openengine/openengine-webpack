@@ -96,7 +96,7 @@ export default class DragBoard extends React.Component {
           done: []
         } 
       };
-    }
+  }
 
    moveCard(from, to) {
     const { card, status, index } = this.findCard(from.id, from.status);

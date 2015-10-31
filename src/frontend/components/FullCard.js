@@ -150,10 +150,10 @@ class FullCard extends React.Component {
 
   constructor(props) {
       super(props);
-      this.state = {
-         activeTab: 'product'
-      };
-   };
+
+      this.state = {activeTab: 'product', headerOffSet:0};
+      this.tabLinkActivated = this.tabLinkActivated.bind(this)
+   }
 
    componentDidMount() {
 
@@ -168,25 +168,21 @@ class FullCard extends React.Component {
     const headerHeight =  titleHeight + tabHeight + 20; 
     this._notesComments.style.marginTop = headerHeight + "px";
 
-  };
+     this.setState({headerOffset: headerHeight * -1});
+  }
 
-    _handleTabActive(tab){
-    
-     //  Helpers.Scroll.scrollTo('notes_business');
+  _handleTabActive(tab){
+  
 
-  };
+  }
 
   tabLinkActivated(to){
-    this.setState(update(this.state, {
-      activeTab: to}));
-  };
-
-  getActiveTab (){
-    return activeTab;
+    this.setState({activeTab: to});
   }
 
   render() {
     const {card} = this.props;
+    const {activeTab, headerOffSet} = this.state;
 
     return (
       <div style={styles.outerStyle}>
@@ -198,21 +194,21 @@ class FullCard extends React.Component {
                 <div style={[styles.flexBoardHeader, {marginLeft:20}]}>
                    <h2 style={[styles.cardTitle]}>{card.title}</h2> <small style={styles.cardId}>#184</small>
                 </div>
-                  <div style={[styles.flexBoardHeader, styles.search]}>
-                      <TextField
-                        style={styles.searchTextBox}
-                        hintText={<span><i style={[styles.searchIcon]} className="material-icons">search</i>Search...</span>}
-                        hintStyle={{paddingBottom: 5, fontSize:'0.9rem'}}
-                        type="search" />
-                  </div>
+                <div style={[styles.flexBoardHeader, styles.search]}>
+                  <TextField
+                    style={styles.searchTextBox}
+                    hintText={<span><i style={[styles.searchIcon]} className="material-icons">search</i>Search...</span>}
+                    hintStyle={{paddingBottom: 5, fontSize:'0.9rem'}}
+                    type="search" />
+                </div>
               </div>
               <div ref={(ref) => this._headerTabs = ref} style={[styles.flexHeaderTabContainer]}>
-               <Tabs value={this.state.activeTab} inkBarStyle={styles.tabInkBar} tabItemContainerStyle ={{background: '#FFFFFF'}}>
-                    <Tab style={styles.tab} value="product" label={<Link tab='product' to="product" onSetActive={this.tabLinkActivated} spy={true} smooth={true} offset={-150} duration={400} >Product</Link>} />
-                    <Tab style={styles.tab} value="design" label={<Link tab='design' to="design" onSetActive={this.tabLinkActivated}  spy={true} smooth={true} offset={-150} duration={400} >Design</Link>} />
-                    <Tab style={styles.tab} value="engineering" label={<Link to="engineering" onSetActive={this.tabLinkActivated}  spy={true} smooth={true} offset={-150} duration={400} >Engineering</Link>} />
-                    <Tab style={styles.tab} onActive={this._handleTabActive} value="business" label={<Link to="business" onSetActive={this.tabLinkActivated} spy={true} smooth={true} offset={-150} duration={400} >Business</Link>} />
-                    <Tab style={styles.tab} value="qa" label={<Link to="qa" onSetActive={this.tabLinkActivated}  spy={true} smooth={true} offset={-150} duration={400} >Q/A</Link>} />
+               <Tabs value={activeTab} inkBarStyle={styles.tabInkBar} tabItemContainerStyle ={{background: '#FFFFFF'}}>
+                  <Tab style={styles.tab} value="product" label={<Link tab='product' to="product" onSetActive={this.tabLinkActivated} spy={true} smooth={true} offset={headerOffSet} duration={400} >Product</Link>} />
+                  <Tab style={styles.tab} value="design" label={<Link tab='design' to="design" onSetActive={this.tabLinkActivated}  spy={true} smooth={true} offset={headerOffSet} duration={400} >Design</Link>} />
+                  <Tab style={styles.tab} value="engineering" label={<Link to="engineering" onSetActive={this.tabLinkActivated}  spy={true} smooth={true} offset={headerOffSet} duration={400} >Engineering</Link>} />
+                  <Tab style={styles.tab} onActive={this._handleTabActive} value="business" label={<Link to="business" onSetActive={this.tabLinkActivated} spy={true} smooth={true} offset={headerOffSet} duration={400} >Business</Link>} />
+                  <Tab style={styles.tab} value="qa" label={<Link to="qa" onSetActive={this.tabLinkActivated}  spy={true} smooth={true} offset={headerOffSet} duration={400} >Q/A</Link>} />
                 </Tabs>
               </div>
               <div ref={(ref) => this._notesComments = ref} style={[styles.flexColumnContainer, styles.flexNotesContainer]}>
