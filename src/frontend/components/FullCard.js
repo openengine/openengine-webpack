@@ -112,7 +112,7 @@ const styles = {
         maxWidth: 200 
     },
 
-    cardTitle: {
+    cardName: {
       fontSize: '1.5rem',
       fontWeight:100,
       color: '#9E9E9E',
@@ -192,7 +192,7 @@ class FullCard extends React.Component {
               <div ref={(ref) => this._headerTitle = ref} style={[styles.flexHeaderRowContainer]}>
                 <IconButton onClick={()=> this.props.history.goBack()} style={{cursor:'pointer'}} iconClassName="material-icons" iconStyle = {{color: Colors.blueGrey100}}>close</IconButton>
                 <div style={[styles.flexBoardHeader, {marginLeft:20}]}>
-                   <h2 style={[styles.cardTitle]}>{card.title}</h2> <small style={styles.cardId}>#184</small>
+                   <h2 style={[styles.cardName]}>{card.name}</h2> <small style={styles.cardId}>#184</small>
                 </div>
                 <div style={[styles.flexBoardHeader, styles.search]}>
                   <TextField
@@ -261,7 +261,7 @@ export default Relay.createContainer(FullCard, {
   fragments: {
     card: () => Relay.QL`
       fragment on Card {
-        title
+        name
       }
     `,
   },
@@ -367,7 +367,7 @@ export default Relay.createContainer(FullCard, {
 //         maxWidth: 200 
 //     },
 
-//     cardTitle: {
+//     cardName: {
 //       fontSize: '1.5rem',
 //       fontWeight:100,
 //       color: '#9E9E9E',
@@ -431,7 +431,7 @@ export default Relay.createContainer(FullCard, {
 //               <div style={[styles.flexHeaderRowContainer]}>
 //                   <IconButton onClick={()=> this.props.history.goBack()} style={{cursor:'pointer'}} iconClassName="material-icons" iconStyle = {{color: Colors.blueGrey100}}>close</IconButton>
 //                   <div style={[styles.flexBoardHeader, {marginLeft:20}]}>
-//                      <h2 style={[styles.cardTitle]}>{card.title}</h2> <small style={styles.cardId}>#184</small>
+//                      <h2 style={[styles.cardName]}>{card.title}</h2> <small style={styles.cardId}>#184</small>
 //                   </div>
 //                   <div style={[styles.flexBoardHeader, styles.search]}>
 //                       <TextField

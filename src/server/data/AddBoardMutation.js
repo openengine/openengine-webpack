@@ -16,7 +16,7 @@ export default mutationWithClientMutationId({
   name: 'AddBoard',
   description: 'Create a new board',
   inputFields: {
-    title: {type: new GraphQLNonNull(GraphQLString)}
+    name: {type: new GraphQLNonNull(GraphQLString)}
   },
   outputFields: {
     viewer: {
@@ -34,8 +34,8 @@ export default mutationWithClientMutationId({
       }
     }
   },
-  mutateAndGetPayload: ({title}) => {
-    const boardId = db.addBoard(title);
+  mutateAndGetPayload: ({name}) => {
+    const boardId = db.addBoard(name);
     return {boardId};
   }
 });
