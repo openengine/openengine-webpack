@@ -28,6 +28,7 @@ export default Relay.createContainer(Board, {
         cardLists(first: $limit) {
           edges {
             node {
+              id
               ${CardList.getFragment('cardList')}
             }
           }
