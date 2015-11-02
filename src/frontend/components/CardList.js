@@ -5,7 +5,7 @@ import Relay from 'react-relay';
 import Paper from 'material-ui/lib/paper';
 import FontIcon from 'material-ui/lib/font-icon';
 import Colors from 'material-ui/lib/styles/colors'
-import Card from './BoardCard'
+import BoardCard from './BoardCard'
 import { DragDropContext } from 'react-dnd';
 import { DragItemTypes } from "../constants"
 import { DragSource, DropTarget } from 'react-dnd';
@@ -63,28 +63,31 @@ const styles = {
 };
 
 const columnTarget = {
-  canDrop() {
-    return true;
-  },
-
+  // When a card is dropped in a column, we want to update
+  // that card's CardList.
   drop(props, monitor) {
+    console.log('CardList#drop', props);
+
     return {
       status: props.status
     }
   },
 
+  // QUESTION: When hovering a cardList, temporarily set the card's cardList
+  // to the hovered list?
   hover(props, monitor) {
+    console.log('CardList#hover', props, monitor.getItem());
     const { id: draggedId, currentStatus: draggedStatus } = monitor.getItem();
     const { status: overStatus, cards } = props;
 
     // This will only happen over the empty (bottom) portions of a column. BoardCard will handle when hovering happens over a list.
-    if (overStatus!==draggedStatus && monitor.isOver({shallow: true})) {
+    if (overStatus !== draggedStatus && monitor.isOver({shallow: true})) {
       const from = {id: draggedId, status: draggedStatus};
-      const to = {index: cards.length, status: overStatus }
+      const to = {index: cards.length, status: overStatus};
 
       props.moveCard(from, to);
 
-      if(draggedStatus!==overStatus) {
+      if(draggedStatus !== overStatus) {
         // So I think this might actually be frowned upon (mutating here)... but it works for now.
         monitor.getItem().currentStatus = overStatus;
       }
@@ -106,38 +109,27 @@ class CardList extends React.Component {
   render() {
     const { connectDropTarget, isOver } = this.props;
     const { cardList } = this.props;
-    const cards = cardList.cards.edges;
+    let cards = cardList.cards.edges.map(({node}) => node);
 
     return connectDropTarget(
-        <div style={[styles.columnContainer]}>
-          <div style={[styles.headerRowContainer]}>
-            <div style={[styles.cardListName]}>
-              {cardList.name}
-            </div>
+      <div style={[styles.columnContainer]}>
+        <div style={[styles.headerRowContainer]}>
+          <div style={[styles.cardListName]}>
+            {cardList.name}
           </div>
-          <div style={[styles.columnContainer]}>
-            <div style={[styles.cardListContainer(isOver)]}>
-              {cards.map(({node}) => {
-                return (
-                  <Paper
-                    style={styles.cardList}
-                    zDepth={0}
-                    rounded={false}
-                    key={node.id}
-                  >
-                    <Card
-                      id={node.id}
-                      text={node.name}
-                      moveCard={this.props.moveCard}
-                      findCard={this.props.findCard}
-                    />
-                  </Paper>
-                );
-              })}
-            </div>
-          </div>
-
         </div>
+        <div style={[styles.columnContainer]}>
+          <div style={[styles.cardListContainer(isOver)]}>
+            {cards.map(card => {
+              return (
+                <Paper key={card.id} style={styles.cardList} zDepth={0} rounded={false} >
+                  <BoardCard card={card} />
+                </Paper>
+              );
+            })}
+          </div>
+        </div>
+      </div>
     );
   }
 };
@@ -152,13 +144,13 @@ export default Relay.createContainer(CardList, {
   fragments: {
     cardList: () => Relay.QL`
       fragment on CardList {
+        id
         name
+        boardRank
         cards(first: $limit) {
           edges {
             node {
-              id
-              name
-              cardListRank
+              ${BoardCard.getFragment('card')}
             }
           }
         }

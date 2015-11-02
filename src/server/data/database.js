@@ -105,7 +105,7 @@ var cards = [
     boardId: 'eng_board',
     cardListId: 'eng_backlog_list',
     name: 'Integration data service',
-    rank: 2,
+    rank: 0,
   }),
   new Card({
     id: 'marketing_dash_card',
@@ -170,8 +170,18 @@ export function getCardList(id) {
   return cardLists.filter((list) => list.id == id)[0];
 }
 
+// Ordered by cardListRank
 export function getCards(cardListId) {
-  return cards.filter(card => card.cardListId === cardListId);
+  let c = cards.filter(card => card.cardListId === cardListId);
+  c = c.sort((a, b) => {
+    if (a.cardListRank >= b.cardListRank) {
+      return 1;
+    }
+    if (a.cardListRank < b.cardListRank) {
+      return -1;
+    }
+  });
+  return c;
 }
 
 export function getCard(id) {

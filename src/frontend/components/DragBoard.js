@@ -76,38 +76,38 @@ const styles = {
 export default class DragBoard extends React.Component {
   constructor(props) {
     super(props);
-    this.moveCard = this.moveCard.bind(this);
-    this.findCard = this.findCard.bind(this);
+    //this.moveCard = this.moveCard.bind(this);
+    //this.findCard = this.findCard.bind(this);
     const { board } = this.props;
   }
 
-  moveCard(from, to) {
-    const { card, status, index } = this.findCard(from.id, from.status);
+  //moveCard(from, to) {
+    //const { card, status, index } = this.findCard(from.id, from.status);
 
-    if(card) {
-      // I know there's a way to consolidate these two calls... but not sure how
-      this.setState(update(this.state, {
-        cards: {[from.status] : {$splice:[[index, 1]]}
-        }
-      }));
+    //if(card) {
+      //// I know there's a way to consolidate these two calls... but not sure how
+      //this.setState(update(this.state, {
+        //cards: {[from.status] : {$splice:[[index, 1]]}
+        //}
+      //}));
 
-      this.setState(update(this.state, {
-        cards: {[to.status]: {$splice:[[to.index, 0, card]]}
-        }
-      }));
-    }
-  }
+      //this.setState(update(this.state, {
+        //cards: {[to.status]: {$splice:[[to.index, 0, card]]}
+        //}
+      //}));
+    //}
+  //}
 
-  findCard(id, status) {
-    const { cards } = this.state;
-    const card = cards[status].filter(c => c.id === id)[0];
+  //findCard(id, status) {
+    //const { cards } = this.state;
+    //const card = cards[status].filter(c => c.id === id)[0];
 
-    return {
-      card,
-      status,
-      index: cards[status].indexOf(card)
-    };
-  }
+    //return {
+      //card,
+      //status,
+      //index: cards[status].indexOf(card)
+    //};
+  //}
 
   render() {
     const { board } = this.props;
@@ -133,6 +133,7 @@ export default class DragBoard extends React.Component {
         <div style={[styles.rowContainer]}>
           {cardLists.edges.map(({node}) =>
             <CardList
+              key={node.id}
               cardList={node}
               moveCard={this.moveCard}
               findCard={this.findCard}
