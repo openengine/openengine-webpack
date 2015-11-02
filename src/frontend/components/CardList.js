@@ -13,7 +13,6 @@ import { DragSource, DropTarget } from 'react-dnd';
 const styles = {
   container: {
     fontFamily: 'Roboto, sans-serif',
-    background: '#99ccaa'
   },
 
   rowContainer: {
@@ -28,7 +27,6 @@ const styles = {
   },
 
   headerRowContainer: {
-    background: 'pink',
     display: 'flex',
     flexFlow: 'row nowrap',
     justifyContent: 'center',
@@ -39,7 +37,6 @@ const styles = {
   },
 
   columnContainer: {
-    background: 'green',
     display: 'flex',
     flexFlow: 'column nowrap',
     justifyContent: 'center',
@@ -48,13 +45,11 @@ const styles = {
   },
 
   cardList: {
-    background: 'blue',
     flex: '1 0 auto',
     boxShadow: '0 0px 2px rgba(0, 0, 0, 0.15)'
   },
 
   cardListName: {
-    background: 'orange',
     flex: '1 0 auto',
     fontSize:'1.0rem',
     fontWeight:100,

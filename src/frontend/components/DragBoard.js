@@ -13,7 +13,7 @@ import HTML5Backend from 'react-dnd-html5-backend';
 const styles = {
   container: {
     fontFamily: 'Roboto, sans-serif',
-    background: '#00ccaa'
+    background: '#fff'
   },
 
   rowContainer: {
