@@ -8,9 +8,8 @@ import Colors from 'material-ui/lib/styles/colors'
 import Paper from 'material-ui/lib/paper';
 import TextField from 'material-ui/lib/text-field'
 import IconButton from 'material-ui/lib/icon-button';
-import Tabs from 'material-ui/lib/tabs/tabs'
-import Tab from 'material-ui/lib/tabs/tab'
 import {Link, Element, Helpers} from 'react-scroll'
+import NotesTab from "./NotesTab"
 
 // Inline JS Styles
 const styles = {
@@ -21,12 +20,12 @@ const styles = {
         top:0, bottom:0, left:0, right:0
     },
 
-    flexContainer: {
+    container: {
       fontFamily: 'Roboto, sans-serif',
       background: '#FFFFFF'
     },
 
-    flexRowContainer: {
+    rowContainer: {
       display: 'flex',
       flexFlow: 'row nowrap',
       justifyContent: 'stretch',
@@ -36,7 +35,7 @@ const styles = {
       minHeight: 550
     },
 
-    flexHeaderRowContainer: {
+    headerRowContainer: {
       display: 'flex',
       flexFlow: 'row nowrap',
       justifyContent: 'center',
@@ -49,17 +48,17 @@ const styles = {
       borderTop: 'solid 6px ' + Colors.greenA700
     },
 
-    flexHeaderTabContainer: {
+    headerTabContainer: {
       display: 'flex',
       flexFlow: 'row nowrap',
-      justifyContent: 'stretch',
+      justifyContent: 'flex-start',
       alignItems: 'stretch',
       overflow: 'hidden',
       padding: 3,
       position: 'fixed'
     },
 
-    flexFeaturesContainer: {
+    featuresContainer: {
       position:'fixed',
       marginTop:4,
       boxShadow: '0px -5px 0px 0px ' + Colors.purple600 + ', 0 0px 2px rgba(0, 0, 0, 0.15)',
@@ -69,35 +68,29 @@ const styles = {
       width:'20%'
     },
 
-    flexColumnContainer: {
+    columnContainer: {
       display: 'flex',
       flexFlow: 'column nowrap',
       justifyContent: 'stretch',
       alignItems: 'stretch'
     },
 
-    flexNotesContainer: {
+    notesContainer: {
 
     },
 
-    flexBoardColumn: {
-      width:'33%',
-      flex: '1 0 auto',
-      boxShadow: '0 0px 2px rgba(0, 0, 0, 0.15)'
-    },
-
-    flexNotesColumn: {
+    notesColumn: {
       marginLeft:'5%',
       flex: '1 0 80%',
       boxShadow: '0 0px 0px rgba(0, 0, 0, 0.15)'
     },
 
-    flexCommentsColumn: {
+    commentsColumn: {
       flex: '1 0 20%',
       boxShadow: '0 0px 0px rgba(0, 0, 0, 0.15)'
     },
 
-    flexBoardHeader: {
+    cardHeader: {
       flex: '1 0 auto',
       fontSize:'1.0rem',
       fontWeight:100,
@@ -151,8 +144,9 @@ class FullCard extends React.Component {
   constructor(props) {
       super(props);
 
-      this.state = {activeTab: 'product', headerOffSet:0};
-      this.tabLinkActivated = this.tabLinkActivated.bind(this)
+      this.state = {tabOffset:0};
+     // this.tabLinkActivated = this.tabLinkActivated.bind(this);
+     // this._handleTabActive = this._handleTabActive.bind(this);
    }
 
    componentDidMount() {
@@ -162,39 +156,30 @@ class FullCard extends React.Component {
     const tabHeight = this._headerTabs.offsetHeight;
 
     // Offset tabs from top title
-    this._headerTabs.style.marginTop = titleHeight + "px";
+    this._headerTabs.style.marginTop = titleHeight + 20 + "px";
 
     // Offset notes and comments from all header fixed components
-    const headerHeight =  titleHeight + tabHeight + 20; 
+    const headerHeight =  titleHeight + tabHeight + 60; 
     this._notesComments.style.marginTop = headerHeight + "px";
 
-     this.setState({headerOffset: headerHeight * -1});
-  }
-
-  _handleTabActive(tab){
-  
-
-  }
-
-  tabLinkActivated(to){
-    this.setState({activeTab: to});
+     this.setState({tabOffset: headerHeight * -1});
   }
 
   render() {
     const {card} = this.props;
-    const {activeTab, headerOffSet} = this.state;
+    const {activeTab, tabOffset} = this.state;
 
     return (
       <div style={styles.outerStyle}>
-        <div style={[styles.flexContainer]}>
-          <div style={[styles.flexRowContainer]}>
-            <div style={[styles.flexColumnContainer, {width:'80%'}]} type='Content'>
-              <div ref={(ref) => this._headerTitle = ref} style={[styles.flexHeaderRowContainer]}>
+        <div style={[styles.container]}>
+          <div style={[styles.rowContainer]}>
+            <div style={[styles.columnContainer, {width:'80%'}]} type='Content'>
+              <div ref={(ref) => this._headerTitle = ref} style={[styles.headerRowContainer]}>
                 <IconButton onClick={()=> this.props.history.goBack()} style={{cursor:'pointer'}} iconClassName="material-icons" iconStyle = {{color: Colors.blueGrey100}}>close</IconButton>
-                <div style={[styles.flexBoardHeader, {marginLeft:20}]}>
+                <div style={[styles.cardHeader, {marginLeft:20}]}>
                    <h2 style={[styles.cardTitle]}>{card.title}</h2> <small style={styles.cardId}>#184</small>
                 </div>
-                <div style={[styles.flexBoardHeader, styles.search]}>
+                <div style={[styles.cardHeader, styles.search]}>
                   <TextField
                     style={styles.searchTextBox}
                     hintText={<span><i style={[styles.searchIcon]} className="material-icons">search</i>Search...</span>}
@@ -202,18 +187,16 @@ class FullCard extends React.Component {
                     type="search" />
                 </div>
               </div>
-              <div ref={(ref) => this._headerTabs = ref} style={[styles.flexHeaderTabContainer]}>
-               <Tabs value={activeTab} inkBarStyle={styles.tabInkBar} tabItemContainerStyle ={{background: '#FFFFFF'}}>
-                  <Tab style={styles.tab} value="product" label={<Link tab='product' to="product" onSetActive={this.tabLinkActivated} spy={true} smooth={true} offset={headerOffSet} duration={400} >Product</Link>} />
-                  <Tab style={styles.tab} value="design" label={<Link tab='design' to="design" onSetActive={this.tabLinkActivated}  spy={true} smooth={true} offset={headerOffSet} duration={400} >Design</Link>} />
-                  <Tab style={styles.tab} value="engineering" label={<Link to="engineering" onSetActive={this.tabLinkActivated}  spy={true} smooth={true} offset={headerOffSet} duration={400} >Engineering</Link>} />
-                  <Tab style={styles.tab} onActive={this._handleTabActive} value="business" label={<Link to="business" onSetActive={this.tabLinkActivated} spy={true} smooth={true} offset={headerOffSet} duration={400} >Business</Link>} />
-                  <Tab style={styles.tab} value="qa" label={<Link to="qa" onSetActive={this.tabLinkActivated}  spy={true} smooth={true} offset={headerOffSet} duration={400} >Q/A</Link>} />
-                </Tabs>
+              <div ref={(ref) => this._headerTabs = ref} className="notes_tabs" style={[styles.headerTabContainer]}>
+                    <NotesTab linkTo="product" headerOffset={tabOffset}>Product</NotesTab>
+                    <NotesTab linkTo="design" headerOffset={tabOffset}>Design</NotesTab>
+                    <NotesTab linkTo="engineering" headerOffset={tabOffset}>Engineering</NotesTab>
+                    <NotesTab linkTo="business" headerOffset={tabOffset}>Business</NotesTab>
+                    <NotesTab linkTo="qa" headerOffset={tabOffset}>Q/A</NotesTab>
               </div>
-              <div ref={(ref) => this._notesComments = ref} style={[styles.flexColumnContainer, styles.flexNotesContainer]}>
-                <div style={[styles.flexRowContainer]} type="Notes_Comments">
-                   <div style={[styles.flexNotesColumn]} type='Notes'> 
+              <div ref={(ref) => this._notesComments = ref} style={[styles.columnContainer, styles.notesContainer]}>
+                <div style={[styles.rowContainer]} type="Notes_Comments">
+                   <div style={[styles.notesColumn]} type='Notes'> 
                       <Paper zDepth={0} rounded={false}>
                             <Element name="product" style={{height:800}}>
                               Product
@@ -232,7 +215,7 @@ class FullCard extends React.Component {
                             </Element>
                       </Paper>
                    </div>
-                   <div style={[styles.flexColumnContainer,styles.flexCommentsColumn]} type='Comments'>
+                   <div style={[styles.columnContainer,styles.commentsColumn]} type='Comments'>
                       <Paper style={styles.flexComments} zDepth={0} rounded={false}>
                           COMMENTS
                       </Paper>
@@ -240,7 +223,7 @@ class FullCard extends React.Component {
                 </div>
               </div>
             </div>
-            <div style={[styles.flexColumnContainer, styles.flexFeaturesContainer]} type='Features'>
+            <div style={[styles.columnContainer, styles.featuresContainer]} type='Features'>
               
             </div>
           </div>
@@ -266,234 +249,4 @@ export default Relay.createContainer(FullCard, {
     `,
   },
 });
-
-
-
-
-// import React from 'react';
-// import Radium from 'radium';
-// import Relay from 'react-relay';
-// import Avatar from 'material-ui/lib/avatar'
-// import FlatButton from 'material-ui/lib/flat-button'
-// import Colors from 'material-ui/lib/styles/colors'
-// import Paper from 'material-ui/lib/paper';
-// import TextField from 'material-ui/lib/text-field'
-// import IconButton from 'material-ui/lib/icon-button';
-// import Tabs from 'material-ui/lib/tabs/tabs'
-// import Tab from 'material-ui/lib/tabs/tab'
-// import {Link, Element} from 'react-scroll'
-
-// // Inline JS Styles
-// const styles = {
-//     flexContainer: {
-//       fontFamily: 'Roboto, sans-serif',
-//       background: '#FFFFFF'
-//     },
-
-//     flexRowContainer: {
-//       display: 'flex',
-//       flexFlow: 'row nowrap',
-//       justifyContent: 'center',
-//       alignItems: 'stretch',
-//       overflow: 'hidden',
-//       width: '100%',
-//       padding: 3,
-//       minHeight: 550
-//     },
-
-//     flexHeaderRowContainer: {
-//       display: 'flex',
-//       flexFlow: 'row nowrap',
-//       justifyContent: 'center',
-//       alignItems: 'stretch',
-//       overflow: 'hidden',
-//       width: '100%',
-//       padding: 3
-//     },
-
-//     flexHeaderTabContainer: {
-//       display: 'flex',
-//       flexFlow: 'row nowrap',
-//       justifyContent: 'stretch',
-//       alignItems: 'stretch',
-//       overflow: 'hidden',
-//       width: '100%',
-//       padding: 3
-//     },
-
-//     flexColumnContainer: {
-//       display: 'flex',
-//       flexFlow: 'column nowrap',
-//       justifyContent: 'stretch',
-//       alignItems: 'stretch'
-//     },
-
-//     flexNotesContainer: {
-//       overflowY: 'scroll',
-//       position: "relative", 
-//       border:'solid 1px red',
-//       height: 100
-//     },
-
-//     flexBoardColumn: {
-//       width:'33%',
-//       flex: '1 0 auto',
-//       boxShadow: '0 0px 2px rgba(0, 0, 0, 0.15)'
-//     },
-
-//     flexNotesColumn: {
-//       marginLeft:'5%',
-//       flex: '1 0 80%',
-//       boxShadow: '0 0px 0px rgba(0, 0, 0, 0.15)'
-//     },
-
-//     flexCommentsColumn: {
-//       flex: '1 0 20%',
-//       boxShadow: '0 0px 0px rgba(0, 0, 0, 0.15)'
-//     },
-
-//     flexBoardHeader: {
-//       flex: '1 0 auto',
-//       fontSize:'1.0rem',
-//       fontWeight:100,
-//       color: '#9E9E9E'
-//     },
-
-//     search: {
-//       paddingTop: '10px'
-//     },
-
-//     searchTextBox: {
-//         maxWidth: 200 
-//     },
-
-//     cardTitle: {
-//       fontSize: '1.5rem',
-//       fontWeight:100,
-//       color: '#9E9E9E',
-//       marginBottom: 40,
-//       marginRight: 20,
-//       display: 'inline-block'
-//     },
-
-//     cardId: {
-//         color: Colors.blueGrey100
-//     },
-
-//     searchIcon: {
-//       position: 'relative',
-//       bottom: -5,
-//       fontSize: '1.0rem'
-//     },
-
-//     tab: {
-//       color: Colors.blueGrey200,
-//       fontWeight:100,
-//       paddingLeft:20,
-//       paddingRight:20
-//     },
-
-//     tabInkBar: {
-//       transition: 'left .4s',
-//       background: Colors.purple200
-//     }
-// };
-
-// //let ScrollLink = Scroll.Link;
-
-
-// @Radium
-// class FullCard extends React.Component {
-//   render() {
-//     const {card} = this.props;
-    
-//     const outerStyle = {
-//         position: 'absolute',
-//         width:'100%',
-//         height:'100%',
-//         top:0, bottom:0, left:0, right:0,
-//         marginTop:4,
-//         boxShadow: '0px 0px 0px 4px ' + Colors.purple600,
-//         borderTop: 'solid 6px ' + Colors.greenA700
-//     };
-
-//     const featuresStyle = {
-//         backgroundColor: '#FDFDFE',
-//         height: 800,
-//         boxShadow: '0 0px 2px rgba(0, 0, 0, 0.15)'
-//      };
-
-//     return (
-//       <div style={outerStyle}>
-//         <div style={[styles.flexContainer]}>
-//           <div style={[styles.flexRowContainer]}>
-//             <div style={[styles.flexColumnContainer, {width:'80%'}]} type='Content'>
-//               <div style={[styles.flexHeaderRowContainer]}>
-//                   <IconButton onClick={()=> this.props.history.goBack()} style={{cursor:'pointer'}} iconClassName="material-icons" iconStyle = {{color: Colors.blueGrey100}}>close</IconButton>
-//                   <div style={[styles.flexBoardHeader, {marginLeft:20}]}>
-//                      <h2 style={[styles.cardTitle]}>{card.title}</h2> <small style={styles.cardId}>#184</small>
-//                   </div>
-//                   <div style={[styles.flexBoardHeader, styles.search]}>
-//                       <TextField
-//                         style={styles.searchTextBox}
-//                         hintText={<span><i style={[styles.searchIcon]} className="material-icons">search</i>Search...</span>}
-//                         hintStyle={{paddingBottom: 5, fontSize:'0.9rem'}}
-//                         type="search" />
-//                   </div>
-//               </div>
-//               <div style={[styles.flexHeaderTabContainer]}>
-//                <Tabs inkBarStyle={styles.tabInkBar} tabItemContainerStyle ={{background: '#FFFFFF'}}>
-//                     <Tab style={styles.tab} label="Product" />
-//                     <Tab style={styles.tab} label={<Link to="test1" spy={true} smooth={true} offset={20} containerId="notes_comments" duration={400} >Test 1</Link>} />
-//                     <Tab style={styles.tab} label="Engineering" />
-//                     <Tab style={styles.tab} label="Business" />
-//                     <Tab style={styles.tab} label="Q/A" />
-//                 </Tabs>
-//               </div>
-//               <div id="notes_comments" style={[styles.flexColumnContainer, styles.flexNotesContainer]}>
-//                 <div style={[styles.flexRowContainer]} type="Notes_Comments">
-//                    <div style={[styles.flexNotesColumn]} type='Notes'> 
-//                       <Paper zDepth={0} rounded={false}>
-//                              <div style={{height:400}}>
-//                                 &nbsp;
-//                              </div> 
-//                             <Element name="test1" className="element">
-//                               test 1
-//                             </Element>
-//                       </Paper>
-//                    </div>
-//                    <div style={[styles.flexColumnContainer,styles.flexCommentsColumn]} type='Comments'>
-//                       <Paper style={styles.flexComments} zDepth={0} rounded={false}>
-//                           COMMENTS
-//                       </Paper>
-//                    </div>
-//                 </div>
-//               </div>
-//             </div>
-//             <div style={[styles.flexColumnContainer, featuresStyle, {width:'20%'}]} type='Features'>
-              
-//             </div>
-//           </div>
-//         </div>
-//        </div>
-
-//     );
-//   }
-// };
-
-// export default Relay.createContainer(FullCard, {
-//   prepareVariables({status}) {
-//     return {
-//       limit: Number.MAX_SAFE_INTEGER || 9007199254740991
-//     };
-//   },
-
-//   fragments: {
-//     card: () => Relay.QL`
-//       fragment on Card {
-//         title
-//       }
-//     `,
-//   },
-// });
 
