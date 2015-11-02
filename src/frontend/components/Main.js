@@ -1,14 +1,14 @@
-import React, { Component, PropTypes } from 'react';
+import React from 'react';
 import Relay from 'react-relay';
 import Navigation from './Navigation';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
 
 class Main extends React.Component {
 
-  render() {
-    const { pathname } = this.props.location
+   render() {
+      const { pathname}  = this.props.location;
 
-    return (
+      return (
       <div>
         <Navigation projectName="Engine" />
         <ReactCSSTransitionGroup

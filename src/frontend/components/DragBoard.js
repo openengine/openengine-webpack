@@ -79,14 +79,6 @@ export default class DragBoard extends React.Component {
     this.moveCard = this.moveCard.bind(this);
     this.findCard = this.findCard.bind(this);
     const { board } = this.props;
-    const { cardLists } = board;
-    //this.state = {
-      //cards: {
-        //todo: Array.from(board.cardLists.edges, ed => ed.node),
-        //doing: [],
-        //done: []
-      //}
-    //};
   }
 
   moveCard(from, to) {
