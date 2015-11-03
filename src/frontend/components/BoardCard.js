@@ -8,7 +8,6 @@ import { Link } from 'react-router'
 import { DragItemTypes } from "../constants"
 import { DragSource, DropTarget } from 'react-dnd';
 
-
 const cardSource = {
   beginDrag(props) {
     return {
@@ -22,14 +21,13 @@ const cardSource = {
   endDrag(props, monitor) {
     const { id: droppedId, originalStatus, currentStatus, originalIndex } = monitor.getItem();
     const didDrop = monitor.didDrop();
- //   const dropColumn = monitor.getDropResult();
+ // const dropColumn = monitor.getDropResult();
 
     // This means it was dropped outside of a dropzone... so put it back in its original spot
-    if(!didDrop)
-    {
-        const from = {id: droppedId, status: currentStatus};
-        const to = {index: originalIndex, status: originalStatus  }
-        props.moveCard(from, to);
+    if(!didDrop) {
+      const from = {id: droppedId, status: currentStatus};
+      const to = {index: originalIndex, status: originalStatus}
+      props.moveCard(from, to);
     }
   }
 };
@@ -44,17 +42,15 @@ const cardTarget = {
     const { id: overId, status: overStatus } = props;
 
     if (draggedId !== overId) {
-
       const { index: overIndex } = props.findCard(overId, draggedStatus);
-
       const from = {id: draggedId, status: draggedStatus};
-      const to = {index: overIndex, status: overStatus }
+      const to = {index: overIndex, status: overStatus };
 
       props.moveCard(from, to);
 
       if(draggedStatus!==overStatus) {
-        // So I think this might actually be frowned upon (mutating here)... but it works for now. 
-          monitor.getItem().currentStatus = overStatus;
+        // So I think this might actually be frowned upon (mutating here)... but it works for now.
+        monitor.getItem().currentStatus = overStatus;
       }
     }
   }
@@ -68,7 +64,7 @@ const cardTarget = {
   isDragging: monitor.isDragging()
 }))
 export default class Card extends Component {
-static propTypes = {
+  static propTypes = {
     connectDragSource: PropTypes.func.isRequired,
     connectDropTarget: PropTypes.func.isRequired,
     isDragging: PropTypes.bool.isRequired,
@@ -102,13 +98,3 @@ static propTypes = {
     ));
   }
 };
-
-// export default Relay.createContainer(Card, {
-//   fragments: {
-//     card: () => Relay.QL`
-//       fragment on Card {
-//         title
-//       }
-//     `,
-//   },
-// });

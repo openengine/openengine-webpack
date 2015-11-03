@@ -70,7 +70,7 @@ const GraphQLRenameBoardMutation = mutationWithClientMutationId({
   name: 'RenameBoard',
   inputFields: {
     id: {type: new GraphQLNonNull(GraphQLID)},
-    title: {type: new GraphQLNonNull(GraphQLString)}
+    name: {type: new GraphQLNonNull(GraphQLString)}
   },
   outputFields: {
     board: {
@@ -78,9 +78,9 @@ const GraphQLRenameBoardMutation = mutationWithClientMutationId({
       resolve: ({boardId}) => getBoard(boardId)
     }
   },
-  mutateAndGetPayload: ({id, title}) => {
+  mutateAndGetPayload: ({id, name}) => {
     const {id: boardId} = fromGlobalId(id);
-    renameBoard(boardId, title);
+    renameBoard(boardId, name);
     return {boardId};
   }
 });

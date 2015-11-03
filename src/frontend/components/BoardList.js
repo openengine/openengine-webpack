@@ -11,24 +11,21 @@ import Paper from 'material-ui/lib/paper';
 import { Link } from 'react-router'
 
 class BoardList extends React.Component {
-  renderBoards() {
-    const {viewer} = this.props;
-
-    return viewer.boards.edges.map(({node}) =>
-      <Link to={`/board/${node.id}`}>
-         <Paper zDepth={1} rounded={false} className="boardListing">
-           <Avatar color={Colors.amber800} backgroundColor={Colors.green100}>{node.title.charAt(0)}</Avatar>
-           <h2 className="boardListTitle">{node.title}</h2>
-         </Paper>
-       </Link>
-    );
-  }
-
   render() {
+    const { viewer } = this.props;
+    const { boards } = viewer;
+
     return (
       <div>
         <div className="container-fluid">
-          {this.renderBoards()}
+          {boards.edges.map(({node}) =>
+            <Link to={`/board/${node.id}`} key={node.id}>
+              <Paper zDepth={1} rounded={false} className="boardListing">
+                <Avatar color={Colors.amber800} backgroundColor={Colors.green100}>{node.name.charAt(0)}</Avatar>
+                <h2 className="boardListName">{node.name}</h2>
+              </Paper>
+            </Link>
+          )}
         </div>
       </div>
     );
@@ -60,11 +57,11 @@ export default Relay.createContainer(BoardList, {
     viewer: () => Relay.QL`
       fragment on User {
         id
-        boards(status: $status, first: $limit) {
+        boards(first: $limit) {
           edges {
             node {
-              id,
-              title
+              id
+              name
             }
           }
         },

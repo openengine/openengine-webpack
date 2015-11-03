@@ -13,22 +13,22 @@ import {
 
 import * as db from './database';
 import { nodeInterface } from './nodeInterface';
-import { CardConnection } from './CardConnection';
+import { CardListConnection } from './CardListConnection';
 
 const BoardType = new GraphQLObjectType({
   name: 'Board',
   description: 'A board',
   fields: {
     id: globalIdField('Board'),
-    title: { type: GraphQLString },
-    cards: {
-      type: CardConnection,
+    name: { type: GraphQLString },
+    cardLists: {
+      type: CardListConnection,
       args: {
         ... connectionArgs
       },
       resolve: (obj, {...args}) => {
-        let cards = db.getCards(obj.id);
-        return connectionFromArray(cards, args)
+        let cardLists = db.getCardLists(obj.id);
+        return connectionFromArray(cardLists, args)
       }
     },
   },

@@ -17,7 +17,7 @@ export default mutationWithClientMutationId({
   description: 'Rename a board',
   inputFields: {
     id: {type: new GraphQLNonNull(GraphQLID)},
-    title: {type: new GraphQLNonNull(GraphQLString)}
+    name: {type: new GraphQLNonNull(GraphQLString)}
   },
   outputFields: {
     board: {
@@ -25,9 +25,9 @@ export default mutationWithClientMutationId({
       resolve: ({boardId}) => db.getBoard(boardId)
     }
   },
-  mutateAndGetPayload: ({id, title}) => {
+  mutateAndGetPayload: ({id, name}) => {
     const {id: boardId} = fromGlobalId(id);
-    db.renameBoard(boardId, title);
+    db.renameBoard(boardId, name);
     return {boardId};
   }
 });
