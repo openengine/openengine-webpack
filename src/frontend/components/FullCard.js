@@ -10,6 +10,7 @@ import TextField from 'material-ui/lib/text-field'
 import IconButton from 'material-ui/lib/icon-button';
 import NotesTab from "./NotesTab"
 import Note from "./Note"
+import Feature from "./Feature"
 
 // Inline JS Styles
 const styles = {
@@ -196,7 +197,7 @@ class FullCard extends React.Component {
               </div>
             </div>
             <div style={[styles.columnContainer, styles.featuresContainer]} type='Features'>
-              
+                <Feature />
             </div>
           </div>
         </div>
