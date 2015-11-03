@@ -10,7 +10,8 @@ import TextField from 'material-ui/lib/text-field'
 import IconButton from 'material-ui/lib/icon-button';
 import NotesTab from "./NotesTab"
 import Note from "./Note"
-import Feature from "./Feature"
+import FeatureText from "./FeatureText"
+import FeatureSelect from "./FeatureSelect"
 
 // Inline JS Styles
 const styles = {
@@ -196,8 +197,11 @@ class FullCard extends React.Component {
                 <Note name='qa' /> 
               </div>
             </div>
-            <div style={[styles.columnContainer, styles.featuresContainer]} type='Features'>
-                <Feature />
+            <div style={[styles.columnContainer, styles.featuresContainer]} type='Features'>     
+                <FeatureSelect feature={{name: 'status', options:[{text:'To Do'},{text:'Doing'}, {text:'Done'}]}} />
+                <FeatureText feature={{name: 'completion', text: 'Not Complete'}} />
+                <FeatureSelect feature={{name: 'impact', options:[{text:'High'},{text:'Medium'}, {text:'Low'}]}} />
+                <FeatureSelect feature={{name: 'effort', options:[{text:'High'},{text:'Medium'}, {text:'Low'}]}} />
             </div>
           </div>
         </div>
