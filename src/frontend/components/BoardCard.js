@@ -112,5 +112,3 @@ static propTypes = {
 //     `,
 //   },
 // });
-
-

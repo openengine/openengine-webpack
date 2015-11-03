@@ -6,7 +6,9 @@ import {Link} from 'react-scroll';
 const styles = {
   tab:{
     paddingLeft: 20,
-    paddingRight: 20
+    paddingRight: 20,
+    cursor: 'pointer',
+    fontSize: '0.9rem'
   }
 }
 
@@ -21,7 +23,7 @@ export default class NotesTab extends React.Component {
     const {headerOffset, linkTo, isActive} = this.props;
 
     return (
-       <div style={styles.tab}><Link to={linkTo} spy={true} smooth={true} offset={headerOffset} duration={400}>{this.props.children}</Link></div>
+       <div className="notes_tabs" style={styles.tab}><Link to={linkTo} spy={true} smooth={true} offset={headerOffset} duration={400}>{this.props.children}</Link></div>
     );
   }
 };
