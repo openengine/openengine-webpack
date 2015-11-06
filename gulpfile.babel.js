@@ -71,7 +71,7 @@ gulp.task('copy-assets', ['clean-build'], () => {
 
 // Runs our combined production tasks using the webpack-prod.config.js file
 gulp.task('production-run', () => {
-  
+
   // run webpack backend server (will start server after all assets are ready)
   webpack(prodBackendConfig, function(err, stats) {
     if(err) throw new gutil.PluginError("webpack-prod:build", err);

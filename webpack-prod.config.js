@@ -48,9 +48,9 @@ var frontendConfig = assign({}, defaultConfig, {
       {
         test: /\.css$/,
         include: path.join(__dirname, 'src', 'frontend','assets','styles'),
-        loaders: ['style', 'css', 'sass']
+        loaders: ['style', 'css']
       }
-  
+
     ]
   }
 });
