@@ -1,19 +1,15 @@
-import React, { Component, PropTypes } from 'react';
+import React, { PropTypes } from 'react';
 import Radium from 'radium';
 import update from 'react/lib/update';
-import Relay from 'react-relay';
-import TextField from 'material-ui/lib/text-field'
-import Paper from 'material-ui/lib/paper';
-import FontIcon from 'material-ui/lib/font-icon';
-import Card from './BoardCard'
-import CardList from "./CardList"
+import { TextField } from 'material-ui';
+import CardList from './CardList';
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 
 const styles = {
   container: {
     fontFamily: 'Roboto, sans-serif',
-    background: '#fff'
+    background: '#fff',
   },
 
   rowContainer: {
@@ -24,7 +20,7 @@ const styles = {
     overflow: 'hidden',
     width: '100%',
     padding: 3,
-    minHeight: 550
+    minHeight: 550,
   },
 
   headerRowContainer: {
@@ -34,38 +30,38 @@ const styles = {
     alignItems: 'stretch',
     overflow: 'hidden',
     width: '100%',
-    padding: 3
+    padding: 3,
   },
 
   columnContainer: {
     display: 'flex',
     flexFlow: 'column nowrap',
     justifyContent: 'center',
-    alignItems: 'stretch'
+    alignItems: 'stretch',
   },
 
   boardHeader: {
     flex: '1 0 auto',
-    fontSize:'1.0rem',
-    fontWeight:100,
-    color: '#9E9E9E'
+    fontSize: '1.0rem',
+    fontWeight: 100,
+    color: '#9E9E9E',
   },
 
   boardSearchbox: {
-    paddingTop: '20px'
+    paddingTop: '20px',
   },
 
   boardNmae: {
     fontSize: '1.5rem',
-    fontWeight:100,
+    fontWeight: 100,
     color: '#9E9E9E',
-    marginBottom: 40
+    marginBottom: 40,
   },
 
   boardSearchIcon: {
     position: 'relative',
-    bottom: -5
-  }
+    bottom: -5,
+  },
 };
 
 
@@ -74,40 +70,42 @@ const styles = {
 @DragDropContext(HTML5Backend)
 @Radium
 export default class DragBoard extends React.Component {
+  static propTypes = {
+    board: PropTypes.object.isRequired,
+  };
   constructor(props) {
     super(props);
-    //this.moveCard = this.moveCard.bind(this);
-    //this.findCard = this.findCard.bind(this);
-    const { board } = this.props;
+    this.moveCard = this.moveCard.bind(this);
+    this.findCard = this.findCard.bind(this);
   }
 
-  //moveCard(from, to) {
-    //const { card, status, index } = this.findCard(from.id, from.status);
+  moveCard(from, to) {
+    const { card, index } = this.findCard(from.id, from.status);
 
-    //if(card) {
-      //// I know there's a way to consolidate these two calls... but not sure how
-      //this.setState(update(this.state, {
-        //cards: {[from.status] : {$splice:[[index, 1]]}
-        //}
-      //}));
+    if (card) {
+      // I know there's a way to consolidate these two calls... but not sure how
+      this.setState(update(this.state, {
+        cards: {[from.status]: {$splice: [[index, 1]]},
+      },
+      }));
 
-      //this.setState(update(this.state, {
-        //cards: {[to.status]: {$splice:[[to.index, 0, card]]}
-        //}
-      //}));
-    //}
-  //}
+      this.setState(update(this.state, {
+        cards: {[to.status]: {$splice: [[to.index, 0, card]]},
+      },
+      }));
+    }
+  }
 
-  //findCard(id, status) {
-    //const { cards } = this.state;
-    //const card = cards[status].filter(c => c.id === id)[0];
+  findCard(id, status) {
+    const { cards } = this.state;
+    const card = cards[status].filter(crd => crd.id === id)[0];
 
-    //return {
-      //card,
-      //status,
-      //index: cards[status].indexOf(card)
-    //};
-  //}
+    return {
+      card,
+      status,
+      index: cards[status].indexOf(card),
+    };
+  }
 
   render() {
     const { board } = this.props;
@@ -143,4 +141,4 @@ export default class DragBoard extends React.Component {
       </div>
     );
   }
-};
+}

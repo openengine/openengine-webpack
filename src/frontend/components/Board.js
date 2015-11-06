@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
-import DragBoard from './DragBoard'
-import CardList from './CardList'
+import DragBoard from './DragBoard';
+import CardList from './CardList';
 
 class Board extends React.Component {
+  static propTypes = {
+    board: PropTypes.object.isRequired,
+  };
   render() {
     const {board} = this.props;
     return (
@@ -12,12 +15,12 @@ class Board extends React.Component {
       <DragBoard board={board} />
     );
   }
-};
+}
 
 export default Relay.createContainer(Board, {
-  prepareVariables({status}) {
+  prepareVariables({}) {
     return {
-      limit: Number.MAX_SAFE_INTEGER || 9007199254740991
+      limit: Number.MAX_SAFE_INTEGER || 9007199254740991,
     };
   },
 

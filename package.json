@@ -67,5 +67,11 @@
   "bugs": {
     "url": "https://github.com/openengine/openengine-webpack/issues"
   },
-  "homepage": "https://github.com/openengine/openengine-webpack"
+  "homepage": "https://github.com/openengine/openengine-webpack",
+  "devDependencies": {
+    "babel-eslint": "^4.1.3",
+    "eslint": "^1.8.0",
+    "eslint-config-airbnb": "^0.1.0",
+    "eslint-plugin-react": "^3.6.3"
+  }
 }
