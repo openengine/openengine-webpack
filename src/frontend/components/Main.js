@@ -1,11 +1,15 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
 import Navigation from './Navigation';
-import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
 class Main extends React.Component {
+  static propTypes = {
+    location: PropTypes.object,
+    children: PropTypes.object,
+  };
   render() {
-    const { pathname }  = this.props.location;
+    const { pathname } = this.props.location;
 
     return (
       <div>
@@ -15,14 +19,13 @@ class Main extends React.Component {
           transitionName="board"
           transitionEnterTimeout={500}
           transitionLeaveTimeout={300}
-          transitionLeave={false}
-         >
+          transitionLeave={false} >
           {React.cloneElement(this.props.children || <div />, { key: pathname })}
         </ReactCSSTransitionGroup>
       </div>
     );
   }
-};
+}
 
 export default Relay.createContainer(Main, {
   fragments: {

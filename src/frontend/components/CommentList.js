@@ -1,26 +1,20 @@
-import React, { Component, PropTypes } from 'react';
+import React from 'react';
 import Radium from 'radium';
-import {Paper, IconMenu, MenuItem, IconButton, FontIcon, List, ListItem, ListDivider, Avatar} from 'material-ui';
-import Colors from 'material-ui/lib/styles/colors'
-import Comment from "./Comment"
-
-const styles = {
-
-};
+import { List } from 'material-ui/';
+import Comment from './Comment';
 
 @Radium
-export default class CommentList extends React.Component {   
+export default class CommentList extends React.Component {
 
-constructor(props) {
+  constructor(props) {
     super(props);
   }
 
   render() {
-
-    return (  
+    return (
       <List>
-        <Comment  />
+        <Comment />
       </List>
     );
   }
-};
+}

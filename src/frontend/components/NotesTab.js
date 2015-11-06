@@ -1,29 +1,28 @@
-import React, { Component, PropTypes } from 'react';
+import React, { PropTypes } from 'react';
 import Radium from 'radium';
-import Colors from 'material-ui/lib/styles/colors';
-import {Link} from 'react-scroll';
+import { Link } from 'react-scroll';
 
 const styles = {
-  tab:{
+  tab: {
     paddingLeft: 20,
     paddingRight: 20,
     cursor: 'pointer',
-    fontSize: '0.9rem'
-  }
-}
+    fontSize: '0.9rem',
+  },
+};
 
 @Radium
-export default class NotesTab extends React.Component {  
-
+export default class NotesTab extends React.Component {
   static propTypes = {
     headerOffset: PropTypes.number,
-    linkTo: PropTypes.string.isRequired
+    linkTo: PropTypes.string.isRequired,
+    children: PropTypes.string,
   };
   render() {
-    const {headerOffset, linkTo, isActive} = this.props;
+    const {headerOffset, linkTo} = this.props;
 
     return (
-       <div className="notes_tabs" style={styles.tab}><Link to={linkTo} spy={true} smooth={true} offset={headerOffset} duration={400}>{this.props.children}</Link></div>
+       <div className="notes_tabs" style={styles.tab}><Link to={linkTo} spy smooth offset={headerOffset} duration={400}>{this.props.children}</Link></div>
     );
   }
-};
+}

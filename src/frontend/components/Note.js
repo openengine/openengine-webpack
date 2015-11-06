@@ -1,9 +1,9 @@
-import React, { Component, PropTypes } from 'react';
+import React, { PropTypes } from 'react';
 import Radium from 'radium';
 import Paper from 'material-ui/lib/paper';
 import Colors from 'material-ui/lib/styles/colors';
-import {Element} from 'react-scroll'
-import CommentList from "./CommentList"
+import { Element } from 'react-scroll';
+import CommentList from './CommentList';
 
 const styles = {
   rowContainer: {
@@ -12,14 +12,14 @@ const styles = {
     justifyContent: 'center',
     alignItems: 'stretch',
     overflow: 'hidden',
-    width: '100%'
+    width: '100%',
   },
 
   columnContainer: {
     display: 'flex',
     flexFlow: 'column nowrap',
     justifyContent: 'stretch',
-    alignItems: 'stretch'
+    alignItems: 'stretch',
   },
 
   notesColumn: {
@@ -29,38 +29,38 @@ const styles = {
 
   commentsColumn: {
     flex: '0 1 35%',
-    boxShadow: '0 0px 0px rgba(0, 0, 0, 0.15)'
+    boxShadow: '0 0px 0px rgba(0, 0, 0, 0.15)',
   },
 
   title: {
     fontWeight: 100,
-    color: Colors.blueGrey400
+    color: Colors.blueGrey400,
   },
 
   note: {
     fontWeight: 300,
-    fontSize:'0.9rem',
+    fontSize: '0.9rem',
     color: Colors.grey600,
-    lineHeight:'1.5rem'
+    lineHeight: '1.5rem',
   },
 
   list: {
-    listStyle: 'circle outside'
-  }
+    listStyle: 'circle outside',
+  },
 };
 
 @Radium
-export default class Note extends React.Component {  
+export default class Note extends React.Component {
 
   static propTypes = {
-    name: PropTypes.string.isRequired
+    name: PropTypes.string.isRequired,
   };
   render() {
     const {name } = this.props;
     return (
       <Element name={name}>
         <div style={[styles.rowContainer]}>
-          <div style={[styles.notesColumn]}> 
+          <div style={[styles.notesColumn]}>
             <Paper style={styles.note} zDepth={0} rounded={false}>
               <h1 style={styles.title}>{name}</h1>
               <p > Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam fringilla eget justo a aliquam. Aliquam tincidunt diam vitae interdum sollicitudin. Quisque vitae lacinia sem, vehicula faucibus nunc. Morbi at mollis tellus. Sed eu tellus sed magna dictum posuere. Morbi at purus ligula. Nam nec imperdiet ex. Phasellus hendrerit vestibulum arcu, sit amet consequat diam consequat sed. Integer lobortis risus quis luctus auctor. Phasellus felis felis, finibus vel faucibus sed, lacinia eu dolor.
@@ -75,14 +75,14 @@ export default class Note extends React.Component {
                 <li>
                     Suspendisse facilisis urna ut fringilla condimentum. Aenean hendrerit turpis eget eros efficitur
                 </li>
-              </ul>      
+              </ul>
             </Paper>
-          </div>           
+          </div>
           <div style={[styles.commentsColumn]}>
                 <CommentList />
           </div>
-        </div> 
+        </div>
       </Element>
     );
   }
-};
+}

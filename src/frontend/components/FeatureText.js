@@ -1,7 +1,6 @@
-import React, { Component, PropTypes } from 'react';
+import React, { PropTypes } from 'react';
 import Radium from 'radium';
-import {Toolbar, ToolbarGroup, ToolbarTitle, ToolbarSeparator, IconButton, FontIcon, Avatar} from 'material-ui';
-import Colors from 'material-ui/lib/styles/colors'
+import Colors from 'material-ui/lib/styles/colors';
 
 const styles = {
 
@@ -11,50 +10,52 @@ const styles = {
     justifyContent: 'stretch',
     alignItems: 'stretch',
     overflow: 'hidden',
-    width: '100%'
+    width: '100%',
   },
 
   nameColumn: {
     flex: '0 1 30%',
     fontWeight: 300,
-    fontSize:'0.7rem',
-    color: Colors.grey500
+    fontSize: '0.7rem',
+    color: Colors.grey500,
   },
 
   actionColumn: {
     flex: '0 1 70%',
-    textAlign:'left'
+    textAlign: 'left',
   },
 
   dropdown: {
     fontWeight: 400,
-    fontSize:'0.8rem',
-    color: Colors.grey600
-  },
-
-  featureName:{
-    fontWeight: 300,
-    fontSize:'0.7rem',
-    color: Colors.grey500,
-    marginLeft:'1rem',
-    marginTop:'1rem',
-    textAlign:'right'
-  },
-
-  featureText:{
-    fontWeight: 400,
-    fontSize:'0.7rem',
+    fontSize: '0.8rem',
     color: Colors.grey600,
-    marginTop:'1rem',
-    textAlign:'left',
-    paddingLeft:24
-  }
+  },
+
+  featureName: {
+    fontWeight: 300,
+    fontSize: '0.7rem',
+    color: Colors.grey500,
+    marginLeft: '1rem',
+    marginTop: '1rem',
+    textAlign: 'right',
+  },
+
+  featureText: {
+    fontWeight: 400,
+    fontSize: '0.7rem',
+    color: Colors.grey600,
+    marginTop: '1rem',
+    textAlign: 'left',
+    paddingLeft: 24,
+  },
 
 };
 
 @Radium
-export default class FeatureText extends React.Component {   
-
+export default class FeatureText extends React.Component {
+  static propTypes = {
+    feature: PropTypes.object.isRequired,
+  };
   constructor(props) {
     super(props);
   }
@@ -70,7 +71,7 @@ export default class FeatureText extends React.Component {
         <div style={styles.actionColumn}>
             <div style={styles.featureText}>{feature.text}</div>
         </div>
-      </div> 
+      </div>
     );
   }
-};
+}
