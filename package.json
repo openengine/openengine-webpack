@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "description": "Engine.",
   "main": "gulpfile.babel.js",
+  "engines": {
+    "node": ">= 5.0.0"
+  },
   "scripts": {
     "postinstall": "gulp production-prep",
     "start": "gulp production-run",
