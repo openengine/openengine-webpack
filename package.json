@@ -49,7 +49,6 @@
     "react-scroll": "^0.30.0",
     "react-tap-event-plugin": "^0.2.1",
     "relay-local-schema": "^0.3.0",
-    "sass-loader": "^3.0.0",
     "source-map-support": "^0.3.2",
     "style-loader": "^0.13.0",
     "webpack": "^1.10.5",
