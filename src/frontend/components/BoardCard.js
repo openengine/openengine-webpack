@@ -1,20 +1,25 @@
-import React, { Component, PropTypes } from 'react';
-import Relay from 'react-relay';
+import React, {
+  Component,
+  PropTypes,
+} from 'react';
 import MaterialCard from 'material-ui/lib/card/card';
 import CardHeader from 'material-ui/lib/card/card-header';
-import Avatar from 'material-ui/lib/avatar'
-import FontIcon from 'material-ui/lib/font-icon';
-import { Link } from 'react-router'
-import { DragItemTypes } from "../constants"
-import { DragSource, DropTarget } from 'react-dnd';
-
+import {
+  Avatar,
+} from 'material-ui';
+import { Link } from 'react-router';
+import { DragItemTypes } from '../constants';
+import {
+  DragSource,
+  DropTarget,
+} from 'react-dnd';
 const cardSource = {
   beginDrag(props) {
     return {
       id: props.id,
       currentStatus: props.status,
       originalStatus: props.status,
-      originalIndex: props.findCard(props.id, props.status).index
+      originalIndex: props.findCard(props.id, props.status).index,
     };
   },
 
@@ -24,14 +29,13 @@ const cardSource = {
  // const dropColumn = monitor.getDropResult();
 
     // This means it was dropped outside of a dropzone... so put it back in its original spot
-    if(!didDrop) {
+    if (!didDrop) {
       const from = {id: droppedId, status: currentStatus};
-      const to = {index: originalIndex, status: originalStatus}
+      const to = {index: originalIndex, status: originalStatus};
       props.moveCard(from, to);
     }
-  }
+  },
 };
-
 const cardTarget = {
   canDrop() {
     return false;
@@ -48,53 +52,51 @@ const cardTarget = {
 
       props.moveCard(from, to);
 
-      if(draggedStatus!==overStatus) {
+      if (draggedStatus !== overStatus) {
         // So I think this might actually be frowned upon (mutating here)... but it works for now.
         monitor.getItem().currentStatus = overStatus;
       }
     }
-  }
+  },
 };
 
 @DropTarget(DragItemTypes.BOARDCARD, cardTarget, connect => ({
-  connectDropTarget: connect.dropTarget()
+  connectDropTarget: connect.dropTarget(),
 }))
 @DragSource(DragItemTypes.BOARDCARD, cardSource, (connect, monitor) => ({
   connectDragSource: connect.dragSource(),
-  isDragging: monitor.isDragging()
+  isDragging: monitor.isDragging(),
 }))
-export default class Card extends Component {
+export default class BoardCard extends Component {
   static propTypes = {
     connectDragSource: PropTypes.func.isRequired,
     connectDropTarget: PropTypes.func.isRequired,
-    isDragging: PropTypes.bool.isRequired,
+    isDragging: PropTypes.bool,
     id: PropTypes.any.isRequired,
-    text: PropTypes.string.isRequired,
-    status: PropTypes.string.isRequired,
+    text: PropTypes.string,
+    status: PropTypes.string,
     moveCard: PropTypes.func.isRequired,
-    findCard: PropTypes.func.isRequired
+    findCard: PropTypes.func.isRequired,
   };
 
   render() {
     const { text, isDragging, connectDragSource, connectDropTarget, id } = this.props;
-    const opacity = isDragging ? 0 : 1;
 
     return connectDragSource(connectDropTarget(
       <div style={{
-          opacity: isDragging ? 0 : 1,
-          cursor: 'move'
-        }}>
-        <MaterialCard initiallyExpanded={false}>
-          <CardHeader
-            title={<Link to={`/card/${id}`}>{text}</Link>}
-            titleStyle={{cursor:'pointer'}}
-            textStyle = {{display:'block'}}
-            avatar={<Avatar src="https://s3.amazonaws.com/uifaces/faces/twitter/sauro/48.jpg" style={{float:'right'}}></Avatar>}
-            actAsExpander={false}
-            showExpandableButton={false}>
-          </CardHeader>
-        </MaterialCard>
+        opacity: isDragging ? 0 : 1,
+        cursor: 'move',
+      }}>
+      <MaterialCard initiallyExpanded={false}>
+        <CardHeader
+          title={<Link to={`/card/${id}`}>{text}</Link>}
+          titleStyle={{cursor: 'pointer'}}
+          textStyle = {{display: 'block'}}
+          avatar={<Avatar src="https://s3.amazonaws.com/uifaces/faces/twitter/sauro/48.jpg" style={{float: 'right'}} />}
+          actAsExpander={false}
+          showExpandableButton={false} />
+      </MaterialCard>
       </div>
     ));
   }
-};
+}

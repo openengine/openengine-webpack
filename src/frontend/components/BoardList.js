@@ -1,16 +1,16 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
-import Card from 'material-ui/lib/card/card';
-import CardHeader from 'material-ui/lib/card/card-header';
-import CardText from 'material-ui/lib/card/card-text';
-import CardActions from 'material-ui/lib/card/card-actions';
-import Avatar from 'material-ui/lib/avatar'
-import FlatButton from 'material-ui/lib/flat-button'
-import Colors from 'material-ui/lib/styles/colors'
-import Paper from 'material-ui/lib/paper';
-import { Link } from 'react-router'
+import {
+  Avatar,
+  Paper,
+} from 'material-ui';
+import Colors from 'material-ui/lib/styles/colors';
+import { Link } from 'react-router';
 
 class BoardList extends React.Component {
+  static propTypes = {
+    viewer: PropTypes.object,
+  };
   render() {
     const { viewer } = this.props;
     const { boards } = viewer;
@@ -34,7 +34,7 @@ class BoardList extends React.Component {
 
 export default Relay.createContainer(BoardList, {
   initialVariables: {
-    status: null
+    status: null,
   },
 
   prepareVariables({status}) {
@@ -49,7 +49,7 @@ export default Relay.createContainer(BoardList, {
 
     return {
       status: nextStatus,
-      limit: Number.MAX_SAFE_INTEGER || 9007199254740991
+      limit: Number.MAX_SAFE_INTEGER || 9007199254740991,
     };
   },
 
