@@ -1,7 +1,7 @@
 import {
   GraphQLObjectType,
   GraphQLString,
-  GraphQLInt,
+  GraphQLFloat,
 } from 'graphql';
 
 import {
@@ -21,7 +21,7 @@ const CardType = new GraphQLObjectType({
   fields: () => ({
     id: globalIdField('Card'),
     name: { type: GraphQLString },
-    cardListRank: { type: GraphQLInt },
+    cardListRank: { type: GraphQLFloat },
   }),
   isTypeOf: (value) => value instanceof db.Card,
   interfaces: [nodeInterface]

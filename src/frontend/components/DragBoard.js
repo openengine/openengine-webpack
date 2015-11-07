@@ -77,33 +77,66 @@ export default class DragBoard extends React.Component {
     super(props);
     this.moveCard = this.moveCard.bind(this);
     this.findCard = this.findCard.bind(this);
+    const {cardLists} = this.props.board;
+    // We need to set the state of the Board because we will be maniuplating the UI with hover, but we
+    // don't want those changes to be propagated until the actual drop happens.
+    this.state = {cardLists: cardLists.edges};
   }
 
   moveCard(from, to) {
-    const { card, index } = this.findCard(from.id, from.status);
+    const fromCard = this.findCard(from.id, from.listId);
+    const toCard = this.findCard(to.id, to.listId);
 
-    if (card) {
+    const lowRank = toCard.index === 0 ? toCard.cardListRank - 1 : this.state.cardLists[to.listId][toCard.index - 1].cardListRank;
+
+    const newRank = (toCard.cardListRank + lowRank) / 2;
+
+    this.setState(update(this.state, {
+      cardLists: {[from.listId]: {$splice: [[fromCard.index, 1]]},
+      },
+    }));
+
+    fromCard.card.cardListRank = newRank;
+
+    // Place in new list and rank
+    this.setState(update(this.state, {
+      cardsLists: {[to.listId]: {$splice: [[toCard.index, 0, fromCard.card]]},
+    },
+    }));
+
+    // this.setState(update(this.state, {
+    //   cardLists: {[from.listId]: {[from.id]: {cardListRank: {$set: 7}}},
+    // },
+    // }));
+
+  //  const { card } = this.findCard(from.id, from.status);
+
+  //  if (card) {
       // I know there's a way to consolidate these two calls... but not sure how
-      this.setState(update(this.state, {
-        cards: {[from.status]: {$splice: [[index, 1]]},
-      },
-      }));
-
-      this.setState(update(this.state, {
-        cards: {[to.status]: {$splice: [[to.index, 0, card]]},
-      },
-      }));
-    }
+      // Remove from It's current list
+      // this.setState(update(this.state, {
+      //   cardLists: {[from.listId]: {$splice: [[card.cardListRank, 1]]},
+      // },
+      // }));
+      // this.setState(update(this.state, {
+      //   cardLists: {[from.listId]: {[from.id]: {cardListRank: {$set: 7}}},
+      // },
+      // }));
+      //
+      // // Place in new list and rank
+      // this.setState(update(this.state, {
+      //   cards: {[to.status]: {$splice: [[to.index, 0, card]]},
+      // },
+      // }));
+  //  }
   }
 
-  findCard(id, status) {
-    const { cards } = this.state;
-    const card = cards[status].filter(crd => crd.id === id)[0];
-
+  findCard(id, listId) {
+    const { cardLists } = this.state;
+    const card = cardLists.filter(crdList => crdList.id === listId).filter(crd => crd.id === id)[0];
     return {
       card,
-      status,
-      index: cards[status].indexOf(card),
+      index: cardLists.filter(crdList => crdList.id === listId).indexOf(card),
     };
   }
 

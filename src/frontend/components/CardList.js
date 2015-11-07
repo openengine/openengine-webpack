@@ -105,7 +105,7 @@ class CardList extends React.Component {
   render() {
     const { connectDropTarget, isOver } = this.props;
 
-    const { cardList } = this.props;
+    const { cardList, moveCard, findCard } = this.props;
 
     let cards = cardList.cards.edges.map(({node}) => node);
     cards = cards.sort((cardA, cardB) => {
@@ -132,6 +132,8 @@ class CardList extends React.Component {
                   <BoardCard
                     card={card}
                     cardList={cardList}
+                    moveCard={moveCard}
+                    findCard={findCard}
                     />
                 </Paper>
               );
