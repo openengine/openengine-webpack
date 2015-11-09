@@ -20,43 +20,22 @@ import {
 const cardSource = {
   beginDrag(props, monitor, component) {
     console.log('BoardCard#beginDrag', props);
+    // Send the height of the dragged card to show the correct sized placeHolder
     const height = findDOMNode(component).offsetHeight;
     return {
-      card: props.card,
-      cardList: props.cardList,
       height: height,
     };
-  },
-
-  endDrag(props, monitor) {
-    console.log('BoardCard#endDrag', monitor.didDrop(), props, monitor, monitor.getDropResult());
-    // const { id: droppedId, originalStatus, currentStatus, originalIndex } = monitor.getItem();
-    // const didDrop = monitor.didDrop();
-    // const dropColumn = monitor.getDropResult();
-
-    // This means it was dropped outside of a dropzone... so put it back in its original spot
-    // if (!didDrop) {
-    //   const from = {id: droppedId, status: currentStatus};
-    //   const to = {index: originalIndex, status: originalStatus};
-    //   props.moveCard(from, to);
-    // }
   },
 };
 const cardTarget = {
   canDrop() {
-    return false;
+    return true;
   },
-
-  hover(props, monitor) {
-    const {card: fromCard, cardList: fromList } = monitor.getItem();
-    const { card: toCard, cardList: toList } = props;
-
-    if (fromCard.id !== toCard.id) {
-      const from = {id: fromCard.id, listId: fromList.id};
-      const to = {id: toCard.id, listId: toList.id };
-
-    //  props.moveCard(from, to);
-    }
+  // If a card is dropped on another card, send that card's listRank to the cardList drop event
+  drop(props) {
+    return {
+      droppedOnCardRank: props.card.cardListRank,
+    };
   },
 };
 
@@ -73,8 +52,6 @@ export default class BoardCard extends Component {
   static propTypes = {
     connectDragSource: PropTypes.func.isRequired,
     connectDropTarget: PropTypes.func.isRequired,
-    moveCard: PropTypes.func.isRequired,
-    findCard: PropTypes.func.isRequired,
     card: PropTypes.object,
     cardList: PropTypes.object,
     isDragging: PropTypes.bool,
@@ -95,7 +72,7 @@ export default class BoardCard extends Component {
           display: isOver ? 'block' : 'none',
           width: '100%',
           height: draggedItem.height,
-          background: Colors.grey400,
+          background: Colors.blueGrey50,
         }}/>
     );
     }

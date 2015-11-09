@@ -63,28 +63,12 @@ const columnTarget = {
   },
   // When a card is dropped in a column, we want to update
   // that card's CardList via mutation
-  drop(props) {
-    return {
-      status: props.status,
-    };
-  },
-
-  hover(props, monitor) {
-    const { id: draggedId, currentStatus: draggedStatus } = monitor.getItem();
-    const { status: overStatus, cards } = props;
-
-    // This will only happen over the empty (bottom) portions of a column. BoardCard will handle when hovering happens over a list.
-    if (overStatus !== draggedStatus && monitor.isOver({shallow: true})) {
-      const from = {id: draggedId, status: draggedStatus};
-      const to = {index: cards.length, status: overStatus };
-
-      props.moveCard(from, to);
-
-      if (draggedStatus !== overStatus) {
-        // So I think this might actually be frowned upon (mutating here)... but it works for now.
-        monitor.getItem().currentStatus = overStatus;
-      }
-    }
+  drop(props, monitor) {
+    if (monitor.didDrop()) { // It was dropped on or between cards
+      // Dropped on/between cards set new rank and list for dropped card
+      const { droppedOnCardRank } = monitor.getDropResult();
+      const { cardList } = props;
+    } // // It was dropped on card list but not top/between other cards
   },
 };
 
@@ -105,7 +89,7 @@ class CardList extends React.Component {
   render() {
     const { connectDropTarget, isOver } = this.props;
 
-    const { cardList, moveCard, findCard } = this.props;
+    const { cardList } = this.props;
 
     let cards = cardList.cards.edges.map(({node}) => node);
     cards = cards.sort((cardA, cardB) => {
@@ -132,8 +116,6 @@ class CardList extends React.Component {
                   <BoardCard
                     card={card}
                     cardList={cardList}
-                    moveCard={moveCard}
-                    findCard={findCard}
                     />
                 </Paper>
               );
