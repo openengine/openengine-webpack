@@ -5,6 +5,8 @@ import { Paper } from 'material-ui';
 import BoardCard from './BoardCard';
 import { DragItemTypes } from '../constants';
 import { DropTarget } from 'react-dnd';
+import MoveCardMutation from '../mutations/MoveCardMutation';
+
 const styles = {
   container: {
     fontFamily: 'Roboto, sans-serif',
@@ -66,9 +68,36 @@ const columnTarget = {
   drop(props, monitor) {
     if (monitor.didDrop()) { // It was dropped on or between cards
       // Dropped on/between cards set new rank and list for dropped card
-      const { droppedOnCardRank } = monitor.getDropResult();
+      const { droppedOnCardIndex, droppedOnCardRank } = monitor.getDropResult();
       const { cardList } = props;
-    } // // It was dropped on card list but not top/between other cards
+      const { card } = monitor.getItem();
+
+      let toRank = droppedOnCardRank - 1.0;
+
+      if (droppedOnCardIndex !== 0) {
+        let cards = cardList.cards.edges.map(({node}) => node);
+        cards = cards.sort((cardA, cardB) => {
+          if (cardA.cardListRank >= cardB.cardListRank) {
+            return 1;
+          }
+          if (cardA.cardListRank < cardB.cardListRank) {
+            return -1;
+          }
+        });
+
+        toRank = (droppedOnCardRank + cards[droppedOnCardIndex - 1].cardListRank) / 2;
+      }
+
+      card.cardListRank = toRank;
+
+      Relay.Store.update(
+      new MoveCardMutation({
+        cardId: card.id,
+        cardList: props.cardList,
+        toRank: toRank,
+      })
+    );
+    }
   },
 };
 
@@ -82,8 +111,6 @@ class CardList extends React.Component {
     connectDropTarget: PropTypes.func.isRequired,
     isOver: PropTypes.bool.isRequired,
     cardList: PropTypes.object.isRequired,
-    moveCard: PropTypes.func,
-    findCard: PropTypes.func,
   };
 
   render() {
@@ -115,6 +142,7 @@ class CardList extends React.Component {
                 <Paper key={card.id} style={styles.cardList} zDepth={0} rounded={false} >
                   <BoardCard
                     card={card}
+                    cardIndex={cards.indexOf(card)}
                     cardList={cardList}
                     />
                 </Paper>
@@ -144,11 +172,12 @@ export default Relay.createContainer(CardList, {
           edges {
             node {
               id
-              cardListRank
-              ${BoardCard.getFragment('card')}
+              cardListRank,
+              ${BoardCard.getFragment('card')},
             }
           }
-        }
+        },
+        ${MoveCardMutation.getFragment('cardList')},
       }
     `,
   },

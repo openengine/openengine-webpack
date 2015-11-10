@@ -23,6 +23,7 @@ const cardSource = {
     // Send the height of the dragged card to show the correct sized placeHolder
     const height = findDOMNode(component).offsetHeight;
     return {
+      card: props.card,
       height: height,
     };
   },
@@ -35,6 +36,7 @@ const cardTarget = {
   drop(props) {
     return {
       droppedOnCardRank: props.card.cardListRank,
+      droppedOnCardIndex: props.cardIndex,
     };
   },
 };
@@ -53,6 +55,7 @@ export default class BoardCard extends Component {
     connectDragSource: PropTypes.func.isRequired,
     connectDropTarget: PropTypes.func.isRequired,
     card: PropTypes.object,
+    cardIndex: PropTypes.number,
     cardList: PropTypes.object,
     isDragging: PropTypes.bool,
     isOver: PropTypes.bool,

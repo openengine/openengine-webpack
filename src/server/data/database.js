@@ -131,7 +131,7 @@ var cards = [
 ];
 
 export function getUser(id) {
-  return users.filter((user) => user.id == id)[0];
+  return users.filter((user) => user.id === id)[0];
 }
 
 export function getViewer() {
@@ -143,7 +143,7 @@ export function getBoards() {
 }
 
 export function getBoard(id) {
-  return boards.filter((board) => board.id == id)[0];
+  return boards.filter((board) => board.id === id)[0];
 }
 
 export function addBoard(name) {
@@ -163,11 +163,11 @@ export function removeBoard(id) {
 }
 
 export function getCardLists(boardId) {
-  return cardLists.filter((list) => list.boardId == boardId);
+  return cardLists.filter((list) => list.boardId === boardId);
 }
 
 export function getCardList(id) {
-  return cardLists.filter((list) => list.id == id)[0];
+  return cardLists.filter((list) => list.id === id)[0];
 }
 
 // Ordered by cardListRank
@@ -185,5 +185,30 @@ export function getCards(cardListId) {
 }
 
 export function getCard(id) {
-  return cards.filter((card) => card.id == id)[0];
+  return cards.filter((card) => card.id === id)[0];
+}
+
+export function moveCard(id, toCardListId, toRank) {
+  let newRank = 0;
+  const cList = getCards(toCardListId);
+
+  // if toRank is null that means that it is being moved to an empty cardList...
+  if (toRank !== null) {
+    newRank = toRank;
+    // const replaceIndex = cList.findIndex((crd) => crd.rank === toRank);
+    //
+    // if (replaceIndex === 0) {
+    //   newRank = toRank - 1;
+    // } else {
+    //   // Get the card that comes BEFORE the card to replace so that we can get a rank between the two...
+    //   const cardBefore = cList[replaceIndex - 1];
+    //   newRank = (cardBefore.rank + toRank) / 2;
+    // }
+  }
+
+  const card = getCard(id);
+  card.cardListId = toCardListId;
+  card.cardListRank = newRank;
+
+  return toCardListId;
 }
