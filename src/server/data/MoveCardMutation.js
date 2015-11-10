@@ -14,22 +14,28 @@ import * as db from './database';
 
 export default mutationWithClientMutationId({
   name: 'MoveCard',
-  description: 'Move card to another card list',
+  description: 'Move card wihthin or to another card list',
   inputFields: {
-    id: { type: new GraphQLNonNull(GraphQLID)},
+    cardId: { type: new GraphQLNonNull(GraphQLID)},
+    fromCardListId: { type: new GraphQLNonNull(GraphQLID)},
     toCardListId: { type: new GraphQLNonNull(GraphQLID)},
     toRank: { type: GraphQLFloat },
   },
   outputFields: {
-    cardList: {
+    fromCardList: {
       type: CardListType,
-      resolve: ({cardListId}) => db.getCardList(cardListId),
+      resolve: ({fromCardListIdSimple}) => db.getCardList(fromCardListIdSimple),
+    },
+    toCardList: {
+      type: CardListType,
+      resolve: ({toCardListIdSimple}) => db.getCardList(toCardListIdSimple),
     },
   },
-  mutateAndGetPayload: ({id, toCardListId, toRank}) => {
-    const {id: cardId} = fromGlobalId(id);
-    const {id: localCardListId} = fromGlobalId(toCardListId);
-    const cardListId = db.moveCard(cardId, localCardListId, toRank);
-    return {cardListId};
+  mutateAndGetPayload: ({cardId, fromCardListId, toCardListId, toRank}) => {
+    const {id: cardIdSimple} = fromGlobalId(cardId);
+    const {id: fromCardListIdSimple} = fromGlobalId(fromCardListId);
+    const {id: toCardListIdSimple} = fromGlobalId(toCardListId);
+    db.moveCard(cardIdSimple, toCardListIdSimple, toRank);
+    return {fromCardListIdSimple, toCardListIdSimple};
   },
 });

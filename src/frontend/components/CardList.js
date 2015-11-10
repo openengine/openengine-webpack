@@ -5,6 +5,7 @@ import { Paper } from 'material-ui';
 import BoardCard from './BoardCard';
 import { DragItemTypes } from '../constants';
 import { DropTarget } from 'react-dnd';
+import Colors from 'material-ui/lib/styles/colors';
 import MoveCardMutation from '../mutations/MoveCardMutation';
 
 const styles = {
@@ -59,6 +60,18 @@ const styles = {
   }),
 };
 
+// Used to sort cards in a cardList by the specified field
+const sortCards = (cardList, sortBy) => {
+  return cardList.cards.edges.map(({node}) => node).sort((cardA, cardB) => {
+    if (cardA[sortBy] >= cardB[sortBy]) {
+      return 1;
+    }
+    if (cardA[sortBy] < cardB[sortBy]) {
+      return -1;
+    }
+  });
+};
+
 const columnTarget = {
   canDrop() {
     return true;
@@ -66,69 +79,76 @@ const columnTarget = {
   // When a card is dropped in a column, we want to update
   // that card's CardList via mutation
   drop(props, monitor) {
-    if (monitor.didDrop()) { // It was dropped on or between cards
-      // Dropped on/between cards set new rank and list for dropped card
-      const { droppedOnCardIndex, droppedOnCardRank } = monitor.getDropResult();
-      const { cardList } = props;
-      const { card } = monitor.getItem();
+    const { cardList } = props;
+    const { card, cardList: fromCardList } = monitor.getItem();
+    const cards = sortCards(cardList, 'cardListRank');
+    let toRank = 0;
 
-      let toRank = droppedOnCardRank - 1.0;
+    // Dropped on/between cards, set new rank for dropped card
+    if (monitor.didDrop()) {
+      const { droppedOnCardIndex, droppedOnCardRank } = monitor.getDropResult();
+
+      // If it was dropped on the top card, just set rank less than the top card
+      toRank = droppedOnCardRank - 1.0;
 
       if (droppedOnCardIndex !== 0) {
-        let cards = cardList.cards.edges.map(({node}) => node);
-        cards = cards.sort((cardA, cardB) => {
-          if (cardA.cardListRank >= cardB.cardListRank) {
-            return 1;
-          }
-          if (cardA.cardListRank < cardB.cardListRank) {
-            return -1;
-          }
-        });
-
+        // The new rank of the dropped card will be between the card it was dropped on and the one above it
         toRank = (droppedOnCardRank + cards[droppedOnCardIndex - 1].cardListRank) / 2;
       }
+    } else { // Dropped into the cardList with either A.) no cards in it, or B.) below all other cards in cardList
+      if (cards.length > 0) {
+        toRank = cards[cards.length - 1].cardListRank + 1;
+      }
+    }
 
-      card.cardListRank = toRank;
-
-      Relay.Store.update(
+    Relay.Store.update(
       new MoveCardMutation({
-        cardId: card.id,
-        cardList: props.cardList,
+        card: card,
+        fromCardList: fromCardList,
+        toCardList: cardList,
         toRank: toRank,
       })
     );
-    }
   },
 };
 
 @DropTarget(DragItemTypes.BOARDCARD, columnTarget, (connect, monitor) => ({
   connectDropTarget: connect.dropTarget(),
   isOver: monitor.isOver(),
+  isOverOnly: monitor.isOver({shallow: true}),
+  draggedItem: monitor.getItem(),
 }))
 @Radium
 class CardList extends React.Component {
   static propTypes = {
     connectDropTarget: PropTypes.func.isRequired,
     isOver: PropTypes.bool.isRequired,
+    isOverOnly: PropTypes.bool.isRequired,
     cardList: PropTypes.object.isRequired,
+    draggedItem: PropTypes.object,
   };
 
   render() {
-    const { connectDropTarget, isOver } = this.props;
+    const { connectDropTarget, isOver, isOverOnly, draggedItem } = this.props;
 
     const { cardList } = this.props;
 
-    let cards = cardList.cards.edges.map(({node}) => node);
-    cards = cards.sort((cardA, cardB) => {
-      if (cardA.cardListRank >= cardB.cardListRank) {
-        return 1;
-      }
-      if (cardA.cardListRank < cardB.cardListRank) {
-        return -1;
-      }
-    });
+    const cards = sortCards(cardList, 'cardListRank');
 
-    return connectDropTarget(
+    // We will put the placeholder in when a card is hovering over the empty part of the cardList.
+    let placeHolder = '';
+    // if there is a draggedItem that is picked up by the "dropMonitor" put in the placeHolder
+    if (draggedItem && isOverOnly) {
+      placeHolder = (
+        <div style={{
+          display: isOverOnly ? 'block' : 'none',
+          width: '100%',
+          height: draggedItem.height,
+          background: Colors.blueGrey50,
+        }}/>
+    );
+    }
+    return (
       <div style={[styles.columnContainer]}>
         <div style={[styles.headerRowContainer]}>
           <div style={[styles.cardListName]}>
@@ -136,6 +156,7 @@ class CardList extends React.Component {
           </div>
         </div>
         <div style={[styles.columnContainer]}>
+        {connectDropTarget(
           <div style={[styles.cardListContainer(isOver)]}>
             {cards.map(card => {
               return (
@@ -148,7 +169,9 @@ class CardList extends React.Component {
                 </Paper>
               );
             })}
+            {placeHolder}
           </div>
+        )}
         </div>
       </div>
     );
@@ -177,7 +200,8 @@ export default Relay.createContainer(CardList, {
             }
           }
         },
-        ${MoveCardMutation.getFragment('cardList')},
+        ${MoveCardMutation.getFragment('fromCardList')},
+        ${MoveCardMutation.getFragment('toCardList')},
       }
     `,
   },

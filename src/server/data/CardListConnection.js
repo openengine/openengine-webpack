@@ -9,5 +9,5 @@ export const {
   edgeType: CardListEdge,
 } = connectionDefinitions({
   name: 'CardList',
-  nodeType: CardListType
+  nodeType: CardListType,
 });

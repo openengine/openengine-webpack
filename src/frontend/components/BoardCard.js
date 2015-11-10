@@ -16,20 +16,25 @@ import {
   DragSource,
   DropTarget,
 } from 'react-dnd';
+import MoveCardMutation from '../mutations/MoveCardMutation';
 
 const cardSource = {
   beginDrag(props, monitor, component) {
-    console.log('BoardCard#beginDrag', props);
     // Send the height of the dragged card to show the correct sized placeHolder
     const height = findDOMNode(component).offsetHeight;
     return {
       card: props.card,
+      cardList: props.cardList,
       height: height,
     };
   },
 };
 const cardTarget = {
-  canDrop() {
+  canDrop(props, monitor) {
+    const { card } = monitor.getItem();
+    if (card.id === props.card.id) {
+      return false;
+    }
     return true;
   },
   // If a card is dropped on another card, send that card's listRank to the cardList drop event
@@ -81,7 +86,7 @@ export default class BoardCard extends Component {
     }
     return connectDragSource(connectDropTarget(
       <div style={{
-        opacity: isDragging ? 0 : 1,
+        display: isDragging ? 'none' : 'block',
         cursor: 'move',
       }}>
       {placeHolder}
@@ -106,6 +111,7 @@ export default Relay.createContainer(BoardCard, {
         id
         name
         cardListRank
+        ${MoveCardMutation.getFragment('card')},
       }
     `,
   },

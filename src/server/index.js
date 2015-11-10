@@ -1,19 +1,19 @@
 import express from 'express';
-import schema from './data/schema';
-import path from "path"
-import graphQLHTTP from 'express-graphql';
+import path from 'path';
 
 // This "app" configuraiton is for Heroku deployment of static
 const app = express();
-const static_path = path.join(__dirname, '../build', 'public');
-app.use(express.static(static_path))
-  .get('/*', function (req, res) {
-    res.sendFile('index.html', {
-      root: static_path
-    });
-  }).listen(process.env.PORT || 7777, function (err) {
-    if (err) { console.log(err) };
-    console.log('Listening at localhost:7777');
+const staticPath = path.join(__dirname, '../build', 'public');
+app.use(express.static(staticPath))
+.get('/*', (req, res) => {
+  res.sendFile('index.html', {
+    root: staticPath,
+  });
+}).listen(process.env.PORT || 7777, (err) => {
+  if (err) {
+    console.log(err);
+  }
+  console.log('Listening at localhost:7777');
 });
 
 // const graphqlapp = express();

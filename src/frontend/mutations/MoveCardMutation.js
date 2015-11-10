@@ -4,7 +4,17 @@ export default class MoveCardMutation extends Relay.Mutation {
   // This mutation decalres a dependency on the cardList to which the card is being moved (if any),
   // as well as the card's id and the id of the cardList to which it belongs.
   static fragments = {
-    cardList: () => Relay.QL`
+    card: () => Relay.QL`
+      fragment on Card {
+        id
+      }
+    `,
+    fromCardList: () => Relay.QL`
+      fragment on CardList {
+        id
+      }
+    `,
+    toCardList: () => Relay.QL`
       fragment on CardList {
         id
       }
@@ -14,12 +24,13 @@ export default class MoveCardMutation extends Relay.Mutation {
     return Relay.QL`mutation{moveCard}`;
   }
   getCollisionKey() {
-    return `check_${this.props.cardList.id}`;
+    return `check_${this.props.card.id}`;
   }
   getFatQuery() {
     return Relay.QL`
       fragment on MoveCardPayload {
-        cardList
+        fromCardList,
+        toCardList,
       }
     `;
   }
@@ -27,44 +38,25 @@ export default class MoveCardMutation extends Relay.Mutation {
     return [{
       type: 'FIELDS_CHANGE',
       fieldIDs: {
-        cardList: this.props.cardList.id,
+        fromCardList: this.props.fromCardList.id,
+        toCardList: this.props.toCardList.id,
       },
     },
   ];
   }
-  // {
-  //   type: 'RANGE_DELETE',
-  //   parentName: 'fromCardList',
-  //   parentID: this.props.card.cardList.id,
-  //   connectionName: 'cards',
-  //   deletedIDFieldName: 'removedCardIDs',
-  // },
-  // ,
-  // {
-  //   type: 'RANGE_ADD',
-  //   parentName: 'toCardList',
-  //   parentID: this.props.toCardList.id,
-  //   connectionName: 'cards',
-  //   edgeName: 'newCardEdge',
-  //   rangeBehaviors: {
-  //     // When the cards connection is not under the influence
-  //     // of any call, append the ship to the end of the connection
-  //     '': 'append',
-  //   },
-  // },
-
   getVariables() {
     return {
-      id: this.props.cardId,
-      toCardListId: this.props.cardList.id,
+      cardId: this.props.card.id,
+      fromCardListId: this.props.fromCardList.id,
+      toCardListId: this.props.toCardList.id,
       toRank: this.props.toRank,
     };
   }
-  getOptimisticResponse() {
-    return {
-      cardList: {
-        id: this.props.cardList.id,
-      },
-    };
-  }
+  // getOptimisticResponse() {
+  //   return {
+  //     cardList: {
+  //       id: this.props.cardList.id,
+  //     },
+  //   };
+  // }
 }

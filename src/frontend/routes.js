@@ -35,6 +35,6 @@ export default (
       path=":status"
       component={BoardList}
       queries={ViewerQueries}
-    /> 
+    />
   </Route>
 );

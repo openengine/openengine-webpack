@@ -5,11 +5,7 @@ import {
 } from 'graphql';
 
 import {
-  nodeDefinitions,
-  fromGlobalId,
   globalIdField,
-  connectionFromArray,
-  connectionArgs
 } from 'graphql-relay';
 
 import * as db from './database';
@@ -24,7 +20,7 @@ const CardType = new GraphQLObjectType({
     cardListRank: { type: GraphQLFloat },
   }),
   isTypeOf: (value) => value instanceof db.Card,
-  interfaces: [nodeInterface]
+  interfaces: [nodeInterface],
 });
 
 export default CardType;

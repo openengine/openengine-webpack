@@ -1,7 +1,7 @@
-var userId = 0;
-var boardId = 0;
-var cardListId = 0;
-var cardId = 0;
+let userId = 0;
+let boardId = 0;
+let cardListId = 0;
+let cardId = 0;
 
 export function User(params) {
   this.id = params.id || 'user' + (userId++);
@@ -29,17 +29,17 @@ export function Card(params) {
   this.cardListRank = params.rank;
 }
 
-var users = [
+const users = [
   new User({id: 'luis_user', name: 'Luis'}),
   new User({id: 'dave_user', name: 'Dave'}),
 ];
 
-var boards = [
+let boards = [
   new Board({id: 'product_board', name: 'Product Roadmap'}),
   new Board({id: 'eng_board', name: 'Engineering'}),
 ];
 
-var cardLists = [
+const cardLists = [
   new CardList({
     id: 'product_opp_list',
     boardId: 'product_board',
@@ -78,13 +78,20 @@ var cardLists = [
   }),
 ];
 
-var cards = [
+const cards = [
   new Card({
     id: 'slack_card',
     boardId: 'product_board',
     cardListId: 'product_opp_list',
     name: 'Slack Integration',
     rank: 1,
+  }),
+  new Card({
+    id: 'lowfi_card',
+    boardId: 'eng_board',
+    cardListId: 'eng_done_list',
+    name: 'Create LowFi Workflow',
+    rank: 4,
   }),
   new Card({
     id: 'onboarding_card',
@@ -115,19 +122,12 @@ var cards = [
     rank: 3,
   }),
   new Card({
-    id: 'lowfi_card',
-    boardId: 'eng_board',
-    cardListId: 'eng_done_list',
-    name: 'Create LowFi Workflow',
-    rank: 4,
-  }),
-  new Card({
     id: 'email_card',
     boardId: 'eng_board',
     cardListId: 'eng_doing_list',
     name: 'Email notification on successful oauth connection.',
     rank: 5,
-  })
+  }),
 ];
 
 export function getUser(id) {
@@ -162,8 +162,8 @@ export function removeBoard(id) {
   return id;
 }
 
-export function getCardLists(boardId) {
-  return cardLists.filter((list) => list.boardId === boardId);
+export function getCardLists(id) {
+  return cardLists.filter((list) => list.boardId === id);
 }
 
 export function getCardList(id) {
@@ -171,17 +171,9 @@ export function getCardList(id) {
 }
 
 // Ordered by cardListRank
-export function getCards(cardListId) {
-  let c = cards.filter(card => card.cardListId === cardListId);
-  c = c.sort((a, b) => {
-    if (a.cardListRank >= b.cardListRank) {
-      return 1;
-    }
-    if (a.cardListRank < b.cardListRank) {
-      return -1;
-    }
-  });
-  return c;
+export function getCards(listId) {
+  const filteredCards = cards.filter(card => card.cardListId === listId);
+  return filteredCards;
 }
 
 export function getCard(id) {
@@ -189,26 +181,8 @@ export function getCard(id) {
 }
 
 export function moveCard(id, toCardListId, toRank) {
-  let newRank = 0;
-  const cList = getCards(toCardListId);
-
-  // if toRank is null that means that it is being moved to an empty cardList...
-  if (toRank !== null) {
-    newRank = toRank;
-    // const replaceIndex = cList.findIndex((crd) => crd.rank === toRank);
-    //
-    // if (replaceIndex === 0) {
-    //   newRank = toRank - 1;
-    // } else {
-    //   // Get the card that comes BEFORE the card to replace so that we can get a rank between the two...
-    //   const cardBefore = cList[replaceIndex - 1];
-    //   newRank = (cardBefore.rank + toRank) / 2;
-    // }
-  }
-
   const card = getCard(id);
   card.cardListId = toCardListId;
-  card.cardListRank = newRank;
-
+  card.cardListRank = toRank;
   return toCardListId;
 }
