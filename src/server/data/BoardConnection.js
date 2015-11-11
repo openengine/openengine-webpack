@@ -9,5 +9,5 @@ export const {
   edgeType: BoardEdge,
 } = connectionDefinitions({
   name: 'Board',
-  nodeType: BoardType
+  nodeType: BoardType,
 });

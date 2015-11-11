@@ -32,8 +32,6 @@ export default Relay.createContainer(Board, {
           edges {
             node {
               id
-              name
-              boardRank
               ${CardList.getFragment('cardList')}
             }
           }

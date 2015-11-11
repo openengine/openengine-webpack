@@ -6,10 +6,7 @@ import {
 } from 'graphql';
 
 import {
-  connectionDefinitions,
-  nodeDefinitions,
   fromGlobalId,
-  globalIdField,
 } from 'graphql-relay';
 
 import * as db from './database';
@@ -19,6 +16,7 @@ import BoardType from './BoardType';
 import AddBoardMutation from './AddBoardMutation';
 import RemoveBoardMutation from './RemoveBoardMutation';
 import RenameBoardMutation from './RenameBoardMutation';
+import MoveCardMutation from './MoveCardMutation';
 import { nodeField } from './nodeInterface';
 
 const RootQuery = new GraphQLObjectType({
@@ -26,23 +24,23 @@ const RootQuery = new GraphQLObjectType({
   fields: {
     viewer: {
       type: UserType,
-      resolve: db.getViewer
+      resolve: db.getViewer,
     },
     board: {
       type: BoardType,
       args: {
         id: {
           description: 'id of the board',
-          type: new GraphQLNonNull(GraphQLString)
-        }
+          type: new GraphQLNonNull(GraphQLString),
+        },
       },
       resolve: (root, { id }) => {
         const {id: boardId} = fromGlobalId(id);
         return db.getBoard(boardId);
-      }
+      },
     },
-    node: nodeField
-  }
+    node: nodeField,
+  },
 });
 
 const RootMutation = new GraphQLObjectType({
@@ -50,11 +48,12 @@ const RootMutation = new GraphQLObjectType({
   fields: {
     addBoard: AddBoardMutation,
     removeBoard: RemoveBoardMutation,
-    renameBoard: RenameBoardMutation
-  }
+    renameBoard: RenameBoardMutation,
+    moveCard: MoveCardMutation,
+  },
 });
 
 export default new GraphQLSchema({
   query: RootQuery,
-  mutation: RootMutation
+  mutation: RootMutation,
 });

@@ -5,11 +5,9 @@ import {
 } from 'graphql';
 
 import {
-  nodeDefinitions,
-  fromGlobalId,
   globalIdField,
   connectionFromArray,
-  connectionArgs
+  connectionArgs,
 } from 'graphql-relay';
 
 import * as db from './database';
@@ -26,16 +24,16 @@ const CardListType = new GraphQLObjectType({
     cards: {
       type: CardConnection,
       args: {
-        ... connectionArgs
+        ... connectionArgs,
       },
       resolve: (obj, {...args}) => {
-        let cards = db.getCards(obj.id);
-        return connectionFromArray(cards, args)
-      }
+        const cards = db.getCards(obj.id);
+        return connectionFromArray(cards, args);
+      },
     },
   },
   isTypeOf: (value) => value instanceof db.CardList,
-  interfaces: [nodeInterface]
+  interfaces: [nodeInterface],
 });
 
 export default CardListType;

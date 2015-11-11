@@ -1,6 +1,5 @@
 import React, { PropTypes } from 'react';
 import Radium from 'radium';
-import update from 'react/lib/update';
 import { TextField } from 'material-ui';
 import CardList from './CardList';
 import { DragDropContext } from 'react-dnd';
@@ -75,36 +74,6 @@ export default class DragBoard extends React.Component {
   };
   constructor(props) {
     super(props);
-    this.moveCard = this.moveCard.bind(this);
-    this.findCard = this.findCard.bind(this);
-  }
-
-  moveCard(from, to) {
-    const { card, index } = this.findCard(from.id, from.status);
-
-    if (card) {
-      // I know there's a way to consolidate these two calls... but not sure how
-      this.setState(update(this.state, {
-        cards: {[from.status]: {$splice: [[index, 1]]},
-      },
-      }));
-
-      this.setState(update(this.state, {
-        cards: {[to.status]: {$splice: [[to.index, 0, card]]},
-      },
-      }));
-    }
-  }
-
-  findCard(id, status) {
-    const { cards } = this.state;
-    const card = cards[status].filter(crd => crd.id === id)[0];
-
-    return {
-      card,
-      status,
-      index: cards[status].indexOf(card),
-    };
   }
 
   render() {
@@ -131,9 +100,8 @@ export default class DragBoard extends React.Component {
         <div style={[styles.rowContainer]}>
           {cardLists.edges.map(({node}) =>
             <CardList
+              key={node.id}
               cardList={node}
-              moveCard={this.moveCard}
-              findCard={this.findCard}
             />
           )}
         </div>

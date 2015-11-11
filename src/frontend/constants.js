@@ -1,3 +1,3 @@
 export const DragItemTypes = {
-  BOARDCARD: 'boardCard'
+  BOARDCARD: 'boardCard',
 };

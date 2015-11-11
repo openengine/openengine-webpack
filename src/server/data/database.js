@@ -1,7 +1,7 @@
-var userId = 0;
-var boardId = 0;
-var cardListId = 0;
-var cardId = 0;
+let userId = 0;
+let boardId = 0;
+let cardListId = 0;
+let cardId = 0;
 
 export function User(params) {
   this.id = params.id || 'user' + (userId++);
@@ -29,17 +29,17 @@ export function Card(params) {
   this.cardListRank = params.rank;
 }
 
-var users = [
+const users = [
   new User({id: 'luis_user', name: 'Luis'}),
   new User({id: 'dave_user', name: 'Dave'}),
 ];
 
-var boards = [
+let boards = [
   new Board({id: 'product_board', name: 'Product Roadmap'}),
   new Board({id: 'eng_board', name: 'Engineering'}),
 ];
 
-var cardLists = [
+const cardLists = [
   new CardList({
     id: 'product_opp_list',
     boardId: 'product_board',
@@ -78,13 +78,20 @@ var cardLists = [
   }),
 ];
 
-var cards = [
+const cards = [
   new Card({
     id: 'slack_card',
     boardId: 'product_board',
     cardListId: 'product_opp_list',
     name: 'Slack Integration',
     rank: 1,
+  }),
+  new Card({
+    id: 'lowfi_card',
+    boardId: 'eng_board',
+    cardListId: 'eng_done_list',
+    name: 'Create LowFi Workflow',
+    rank: 4,
   }),
   new Card({
     id: 'onboarding_card',
@@ -105,7 +112,7 @@ var cards = [
     boardId: 'eng_board',
     cardListId: 'eng_backlog_list',
     name: 'Integration data service',
-    rank: 2,
+    rank: 0,
   }),
   new Card({
     id: 'marketing_dash_card',
@@ -115,23 +122,16 @@ var cards = [
     rank: 3,
   }),
   new Card({
-    id: 'lowfi_card',
-    boardId: 'eng_board',
-    cardListId: 'eng_done_list',
-    name: 'Create LowFi Workflow',
-    rank: 4,
-  }),
-  new Card({
     id: 'email_card',
     boardId: 'eng_board',
     cardListId: 'eng_doing_list',
     name: 'Email notification on successful oauth connection.',
     rank: 5,
-  })
+  }),
 ];
 
 export function getUser(id) {
-  return users.filter((user) => user.id == id)[0];
+  return users.filter((user) => user.id === id)[0];
 }
 
 export function getViewer() {
@@ -143,7 +143,7 @@ export function getBoards() {
 }
 
 export function getBoard(id) {
-  return boards.filter((board) => board.id == id)[0];
+  return boards.filter((board) => board.id === id)[0];
 }
 
 export function addBoard(name) {
@@ -162,18 +162,27 @@ export function removeBoard(id) {
   return id;
 }
 
-export function getCardLists(boardId) {
-  return cardLists.filter((list) => list.boardId == boardId);
+export function getCardLists(id) {
+  return cardLists.filter((list) => list.boardId === id);
 }
 
 export function getCardList(id) {
-  return cardLists.filter((list) => list.id == id)[0];
+  return cardLists.filter((list) => list.id === id)[0];
 }
 
-export function getCards(cardListId) {
-  return cards.filter(card => card.cardListId === cardListId);
+// Ordered by cardListRank
+export function getCards(listId) {
+  const filteredCards = cards.filter(card => card.cardListId === listId);
+  return filteredCards;
 }
 
 export function getCard(id) {
-  return cards.filter((card) => card.id == id)[0];
+  return cards.filter((card) => card.id === id)[0];
+}
+
+export function moveCard(id, toCardListId, toRank) {
+  const card = getCard(id);
+  card.cardListId = toCardListId;
+  card.cardListRank = toRank;
+  return toCardListId;
 }

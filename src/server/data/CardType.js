@@ -1,15 +1,11 @@
 import {
   GraphQLObjectType,
   GraphQLString,
-  GraphQLInt,
+  GraphQLFloat,
 } from 'graphql';
 
 import {
-  nodeDefinitions,
-  fromGlobalId,
   globalIdField,
-  connectionFromArray,
-  connectionArgs
 } from 'graphql-relay';
 
 import * as db from './database';
@@ -21,10 +17,10 @@ const CardType = new GraphQLObjectType({
   fields: () => ({
     id: globalIdField('Card'),
     name: { type: GraphQLString },
-    cardListRank: { type: GraphQLInt },
+    cardListRank: { type: GraphQLFloat },
   }),
   isTypeOf: (value) => value instanceof db.Card,
-  interfaces: [nodeInterface]
+  interfaces: [nodeInterface],
 });
 
 export default CardType;
