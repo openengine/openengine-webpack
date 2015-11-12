@@ -1,6 +1,12 @@
 import React, { PropTypes } from 'react';
 import Radium from 'radium';
-import { TextField } from 'material-ui';
+import {
+  TextField,
+  FontIcon,
+  FloatingActionButton,
+  Dialog,
+} from 'material-ui';
+import Colors from 'material-ui/lib/styles/colors';
 import CardList from './CardList';
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
@@ -19,7 +25,7 @@ const styles = {
     overflow: 'hidden',
     width: '100%',
     padding: 3,
-    minHeight: 550,
+    minHeight: 500,
   },
 
   headerRowContainer: {
@@ -35,7 +41,7 @@ const styles = {
   columnContainer: {
     display: 'flex',
     flexFlow: 'column nowrap',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'stretch',
   },
 
@@ -61,6 +67,63 @@ const styles = {
     position: 'relative',
     bottom: -5,
   },
+
+  floatingAdd: {
+    position: 'fixed',
+    bottom: 25,
+    right: 25,
+    transition: '.2s cubic-bezier(.4,0,.2,1)',
+    ':hover': {
+      cursor: 'pointer',
+      boxShadow: '2px 4px 7px 0px rgba(0, 0, 0, 0.6)',
+    },
+    ':active': {
+      backgroundColor: '#C93B2E',
+      boxShadow: '1px 3px 7px 0px rgba(0, 0, 0, 0.6)',
+    },
+  },
+
+  btn: {
+    margin: 30,
+    backgroundColor: '#db4437',
+    position: 'relative',
+    width: 60,
+    height: 60,
+    borderRadius: '50%',
+    boxShadow: '2px 2px 7px -1px rgba(0, 0, 0, 0.5)',
+    border: 'none',
+    outline: 'none',
+    transition: '.2s cubic-bezier(.4,0,.2,1)',
+    ':hover': {
+      cursor: 'pointer',
+      boxShadow: '2px 4px 7px 0px rgba(0, 0, 0, 0.6)',
+    },
+    ':active': {
+      backgroundColor: '#C93B2E',
+      boxShadow: '1px 3px 7px 0px rgba(0, 0, 0, 0.6)',
+    },
+  },
+  icon: {
+    position: 'absolute',
+    marginLeft: 15,
+    marginTop: 15,
+    top: 0,
+    left: 0,
+    width: 30,
+    height: 30,
+    backgroundSize: 'contain',
+    transition: '.2s cubic-bezier(.4,0,.2,1)',
+  },
+  pen: (isHover) => ({
+    backgroundImage: 'url("https://ssl.gstatic.com/bt/C3341AA7A1A076756462EE2E5CD71C11/2x/bt_compose2_2x.png")',
+    opacity: (isHover ? 1 : 0),
+    transform: (isHover ? 'rotate(0deg)' : 'rotate(125deg)'),
+  }),
+  plus: (isHover) => ({
+    backgroundImage: 'url("https://ssl.gstatic.com/bt/C3341AA7A1A076756462EE2E5CD71C11/2x/bt_speed_dial_2x.png")',
+    opacity: (isHover ? 0 : 1),
+    transform: (isHover ? 'rotate(-125deg)' : 'rotate(0deg)'),
+  }),
 };
 
 
@@ -79,6 +142,7 @@ export default class DragBoard extends React.Component {
   render() {
     const { board } = this.props;
     const { cardLists } = board;
+    const isAddHover = Radium.getState(this.state, 'addCardButton', ':hover');
 
     return (
       <div style={[styles.container]}>
@@ -105,6 +169,13 @@ export default class DragBoard extends React.Component {
             />
           )}
         </div>
+        <button key="addCardButton" style={styles.btn}>
+         <div key={1} style={[styles.icon, styles.pen(isAddHover)]}></div>
+         <div key={2} style={[styles.icon, styles.plus(isAddHover)]}></div>
+       </button>
+        <FloatingActionButton backgroundColor={Colors.tealA700} style={styles.floatingAdd}>
+          <FontIcon className="material-icons">add</FontIcon>
+        </FloatingActionButton>
       </div>
     );
   }

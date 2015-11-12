@@ -21,7 +21,7 @@ const styles = {
     overflow: 'hidden',
     width: '100%',
     padding: 3,
-    minHeight: 550,
+    minHeight: 500,
   },
 
   headerRowContainer: {
@@ -37,7 +37,7 @@ const styles = {
   columnContainer: {
     display: 'flex',
     flexFlow: 'column nowrap',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'stretch',
     flex: '1 0 auto',
   },
@@ -55,8 +55,8 @@ const styles = {
   },
 
   cardListContainer: (isOver) => ({
-    height: 800,
-    outline: (isOver ? '#90A4AE solid 1px' : 'none'),
+    minHeight: 500,
+    boxShadow: (isOver ? '0px -1px 0px 1px #90A4AE' : '0px 0px 0px 0px #90A4AE'),
   }),
 };
 
