@@ -68,25 +68,11 @@ const styles = {
     bottom: -5,
   },
 
-  floatingAdd: {
+  floatingBtn: {
     position: 'fixed',
     bottom: 25,
     right: 25,
-    transition: '.2s cubic-bezier(.4,0,.2,1)',
-    ':hover': {
-      cursor: 'pointer',
-      boxShadow: '2px 4px 7px 0px rgba(0, 0, 0, 0.6)',
-    },
-    ':active': {
-      backgroundColor: '#C93B2E',
-      boxShadow: '1px 3px 7px 0px rgba(0, 0, 0, 0.6)',
-    },
-  },
-
-  btn: {
-    margin: 30,
-    backgroundColor: '#db4437',
-    position: 'relative',
+    backgroundColor: Colors.tealA700,
     width: 60,
     height: 60,
     borderRadius: '50%',
@@ -99,14 +85,14 @@ const styles = {
       boxShadow: '2px 4px 7px 0px rgba(0, 0, 0, 0.6)',
     },
     ':active': {
-      backgroundColor: '#C93B2E',
+      backgroundColor: Colors.tealA400,
       boxShadow: '1px 3px 7px 0px rgba(0, 0, 0, 0.6)',
     },
   },
-  icon: {
+  floatingIcon: {
     position: 'absolute',
-    marginLeft: 15,
-    marginTop: 15,
+    marginLeft: 14,
+    marginTop: 14,
     top: 0,
     left: 0,
     width: 30,
@@ -115,15 +101,48 @@ const styles = {
     transition: '.2s cubic-bezier(.4,0,.2,1)',
   },
   pen: (isHover) => ({
-    backgroundImage: 'url("https://ssl.gstatic.com/bt/C3341AA7A1A076756462EE2E5CD71C11/2x/bt_compose2_2x.png")',
     opacity: (isHover ? 1 : 0),
     transform: (isHover ? 'rotate(0deg)' : 'rotate(125deg)'),
   }),
   plus: (isHover) => ({
-    backgroundImage: 'url("https://ssl.gstatic.com/bt/C3341AA7A1A076756462EE2E5CD71C11/2x/bt_speed_dial_2x.png")',
     opacity: (isHover ? 0 : 1),
     transform: (isHover ? 'rotate(-125deg)' : 'rotate(0deg)'),
   }),
+  insideIcon: {
+    color: '#FFFFFF',
+    fontSize: '2.0rem',
+  },
+
+  swing: {
+    width: '140px',
+    backfaceVisibility: 'visible',
+    transitionDuration: '1s',
+    transformOrigin: '170px 0',
+  },
+  panel: {
+    position: 'relative',
+    width: 200,
+    height: 200,
+    margin: 20,
+    backgroundColor: '#999999',
+    perspective: 600,
+  },
+
+  swingFront: {
+    transform: 'rotateY(0deg)',
+  },
+  swingBack: {
+    backgroundColor: '#555', /* hiding this side, so get darker */
+    transform: 'rotateY(-180deg) translateX(198px) translateZ(2px)',
+  },
+  flipFront: {
+    backgroundColor: '#222', /* hiding this side, so get darker */
+    transform: 'rotateY(180deg)',
+  },
+  flipBack: {
+    backgroundColor: '#80888f',
+    transform: 'rotateY(0deg) translateX(198px) translateZ(2px)',
+  },
 };
 
 
@@ -169,13 +188,21 @@ export default class DragBoard extends React.Component {
             />
           )}
         </div>
-        <button key="addCardButton" style={styles.btn}>
-         <div key={1} style={[styles.icon, styles.pen(isAddHover)]}></div>
-         <div key={2} style={[styles.icon, styles.plus(isAddHover)]}></div>
+        <div style={[styles.swing, styles.panel]}>
+          <div style={styles.swingFront}>
+            <h2>Swing Add Card</h2>
+          </div>
+          <div styles={styles.swingBack}>
+            <div>
+            <h2>Any axis is possible</h2>
+            </div>
+          </div>
+        </div>
+        <button key="addCardButton" style={styles.floatingBtn}>
+         <div key={1} style={[styles.floatingIcon, styles.pen(isAddHover)]}><FontIcon style={styles.insideIcon} className="material-icons">create</FontIcon></div>
+         <div key={2} style={[styles.floatingIcon, styles.plus(isAddHover)]}><FontIcon style={styles.insideIcon} className="material-icons">add</FontIcon></div>
        </button>
-        <FloatingActionButton backgroundColor={Colors.tealA700} style={styles.floatingAdd}>
-          <FontIcon className="material-icons">add</FontIcon>
-        </FloatingActionButton>
+
       </div>
     );
   }
