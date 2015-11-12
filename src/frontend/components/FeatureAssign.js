@@ -32,12 +32,6 @@ const styles = {
     textAlign: 'left',
   },
 
-  dropdown: {
-    fontWeight: 400,
-    fontSize: '0.7rem',
-    color: Colors.grey600,
-  },
-
   featureName: {
     fontWeight: 300,
     fontSize: '0.7rem',
@@ -76,7 +70,7 @@ const styles = {
 };
 
 @Radium
-export default class FeatureMenu extends React.Component {
+export default class FeatureAssign extends React.Component {
   static propTypes = {
     feature: PropTypes.object,
   }
