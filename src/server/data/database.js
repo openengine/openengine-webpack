@@ -26,6 +26,7 @@ export function Card(params) {
   this.boardId = params.boardId;
   this.cardListId = params.cardListId;
   this.name = params.name;
+  this.description = params.description;
   this.cardListRank = params.rank;
 }
 
@@ -178,6 +179,18 @@ export function getCards(listId) {
 
 export function getCard(id) {
   return cards.filter((card) => card.id === id)[0];
+}
+
+export function addCard(name, description, cListId) {
+  const id = name;
+  const cList = getCardList(cListId);
+  // Get the smallest rank to put new Card at top spot
+  const rankVals = cards.filter(card => card.cardListId === cListId).map((cld)=> cld.cardListRank);
+  const minRank = Math.min.apply(Math, rankVals);
+  const newRank = minRank - 1;
+  cards.push(new Card({id, name, description, cardListId: cListId, boardId: cList.boardId, rank: newRank }));
+  const lastCard = cards.slice(-1)[0];
+  return lastCard.id;
 }
 
 export function moveCard(id, toCardListId, toRank) {

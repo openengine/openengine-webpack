@@ -1,19 +1,19 @@
 import React, { PropTypes } from 'react';
+import Relay from 'react-relay';
 import Radium from 'radium';
 import {
   TextField,
   FontIcon,
-  Paper,
-  MenuItem,
+  IconButton,
   FlatButton,
-  IconMenu,
-  Avatar,
+  Paper,
 } from 'material-ui';
 import Colors from 'material-ui/lib/styles/colors';
 import CardList from './CardList';
 import AssignMenu from './AssignMenu';
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
+import AddCardMutation from '../mutations/AddCardMutation';
 
 const styles = {
   container: {
@@ -119,7 +119,7 @@ const styles = {
 
   addCardContainer: {
     position: 'fixed',
-    bottom: -198,
+    bottom: -248,
     right: 100,
     width: 400,
     minHeight: 200,
@@ -134,8 +134,7 @@ const styles = {
     transitionDuration: '.4s',
     backgroundColor: '#555',
     width: '100%',
-    transformOrigin: isHover ? '50px 0' : '0',
-    transform: 'rotateX(180deg) translateY(-198px) translateZ(2px)',
+    transform: isHover ? 'translateY(-258px) translateZ(2px)' : 'translateY(0px) translateZ(2px)',
   }),
 
   paperAdd: {
@@ -144,11 +143,23 @@ const styles = {
     padding: 20,
   },
 
-  swing: {
-    transform: 'rotateX(0deg) translateY(-198px) translateZ(2px)',
+  addCardNameRow: {
+    display: 'flex',
+    flexFlow: 'row nowrap',
+    justifyContent: 'stretch',
+    alignItems: 'stretch',
+    overflow: 'visible',
+    width: '100%',
+    fontWeight: 300,
+    fontSize: '0.6rem',
+    color: Colors.grey500,
   },
-};
 
+  addCardName: {
+    flex: '0 1 75%',
+  },
+
+};
 
 // Right... so we need to seperate out this component because the Drag and Drop context will only work with the default exported class...
 // And therefore, a Relay Container (as far as I know), will not work directly with React Dnd...
@@ -161,17 +172,37 @@ export default class DragBoard extends React.Component {
 
   constructor(props) {
     super(props);
-    this.addClick = this.addClick.bind(this);
-    this.state = {swinging: false};
+    this.addMouseEnter = this.addMouseEnter.bind(this);
+    this.closeAdd = this.closeAdd.bind(this);
+    this.createCard = this.createCard.bind(this);
+    this.state = {addOpened: false};
   }
 
-  addClick() {
-    this.setState({swinging: !this.state.swinging});
+  addMouseEnter() {
+    this.setState({addOpened: true});
+  }
+
+  closeAdd() {
+    this.setState({addOpened: false});
+  }
+
+  createCard() {
+    const { cardLists } = this.props.board;
+    // Add card to initial card list...
+    Relay.Store.update(
+      new AddCardMutation({
+        cardList: cardLists.edges[0].node,
+        name: this._addCardName.getValue(),
+        description: this._addCardDescription.getValue(),
+      })
+    );
+    this.setState({addOpened: false});
   }
 
   render() {
     const { board } = this.props;
     const { cardLists } = board;
+    const { addOpened } = this.state;
     const isAddHover = Radium.getState(this.state, 'addFloatButton', ':hover');
 
     return (
@@ -200,15 +231,26 @@ export default class DragBoard extends React.Component {
           )}
         </div>
         <div style={styles.addCardContainer}>
-          <div style={this.state.swinging ? [styles.addCardBack(true), styles.swing] : [styles.addCardBack(isAddHover)]}>
+          <div style={[styles.addCardBack(addOpened)]}>
               <Paper key="addCard" zDepth={1} rounded={false} style={styles.paperAdd}>
-                    <TextField fullWidth hintText="Card Name" />
-                    <TextField fullWidth hintText="Description" multiLine rows={2} />
-                    <AssignMenu users={{}} />
+                <div style={[styles.columnContainer]}>
+                <IconButton onClick={this.closeAdd} style={{position: 'absolute', top: -10, right: -10}}><FontIcon color={Colors.grey300} className="material-icons">close</FontIcon></IconButton>
+                  <div style={styles.addCardNameRow}>
+                      <TextField ref={(ref) => this._addCardName = ref} style={styles.addCardName} fullWidth hintText="Card Name" />
+                      <div style={{textAlign: 'center', position: 'relative', top: 15, flex: '0 1 25%'}}>
+                        <div style={{fontSize: '0.8rem', fontWeight: 400, paddingBottom: 5}}> assign to: </div>
+                        <AssignMenu users={{}} />
+                      </div>
+                  </div>
+                  <TextField ref={(ref) => this._addCardDescription = ref} fullWidth hintText="Description..." multiLine rows={2} />
+                  <div style={{marginTop: 20, textAlign: 'left'}}>
+                    <FlatButton onClick={this.createCard} labelStyle={{textAlign: 'left', padding: 0}} label="Create Card" labelPosition="after" secondary> <FontIcon style={{color: 'inherit', padding: 0, verticalAlign: 'middle'}} className="material-icons">done</FontIcon> </FlatButton>
+                  </div>
+                </div>
               </Paper>
           </div>
         </div>
-        <button onClick={this.addClick} key="addFloatButton" style={styles.floatingBtn}>
+        <button onMouseEnter={this.addMouseEnter} key="addFloatButton" style={styles.floatingBtn}>
          <div key={1} style={[styles.floatingIcon, styles.pen(isAddHover)]}><FontIcon style={styles.insideIcon} className="material-icons">picture_in_picture</FontIcon></div>
          <div key={2} style={[styles.floatingIcon, styles.plus(isAddHover)]}><FontIcon style={styles.insideIcon} className="material-icons">add</FontIcon></div>
        </button>

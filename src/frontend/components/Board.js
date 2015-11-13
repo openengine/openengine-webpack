@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
 import DragBoard from './DragBoard';
 import CardList from './CardList';
+import AddCardMutation from '../mutations/AddCardMutation';
 
 class Board extends React.Component {
   static propTypes = {
@@ -32,7 +33,8 @@ export default Relay.createContainer(Board, {
           edges {
             node {
               id
-              ${CardList.getFragment('cardList')}
+              ${CardList.getFragment('cardList')},
+              ${AddCardMutation.getFragment('cardList')},
             }
           }
         }
