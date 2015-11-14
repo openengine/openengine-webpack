@@ -26,12 +26,17 @@ export function Card(params) {
   this.boardId = params.boardId;
   this.cardListId = params.cardListId;
   this.name = params.name;
+  this.description = params.description;
   this.cardListRank = params.rank;
+  if (params.user) {
+    this.userId = params.user.id;
+    this.assignedTo = params.user.name;
+  }
 }
 
 const users = [
-  new User({id: 'luis_user', name: 'Luis'}),
-  new User({id: 'dave_user', name: 'Dave'}),
+  new User({id: 'luis_user', name: 'Luis Escobedo'}),
+  new User({id: 'dave_user', name: 'Dave Bryand'}),
 ];
 
 let boards = [
@@ -134,6 +139,10 @@ export function getUser(id) {
   return users.filter((user) => user.id === id)[0];
 }
 
+export function getUsers() {
+  return users;
+}
+
 export function getViewer() {
   return users[0];
 }
@@ -178,6 +187,22 @@ export function getCards(listId) {
 
 export function getCard(id) {
   return cards.filter((card) => card.id === id)[0];
+}
+
+export function addCard(name, description, cListId, cardUserId) {
+  const id = name;
+  const cList = getCardList(cListId);
+  // Get the smallest rank to put new Card at top spot
+  const rankVals = cards.filter(card => card.cardListId === cListId).map((cld)=> cld.cardListRank);
+  const minRank = Math.min.apply(Math, rankVals);
+  const newRank = minRank - 1;
+  let user = '';
+  if (cardUserId) {
+    user = getUser(cardUserId);
+  }
+  cards.push(new Card({id, name, description, cardListId: cListId, boardId: cList.boardId, rank: newRank, user }));
+  const lastCard = cards.slice(-1)[0];
+  return lastCard.id;
 }
 
 export function moveCard(id, toCardListId, toRank) {

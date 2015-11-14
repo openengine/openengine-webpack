@@ -17,6 +17,7 @@ const CardType = new GraphQLObjectType({
   fields: () => ({
     id: globalIdField('Card'),
     name: { type: GraphQLString },
+    assignedTo: { type: GraphQLString },
     cardListRank: { type: GraphQLFloat },
   }),
   isTypeOf: (value) => value instanceof db.Card,

@@ -1,14 +1,13 @@
 import {
   GraphQLObjectType,
   GraphQLString,
+  GraphQLList,
 } from 'graphql';
 
 import {
-  nodeDefinitions,
-  fromGlobalId,
   globalIdField,
   connectionFromArray,
-  connectionArgs
+  connectionArgs,
 } from 'graphql-relay';
 
 import * as db from './database';
@@ -26,17 +25,21 @@ const UserType = new GraphQLObjectType({
       args: {
         status: {
           type: GraphQLString,
-          defaultValue: 'any'
+          defaultValue: 'any',
         },
-        ...connectionArgs
+        ...connectionArgs,
       },
-      resolve: (obj, {status, ...args}) => {
-        return connectionFromArray(db.getBoards(), args)
-      }
+      resolve: (obj, {...args}) => {
+        return connectionFromArray(db.getBoards(), args);
+      },
+    },
+    users: {
+      type: new GraphQLList(UserType),
+      resolve: () => db.getUsers(),
     },
   }),
   isTypeOf: (value) => value instanceof db.User,
-  interfaces: [nodeInterface]
+  interfaces: [nodeInterface],
 });
 
 export default UserType;

@@ -6,7 +6,6 @@ import {
 } from 'material-ui';
 import Colors from 'material-ui/lib/styles/colors';
 import { Link } from 'react-router';
-
 class BoardList extends React.Component {
   static propTypes = {
     viewer: PropTypes.object,
@@ -31,7 +30,6 @@ class BoardList extends React.Component {
     );
   }
 }
-
 export default Relay.createContainer(BoardList, {
   initialVariables: {
     status: null,
