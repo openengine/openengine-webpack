@@ -2,6 +2,7 @@ import React, {
   Component,
   PropTypes,
 } from 'react';
+import Radium from 'radium';
 import { findDOMNode } from 'react-dom';
 import Relay from 'react-relay';
 import MaterialCard from 'material-ui/lib/card/card';
@@ -17,7 +18,13 @@ import {
   DropTarget,
 } from 'react-dnd';
 import MoveCardMutation from '../mutations/MoveCardMutation';
-
+const styles = {
+  avatar: {
+    float: 'right',
+    fontSize: '1.0rem',
+    fontWeight: 300,
+  },
+};
 const cardSource = {
   beginDrag(props, monitor, component) {
     // Send the height of the dragged card to show the correct sized placeHolder
@@ -55,6 +62,7 @@ const cardTarget = {
   connectDragSource: connect.dragSource(),
   isDragging: monitor.isDragging(),
 }))
+@Radium
 export default class BoardCard extends Component {
   static propTypes = {
     connectDragSource: PropTypes.func.isRequired,
@@ -66,10 +74,19 @@ export default class BoardCard extends Component {
     isOver: PropTypes.bool,
     draggedItem: PropTypes.object,
   };
-
   render() {
     const { card, isDragging, isOver, draggedItem, connectDragSource, connectDropTarget } = this.props;
-
+    let avatar = '?';
+    if (card.assignedTo) {
+      const splitName = card.assignedTo.split(' ');
+      if (splitName.length > 1) {
+        avatar = splitName[0][0] + splitName[1][0];
+      } else {
+        if (splitName.length === 1) {
+          avatar = card.assignedTo.substring(0, 2);
+        }
+      }
+    }
     // We will put the placeholder in when a card is hovering over this card. Always above since below
     // will be taken care of by the CardList parent component (only on empty or below last card)
     let placeHolder = '';
@@ -95,7 +112,7 @@ export default class BoardCard extends Component {
             title={<Link to={`/card/${card.id}`}>{card.name}</Link>}
             titleStyle={{cursor: 'pointer'}}
             textStyle = {{display: 'block'}}
-            avatar={<Avatar src="https://s3.amazonaws.com/uifaces/faces/twitter/sauro/48.jpg" style={{float: 'right'}} />}
+            avatar={<Avatar style={styles.avatar} backgroundColor={card.assignedTo ? Colors.greenA700 : Colors.grey500}>{avatar}</Avatar>}
             actAsExpander={false}
             showExpandableButton={false} />
         </MaterialCard>
@@ -103,13 +120,13 @@ export default class BoardCard extends Component {
     ));
   }
 }
-
 export default Relay.createContainer(BoardCard, {
   fragments: {
     card: () => Relay.QL`
       fragment on Card {
         id
         name
+        assignedTo
         cardListRank
         ${MoveCardMutation.getFragment('card')},
       }

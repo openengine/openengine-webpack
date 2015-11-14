@@ -7,7 +7,6 @@ import { DragItemTypes } from '../constants';
 import { DropTarget } from 'react-dnd';
 import Colors from 'material-ui/lib/styles/colors';
 import MoveCardMutation from '../mutations/MoveCardMutation';
-
 const styles = {
   container: {
     fontFamily: 'Roboto, sans-serif',
@@ -127,14 +126,10 @@ class CardList extends React.Component {
     cardList: PropTypes.object.isRequired,
     draggedItem: PropTypes.object,
   };
-
   render() {
     const { connectDropTarget, isOver, isOverOnly, draggedItem } = this.props;
-
     const { cardList } = this.props;
-
     const cards = sortCards(cardList, 'cardListRank');
-
     // We will put the placeholder in when a card is hovering over the empty part of the cardList.
     let placeHolder = '';
     // if there is a draggedItem that is picked up by the "dropMonitor" put in the placeHolder
@@ -177,7 +172,6 @@ class CardList extends React.Component {
     );
   }
 }
-
 export default Relay.createContainer(CardList, {
   prepareVariables() {
     return {

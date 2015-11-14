@@ -19,6 +19,7 @@ export default mutationWithClientMutationId({
   description: 'Add a new card to a cardList',
   inputFields: {
     cardListId: { type: new GraphQLNonNull(GraphQLID)},
+    userId: { type: new GraphQLNonNull(GraphQLID)},
     name: {type: new GraphQLNonNull(GraphQLString)},
     description: {type: GraphQLString},
   },
@@ -38,9 +39,10 @@ export default mutationWithClientMutationId({
       },
     },
   },
-  mutateAndGetPayload: ({cardListId, name, description}) => {
+  mutateAndGetPayload: ({cardListId, name, description, userId}) => {
     const {id: cardListIdSimple} = fromGlobalId(cardListId);
-    const newCardId = db.addCard(name, description, cardListIdSimple);
+    const {id: userIdSimple} = fromGlobalId(userId);
+    const newCardId = db.addCard(name, description, cardListIdSimple, userIdSimple);
     return {cardListIdSimple, newCardId};
   },
 });

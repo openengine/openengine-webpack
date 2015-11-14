@@ -39,6 +39,7 @@ export default class AddCardMutation extends Relay.Mutation {
   getVariables() {
     return {
       cardListId: this.props.cardList.id,
+      userId: this.props.userId,
       name: this.props.name,
       description: this.props.description,
     };
