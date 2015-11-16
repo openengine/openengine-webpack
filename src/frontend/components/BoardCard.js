@@ -22,6 +22,7 @@ import {
   DropTarget,
 } from 'react-dnd';
 import MoveCardMutation from '../mutations/MoveCardMutation';
+import DeleteCardMutation from '../mutations/DeleteCardMutation';
 const styles = {
   avatar: {
     float: 'right',
@@ -96,12 +97,17 @@ export default class BoardCard extends Component {
     this.state = {optionsExpanded: false};
   }
   cardMenuSelected(event, item) {
-    switch (item.value) {
-      case "delete":
+    switch (item.props.value) {
+    case 'delete':
+      Relay.Store.update(
+      new DeleteCardMutation({
+        cardList: this.props.cardList,
+        card: this.props.card,
+      })
+    );
+      break;
+    default:
 
-        break;
-      default:
-    
     }
   }
   render() {
@@ -167,6 +173,7 @@ export default Relay.createContainer(BoardCard, {
         assignedTo
         cardListRank
         ${MoveCardMutation.getFragment('card')},
+        ${DeleteCardMutation.getFragment('card')},
       }
     `,
   },

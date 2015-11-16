@@ -19,18 +19,6 @@ const styles = {
     alignItems: 'stretch',
   },
 
-  addCardContainer: {
-    position: 'fixed',
-    bottom: -248,
-    right: 100,
-    width: 400,
-    minHeight: 200,
-    backfaceVisibility: 'hidden',
-    transformStyle: 'preserve-3d',
-    transition: 'all .4s ease-in-out',
-    perspective: 600,
-  },
-
   addCardBack: (isHover) => ({
     backfaceVisibility: 'visible',
     transitionDuration: '.4s',

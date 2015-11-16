@@ -7,6 +7,7 @@ import { DragItemTypes } from '../constants';
 import { DropTarget } from 'react-dnd';
 import Colors from 'material-ui/lib/styles/colors';
 import MoveCardMutation from '../mutations/MoveCardMutation';
+import DeleteCardMutation from '../mutations/DeleteCardMutation';
 const styles = {
   container: {
     fontFamily: 'Roboto, sans-serif',
@@ -196,6 +197,7 @@ export default Relay.createContainer(CardList, {
         },
         ${MoveCardMutation.getFragment('fromCardList')},
         ${MoveCardMutation.getFragment('toCardList')},
+        ${DeleteCardMutation.getFragment('cardList')},
       }
     `,
   },
