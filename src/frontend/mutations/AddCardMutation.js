@@ -1,14 +1,13 @@
 import Relay from 'react-relay';
-
+import {
+  PropTypes,
+} from 'react';
 export default class AddCardMutation extends Relay.Mutation {
-  // This mutation decalres a dependency on the cardList to which the card is being moved (if any),
-  // as well as the card's id and the id of the cardList to which it belongs.
-  static fragments = {
-    cardList: () => Relay.QL`
-      fragment on CardList {
-        id
-      }
-    `,
+  static propTypes = {
+    cardList: PropTypes.object,
+    userId: PropTypes.string,
+    name: PropTypes.string,
+    description: PropTypes.string,
   };
   getMutation() {
     return Relay.QL`mutation{addCard}`;
@@ -44,11 +43,12 @@ export default class AddCardMutation extends Relay.Mutation {
       description: this.props.description,
     };
   }
-  // getOptimisticResponse() {
-  //   return {
-  //     cardList: {
-  //       id: this.props.cardList.id,
-  //     },
-  //   };
-  // }
+  // This mutation decalres a dependency on the cardList to which the card it is being added
+  static fragments = {
+    cardList: () => Relay.QL`
+      fragment on CardList {
+        id
+      }
+    `,
+  };
 }

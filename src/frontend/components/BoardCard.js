@@ -9,7 +9,11 @@ import MaterialCard from 'material-ui/lib/card/card';
 import {
   CardHeader,
   Avatar,
+  IconMenu,
+  IconButton,
+  FontIcon,
 } from 'material-ui';
+import MenuItem from 'material-ui/lib/menus/menu-item';
 import Colors from 'material-ui/lib/styles/colors';
 import { Link } from 'react-router';
 import { DragItemTypes } from '../constants';
@@ -23,6 +27,18 @@ const styles = {
     float: 'right',
     fontSize: '1.0rem',
     fontWeight: 300,
+  },
+  optionsMenuContainer: {
+    position: 'absolute',
+    top: -5,
+    right: -5,
+    padding: 0,
+    margin: 0,
+  },
+  optionsMenu: {
+    padding: 0,
+    margin: 0,
+
   },
 };
 const cardSource = {
@@ -74,6 +90,20 @@ export default class BoardCard extends Component {
     isOver: PropTypes.bool,
     draggedItem: PropTypes.object,
   };
+  constructor(props) {
+    super(props);
+    this.cardMenuSelected = this.cardMenuSelected.bind(this);
+    this.state = {optionsExpanded: false};
+  }
+  cardMenuSelected(event, item) {
+    switch (item.value) {
+      case "delete":
+
+        break;
+      default:
+    
+    }
+  }
   render() {
     const { card, isDragging, isOver, draggedItem, connectDragSource, connectDropTarget } = this.props;
     let avatar = '?';
@@ -101,6 +131,10 @@ export default class BoardCard extends Component {
         }}/>
     );
     }
+
+    const menuIcon = (<IconButton iconStyle={{color: Colors.grey500}} onTouchTap={this.optionsExpandClick} tooltip="show/hide card options" tooltipPosition="bottom-left">
+      <FontIcon className="material-icons">more_vert</FontIcon>
+    </IconButton>);
     return connectDragSource(connectDropTarget(
       <div style={{
         display: isDragging ? 'none' : 'block',
@@ -112,9 +146,13 @@ export default class BoardCard extends Component {
             title={<Link to={`/card/${card.id}`}>{card.name}</Link>}
             titleStyle={{cursor: 'pointer'}}
             textStyle = {{display: 'block'}}
-            avatar={<Avatar style={styles.avatar} backgroundColor={card.assignedTo ? Colors.greenA700 : Colors.grey500}>{avatar}</Avatar>}
+            avatar={<div><Avatar style={styles.avatar} backgroundColor={card.assignedTo ? Colors.greenA700 : Colors.grey500}>{avatar}</Avatar></div> }
             actAsExpander={false}
-            showExpandableButton={false} />
+            showExpandableButton={false}>
+              <IconMenu style={styles.optionsMenuContainer} menuStyle={styles.optionsMenu} onItemTouchTap={this.cardMenuSelected} iconButtonElement={menuIcon}>
+                 <MenuItem value="delete" innerDivStyle={{paddingLeft: 40}} style={{fontSize: '0.9rem'}} key={'delete_' + card.id} index={0} primaryText="Delete" leftIcon={<FontIcon style={{paddingLeft: 0}} className="material-icons">delete</FontIcon>} />
+              </IconMenu>
+          </CardHeader>
         </MaterialCard>
       </div>
     ));
