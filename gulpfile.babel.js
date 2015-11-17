@@ -3,9 +3,6 @@ import webpack from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 import nodemon from 'nodemon';
 import path from 'path';
-import schema from './src/server/data/schema';
-import { introspectionQuery } from 'graphql/utilities';
-import { graphql } from 'graphql';
 import fs from 'fs';
 import concatCss from 'gulp-concat-css';
 import gls from 'gulp-live-server';
@@ -24,8 +21,9 @@ let compiler;
 
 // trigger a manual recompilation of webpack(frontendConfig);
 function recompile() {
-  if (!compiler)
+  if (!compiler) {
     return null;
+  }
   return new Promise((resolve, reject) => {
     compiler.run((err, stats) => {
       if (err)
@@ -42,8 +40,7 @@ gulp.task('clean-build', () => {
 });
 
 // run the webpack dev server
-//  must generate the schema.json first as compiler relies on it for babel-relay-plugin
-gulp.task('webpack', ['copy-assets','generate-schema', 'watch-schema'], () => {
+gulp.task('webpack', ['copy-assets'], () => {
   compiler = webpack(frontendConfig);
   let server = new WebpackDevServer(compiler, {
     contentBase: path.join(__dirname, 'build', 'public'),
@@ -51,9 +48,6 @@ gulp.task('webpack', ['copy-assets','generate-schema', 'watch-schema'], () => {
     noInfo: true,
     stats: { colors: true },
     historyApiFallback: true,
-    proxy: {
-      '/graphql': 'http://localhost:8080'
-    }
   });
   server.listen(3000, 'localhost', (err, result) => {
     if (err)
@@ -92,25 +86,6 @@ gulp.task('production-prep', ['copy-assets','generate-schema'], () => {
         resolve();
     });
   });
-});
-
-// Regenerate the graphql schema and recompile the frontend code that relies on schema.json
-gulp.task('generate-schema', () => {
-  return graphql(schema, introspectionQuery)
-    .then(result => {
-      if (result.errors)
-        return console.error('[schema]: ERROR --', JSON.stringify(result.errors, null, 2), result);
-      fs.writeFileSync(
-        path.join(__dirname, './src/server/data/schema.json'),
-        JSON.stringify(result, null, 2)
-      );
-      return compiler ? recompile() : null;
-    });
-});
-
-// recompile the schema whenever .js files in data are updated
-gulp.task('watch-schema', () => {
-  gulp.watch(path.join(__dirname, './src/server/data', '**/*.js'), ['generate-schema']);
 });
 
 // restart the backend server whenever a required file from backend is updated
