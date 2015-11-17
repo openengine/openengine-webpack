@@ -5,7 +5,7 @@ import {
 export default class DeleteCardMutation extends Relay.Mutation {
   static propTypes = {
     card: PropTypes.object,
-    cardList: PropTypes.object,
+    boardColumn: PropTypes.object,
   };
   getMutation() {
     return Relay.QL`mutation{deleteCard}`;
@@ -16,7 +16,7 @@ export default class DeleteCardMutation extends Relay.Mutation {
   getFatQuery() {
     return Relay.QL`
       fragment on DeleteCardPayload {
-        cardList { cards },
+        boardColumn { cards },
         deletedCardId,
       }
     `;
@@ -24,8 +24,8 @@ export default class DeleteCardMutation extends Relay.Mutation {
   getConfigs() {
     return [{
       type: 'NODE_DELETE',
-      parentName: 'cardList',
-      parentID: this.props.cardList.id,
+      parentName: 'boardColumn',
+      parentID: this.props.boardColumn.id,
       connectionName: 'cards',
       deletedIDFieldName: 'deletedCardId',
     }];
@@ -33,18 +33,18 @@ export default class DeleteCardMutation extends Relay.Mutation {
   getVariables() {
     return {
       cardId: this.props.card.id,
-      cardListId: this.props.cardList.id,
+      boardColumnId: this.props.boardColumn.id,
     };
   }
-  // This mutation decalres a dependency on the cardList to which the card it is being added
+  // This mutation decalres a dependency on the boardColumn to which the card it is being added
   static fragments = {
     card: () => Relay.QL`
       fragment on Card {
         id
       }
     `,
-    cardList: () => Relay.QL`
-      fragment on CardList {
+    boardColumn: () => Relay.QL`
+      fragment on BoardColumn {
         id
       }
     `,

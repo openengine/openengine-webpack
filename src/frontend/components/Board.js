@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
 import DragBoard from './DragBoard';
-import CardList from './CardList';
+import BoardColumn from './BoardColumn';
 import AddCardMutation from '../mutations/AddCardMutation';
 
 class Board extends React.Component {
@@ -30,12 +30,12 @@ export default Relay.createContainer(Board, {
     board: () => Relay.QL`
       fragment on Board {
         name
-        cardLists(first: $limit) {
+        boardColumns(first: $limit) {
           edges {
             node {
               id
-              ${CardList.getFragment('cardList')},
-              ${AddCardMutation.getFragment('cardList')},
+              ${BoardColumn.getFragment('boardColumn')},
+              ${AddCardMutation.getFragment('boardColumn')},
             }
           }
         }

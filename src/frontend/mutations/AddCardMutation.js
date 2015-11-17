@@ -4,7 +4,7 @@ import {
 } from 'react';
 export default class AddCardMutation extends Relay.Mutation {
   static propTypes = {
-    cardList: PropTypes.object,
+    boardColumn: PropTypes.object,
     userId: PropTypes.string,
     name: PropTypes.string,
     description: PropTypes.string,
@@ -13,12 +13,12 @@ export default class AddCardMutation extends Relay.Mutation {
     return Relay.QL`mutation{addCard}`;
   }
   getCollisionKey() {
-    return `check_${this.props.cardList.id}`;
+    return `check_${this.props.boardColumn.id}`;
   }
   getFatQuery() {
     return Relay.QL`
       fragment on AddCardPayload {
-        cardList,
+        boardColumn,
         newCardEdge,
       }
     `;
@@ -26,8 +26,8 @@ export default class AddCardMutation extends Relay.Mutation {
   getConfigs() {
     return [{
       type: 'RANGE_ADD',
-      parentName: 'cardList',
-      parentID: this.props.cardList.id,
+      parentName: 'boardColumn',
+      parentID: this.props.boardColumn.id,
       connectionName: 'cards',
       edgeName: 'newCardEdge',
       rangeBehaviors: {
@@ -37,16 +37,16 @@ export default class AddCardMutation extends Relay.Mutation {
   }
   getVariables() {
     return {
-      cardListId: this.props.cardList.id,
+      boardColumnId: this.props.boardColumn.id,
       userId: this.props.userId,
       name: this.props.name,
       description: this.props.description,
     };
   }
-  // This mutation decalres a dependency on the cardList to which the card it is being added
+  // This mutation decalres a dependency on the boardColumn to which the card it is being added
   static fragments = {
-    cardList: () => Relay.QL`
-      fragment on CardList {
+    boardColumn: () => Relay.QL`
+      fragment on BoardColumn {
         id
       }
     `,

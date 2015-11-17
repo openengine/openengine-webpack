@@ -53,7 +53,7 @@ const styles = {
 export default class CardSave extends React.Component {
   static propTypes = {
     opened: PropTypes.bool,
-    cardList: PropTypes.object,
+    boardColumn: PropTypes.object,
     toggleCard: PropTypes.func,
     users: PropTypes.array,
   }
@@ -66,13 +66,13 @@ export default class CardSave extends React.Component {
     this.props.toggleCard(false);
   }
   createCard() {
-    const { cardList } = this.props;
+    const { boardColumn } = this.props;
     const assignee = this._assignMenu.getSelected();
 
     // Add card to initial card list...
     Relay.Store.update(
       new AddCardMutation({
-        cardList: cardList,
+        boardColumn: boardColumn,
         userId: assignee,
         name: this._addCardName.getValue(),
         description: this._addCardDescription.getValue(),

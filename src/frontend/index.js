@@ -5,7 +5,6 @@ import ReactDOM from 'react-dom';
 import Relay from 'react-relay';
 import {Router} from 'react-router';
 import ReactRouterRelay from 'react-router-relay';
-import RelayLocalSchema from 'relay-local-schema';
 
 import styles from "./assets/styles/engine.css";
 
@@ -14,7 +13,7 @@ import routes from './routes';
 import schema from '../server/data/schema';
 
 Relay.injectNetworkLayer(
-  new RelayLocalSchema.NetworkLayer({schema})
+  new Relay.DefaultNetworkLayer('http://localhost:1337/graphql')
 );
 
 const history = createBrowserHistory({queryKey: false});
