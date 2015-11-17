@@ -83,7 +83,7 @@ const cardLists = [
   }),
 ];
 
-const cards = [
+let cards = [
   new Card({
     id: 'slack_card',
     boardId: 'product_board',
@@ -203,6 +203,11 @@ export function addCard(name, description, cListId, cardUserId) {
   cards.push(new Card({id, name, description, cardListId: cListId, boardId: cList.boardId, rank: newRank, user }));
   const lastCard = cards.slice(-1)[0];
   return lastCard.id;
+}
+
+export function removeCard(id) {
+  cards = cards.filter(card => card.id !== id);
+  return id;
 }
 
 export function moveCard(id, toCardListId, toRank) {

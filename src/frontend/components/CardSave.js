@@ -19,18 +19,6 @@ const styles = {
     alignItems: 'stretch',
   },
 
-  addCardContainer: {
-    position: 'fixed',
-    bottom: -248,
-    right: 100,
-    width: 400,
-    minHeight: 200,
-    backfaceVisibility: 'hidden',
-    transformStyle: 'preserve-3d',
-    transition: 'all .4s ease-in-out',
-    perspective: 600,
-  },
-
   addCardBack: (isHover) => ({
     backfaceVisibility: 'visible',
     transitionDuration: '.4s',
@@ -101,7 +89,7 @@ export default class CardSave extends React.Component {
       <div style={[styles.addCardBack(opened)]}>
         <Paper key="addCard" zDepth={1} rounded={false} style={styles.paperAdd}>
           <div style={[styles.columnContainer]}>
-          <IconButton onClick={this.closeAdd} style={{position: 'absolute', top: -10, right: -10}}><FontIcon color={Colors.grey300} className="material-icons">close</FontIcon></IconButton>
+            <IconButton onClick={this.closeAdd} style={{position: 'absolute', top: -10, right: -10}}><FontIcon color={Colors.grey300} className="material-icons">close</FontIcon></IconButton>
             <div style={styles.addCardNameRow}>
               <TextField tabIndex={1} ref={(ref) => this._addCardName = ref} style={styles.addCardName} fullWidth hintText="Card Name" />
               <div style={{textAlign: 'center', position: 'relative', top: 15, flex: '0 1 25%'}}>

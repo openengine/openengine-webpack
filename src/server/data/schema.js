@@ -18,6 +18,7 @@ import RemoveBoardMutation from './RemoveBoardMutation';
 import RenameBoardMutation from './RenameBoardMutation';
 import MoveCardMutation from './MoveCardMutation';
 import AddCardMutation from './AddCardMutation';
+import DeleteCardMutation from './DeleteCardMutation';
 import { nodeField } from './nodeInterface';
 
 const RootQuery = new GraphQLObjectType({
@@ -52,6 +53,7 @@ const RootMutation = new GraphQLObjectType({
     renameBoard: RenameBoardMutation,
     moveCard: MoveCardMutation,
     addCard: AddCardMutation,
+    deleteCard: DeleteCardMutation,
   },
 });
 
