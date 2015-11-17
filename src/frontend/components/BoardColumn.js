@@ -81,7 +81,7 @@ const columnTarget = {
   drop(props, monitor) {
     const { boardColumn } = props;
     const { card, boardColumn: fromBoardColumn } = monitor.getItem();
-    const cards = sortCards(boardColumn, 'boardColumnRank');
+    const cards = sortCards(boardColumn, 'rank');
     let toRank = 0;
 
     // Dropped on/between cards, set new rank for dropped card
@@ -93,11 +93,11 @@ const columnTarget = {
 
       if (droppedOnCardIndex !== 0) {
         // The new rank of the dropped card will be between the card it was dropped on and the one above it
-        toRank = (droppedOnCardRank + cards[droppedOnCardIndex - 1].boardColumnRank) / 2;
+        toRank = (droppedOnCardRank + cards[droppedOnCardIndex - 1].rank) / 2;
       }
     } else { // Dropped into the boardColumn with either A.) no cards in it, or B.) below all other cards in boardColumn
       if (cards.length > 0) {
-        toRank = cards[cards.length - 1].boardColumnRank + 1;
+        toRank = cards[cards.length - 1].rank + 1;
       }
     }
 
@@ -130,7 +130,7 @@ class BoardColumn extends React.Component {
   render() {
     const { connectDropTarget, isOver, isOverOnly, draggedItem } = this.props;
     const { boardColumn } = this.props;
-    const cards = sortCards(boardColumn, 'boardColumnRank');
+    const cards = sortCards(boardColumn, 'rank');
     // We will put the placeholder in when a card is hovering over the empty part of the boardColumn.
     let placeHolder = '';
     // if there is a draggedItem that is picked up by the "dropMonitor" put in the placeHolder
@@ -185,12 +185,12 @@ export default Relay.createContainer(BoardColumn, {
       fragment on BoardColumn {
         id
         name
-        boardRank
+        rank
         cards(first: $limit) {
           edges {
             node {
               id
-              boardColumnRank,
+              rank,
               ${BoardCard.getFragment('card')},
             }
           }

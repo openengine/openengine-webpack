@@ -64,7 +64,7 @@ const cardTarget = {
   // If a card is dropped on another card, send that card's listRank to the boardColumn drop event
   drop(props) {
     return {
-      droppedOnCardRank: props.card.boardColumnRank,
+      droppedOnCardRank: props.card.rank,
       droppedOnCardIndex: props.cardIndex,
     };
   },
@@ -171,7 +171,7 @@ export default Relay.createContainer(BoardCard, {
         id
         name
         assignedTo
-        boardColumnRank
+        rank
         ${MoveCardMutation.getFragment('card')},
         ${DeleteCardMutation.getFragment('card')},
       }
