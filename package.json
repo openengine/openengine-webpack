@@ -9,8 +9,7 @@
   "scripts": {
     "postinstall": "gulp production-prep",
     "start": "gulp production-run",
-    "start-dev": "gulp",
-    "start-graphiql": "babel-node graphiql/main.js"
+    "start-dev": "gulp"
   },
   "dependencies": {
     "babel": "^5.8.21",
