@@ -74,7 +74,7 @@ gulp.task('production-run', () => {
 });
 
 // Generate the frontend production react relay static page and assets using the webpack-prod.config.js file
-gulp.task('production-prep', ['copy-assets', 'get-schema'], () => {
+gulp.task('production-prep', ['copy-assets'], () => {
   return new Promise((resolve, reject) => {
     webpack(prodFrontendConfig, (err, stats) => {
       if (err) {
