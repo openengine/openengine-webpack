@@ -11,7 +11,11 @@ import styles from "./assets/styles/engine.css";
 import routes from './routes';
 
 Relay.injectNetworkLayer(
-  new Relay.DefaultNetworkLayer('http://localhost:1337/graphql')
+  new Relay.DefaultNetworkLayer('http://localhost:1337/graphql', {
+    headers: {
+      Authorization: 'Bearer cal_token',
+    },
+  })
 );
 
 const history = createBrowserHistory({queryKey: false});
