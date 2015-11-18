@@ -30,7 +30,7 @@ export default Relay.createContainer(Board, {
     board: () => Relay.QL`
       fragment on Board {
         name
-        boardColumns(first: $limit) {
+        columns(first: $limit) {
           edges {
             node {
               id

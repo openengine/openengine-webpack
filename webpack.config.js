@@ -1,28 +1,23 @@
-/*
-  TODO:
-    * add a production flag that disables debug/sourcemaps and minifies
- */
+const webpack = require('webpack');
+const path = require('path');
+const assign = require('object-assign');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-var webpack = require('webpack');
-var path = require('path');
-var assign = require('object-assign');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
-
-var defaultConfig = {
-  devtool: 'sourcemap'
+const defaultConfig = {
+  devtool: 'sourcemap',
 };
 
-var frontendConfig = assign({}, defaultConfig, {
+const frontendConfig = assign({}, defaultConfig, {
   entry: [
     'webpack-dev-server/client?http://localhost:3000',
     'webpack/hot/dev-server',
-    './src/frontend/index.js'
+    './src/frontend/index.js',
   ],
 
   output: {
     filename: 'bundle.js',
-    publicPath: "http://localhost:3000/",
-    path: path.join(__dirname, 'build', 'public')
+    publicPath: 'http://localhost:3000/',
+    path: path.join(__dirname, 'build', 'public'),
   },
 
   plugins: [
@@ -32,64 +27,28 @@ var frontendConfig = assign({}, defaultConfig, {
       title: 'Engine',
       filename: 'index.html',
       template: 'src/frontend/index.template.html',
-      inject: true
-    })
+      inject: true,
+    }),
   ],
 
   module: {
     loaders: [
       {
+        test: /\.json$/,
+        loader: 'json-loader',
+      },
+      {
         test: /\.js$/,
-        include: [path.join(__dirname, 'src', 'frontend'), path.join(__dirname, 'src', 'server/data')],
-        loaders: ['react-hot', 'babel?stage=0&plugins[]=' + path.join(__dirname, 'relayPlugin')]
+        include: [path.join(__dirname, 'src', 'frontend')],
+        loaders: ['react-hot', 'babel?stage=0&plugins[]=' + path.join(__dirname, 'relayPlugin')],
       },
       {
         test: /\.css$/,
-        include: path.join(__dirname, 'src', 'frontend','assets','styles'),
-        loaders: ['style', 'css']
-      }
-    ]
-  }
+        include: path.join(__dirname, 'src', 'frontend', 'assets', 'styles'),
+        loaders: ['style', 'css'],
+      },
+    ],
+  },
 });
 
-var serverConfig = assign({}, defaultConfig, {
-  entry: './src/server/index.js',
-  output: {
-    path: path.join(__dirname, 'build'),
-    filename: 'server.js',
-    libraryTarget: 'commonjs2'
-  },
-
-  target: 'node',
-  // do not include polyfills or mocks for node stuff
-  node: {
-    console: false,
-    global: false,
-    process: false,
-    Buffer: false,
-    __filename: false,
-    __dirname: false
-  },
-  // all non-relative modules are external
-  // abc -> require('abc')
-  externals: /^[a-z\-0-9]+$/,
-
-  plugins: [
-    // enable source-map-support by installing at the head of every chunk
-    new webpack.BannerPlugin('require("source-map-support").install();',
-      {raw: true, entryOnly: false})
-  ],
-
-  module: {
-    loaders: [
-      {
-        // transpile all .js files using babel
-        test: /\.js$/,
-        exclude: /node_modules/,
-        loader: 'babel?stage=0'
-      }
-    ]
-  }
-});
-
-module.exports = [frontendConfig, serverConfig];
+module.exports = [frontendConfig];

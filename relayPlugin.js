@@ -1,10 +1,13 @@
-var getbabelRelayPlugin = require('babel-relay-plugin');
+const getbabelRelayPlugin = require('babel-relay-plugin');
+import fs from 'fs';
+import request from 'sync-request';
 
-// TODO: GET this relay plugin building
-//
-//
-//
-//
-var schema = require('./src/server/data/schema.json');
+// This is a little strange... but we want this http request to be
+// synchronous because it needs to write this json file before it gets
+// read by the babel plugin
+const res = request('GET', 'http://localhost:1337/schema.json');
+fs.writeFileSync('./src/server/data/schema.json', res.getBody());
+
+const schema = require('./src/server/data/schema.json');
 
 module.exports = getbabelRelayPlugin(schema.data);
