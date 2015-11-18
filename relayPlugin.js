@@ -6,8 +6,8 @@ import request from 'sync-request';
 // synchronous because it needs to write this json file before it gets
 // read by the babel plugin
 const res = request('GET', 'http://localhost:1337/schema.json');
-fs.writeFileSync('./src/server/data/schema.json', res.getBody());
+fs.writeFileSync('./schema.json', res.getBody());
 
-const schema = require('./src/server/data/schema.json');
+const schema = require('./schema.json');
 
 module.exports = getbabelRelayPlugin(schema.data);
