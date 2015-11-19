@@ -13,7 +13,6 @@ class BoardList extends React.Component {
   render() {
     const { viewer } = this.props;
     const { boards } = viewer;
-    const what = process.env.ENV_VARIABLE;
     return (
       <div>
         <div className="container-fluid">
