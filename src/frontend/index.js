@@ -11,7 +11,7 @@ import styles from "./assets/styles/engine.css";
 import routes from './routes';
 
 Relay.injectNetworkLayer(
-  new Relay.DefaultNetworkLayer('http://localhost:1337/graphql', {
+  new Relay.DefaultNetworkLayer(process.env.GRAPHQL_SERVER, {
     headers: {
       Authorization: 'Bearer cal_token',
     },

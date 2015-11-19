@@ -23,6 +23,11 @@ const frontendConfig = assign({}, defaultConfig, {
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoErrorsPlugin(),
+    // This allows us to use ENV variables in our react code..
+    new webpack.EnvironmentPlugin([
+      'NODE_ENV',
+      'GRAPHQL_SERVER',
+    ]),
     new HtmlWebpackPlugin({
       title: 'Engine',
       filename: 'index.html',
@@ -35,12 +40,13 @@ const frontendConfig = assign({}, defaultConfig, {
     loaders: [
       {
         test: /\.json$/,
+        include: [path.join(__dirname, 'src', 'frontend')],
         loader: 'json-loader',
       },
       {
         test: /\.js$/,
         include: [path.join(__dirname, 'src', 'frontend')],
-        loaders: ['react-hot', 'babel?stage=0&plugins[]=' + path.join(__dirname, 'relayPlugin')],
+        loaders: ['react-hot', 'babel?stage=1&plugins[]=' + path.join(__dirname, 'relayPlugin')],
       },
       {
         test: /\.css$/,

@@ -106,7 +106,7 @@ export default class DragBoard extends React.Component {
   }
   render() {
     const { board, viewer } = this.props;
-    const { boardColumns } = board;
+    const { columns } = board;
     const { addOpened } = this.state;
     return (
       <div style={[styles.container]}>
@@ -126,7 +126,7 @@ export default class DragBoard extends React.Component {
           </div>
         </div>
         <div style={[styles.rowContainer]}>
-          {boardColumns.edges.map(({node}) =>
+          {columns.edges.map(({node}) =>
             <BoardColumn
               key={node.id}
               boardColumn={node}
@@ -134,7 +134,7 @@ export default class DragBoard extends React.Component {
           )}
         </div>
         <div style={styles.addCardContainer}>
-          <CardSave users={viewer.users} toggleCard={this.toggleCard} opened={addOpened} boardColumn={boardColumns.edges[0].node} />
+          <CardSave users={viewer.users} toggleCard={this.toggleCard} opened={addOpened} boardColumn={columns.edges[0].node} />
         </div>
         <SpinButton btnStyle={styles.spinBtn} mouseEnter={this.addCardMouseEnter} />
       </div>

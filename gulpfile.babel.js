@@ -1,11 +1,12 @@
 import gulp from 'gulp';
+
 import webpack from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 import path from 'path';
 import gls from 'gulp-live-server';
 import clean from 'gulp-clean';
+import dotenv from 'dotenv-safe';
 import { gutil } from 'gulp-babel';
-
 import configs from './webpack.config';
 import prodConfigs from './webpack-prod.config';
 
@@ -16,28 +17,12 @@ const buildDir = 'build'; // process.env.ENV_VARIABLE==='production'?'production
 
 let compiler;
 
-// trigger a manual recompilation of webpack(frontendConfig);
-// function recompile() {
-//   if (!compiler) {
-//     return null;
-//   }
-//   return new Promise((resolve, reject) => {
-//     compiler.run((err, stats) => {
-//       if (err)
-//         reject(err);
-//       console.log('[webpackDevServer]: recompiled');
-//       resolve();
-//     });
-//   });
-// }
-
 // Cleans out build folder prior to compiling and copying assets
 gulp.task('clean-build', () => {
   return gulp.src(path.join(__dirname, buildDir, 'public'), {read: false}).pipe(clean());
 });
-
 // run the webpack dev server
-gulp.task('webpack', ['copy-assets'], () => {
+gulp.task('webpack', ['copy-assets', 'set-dev-env'], () => {
   compiler = webpack(frontendConfig);
   const server = new WebpackDevServer(compiler, {
     contentBase: path.join(__dirname, 'build', 'public'),
@@ -53,13 +38,20 @@ gulp.task('webpack', ['copy-assets'], () => {
     console.log('[webpackDevServer]: listening on localhost:3000');
   });
 });
-
+// Setup our environment variables to use in our dev environment
+gulp.task('set-dev-env', () => {
+  const envFiles = {
+    development: '.env',
+  };
+  dotenv.config({
+    path: envFiles[process.env.NODE_ENV],
+  });
+});
 // Copy all static assets, also concatinates css files into 1 file
 gulp.task('copy-assets', ['clean-build'], () => {
   gulp.src(path.join(__dirname, './src/frontend/assets/img/**')).pipe(gulp.dest(path.join(__dirname, buildDir, 'public', 'img')));
   // gulp.src(path.join(__dirname, './src/frontend/assets/styles/**')).pipe(concatCss("engine.css")).pipe(gulp.dest(path.join(__dirname,'build','public','css')));
 });
-
 // Runs our combined production tasks using the webpack-prod.config.js file
 gulp.task('production-run', () => {
   // run webpack backend server (will start server after all assets are ready)
@@ -72,7 +64,6 @@ gulp.task('production-run', () => {
     server.start();
   });
 });
-
 // Generate the frontend production react relay static page and assets using the webpack-prod.config.js file
 gulp.task('production-prep', ['copy-assets'], () => {
   return new Promise((resolve, reject) => {
@@ -84,6 +75,5 @@ gulp.task('production-prep', ['copy-assets'], () => {
     });
   });
 });
-
 
 gulp.task('default', ['webpack']);
