@@ -3,7 +3,7 @@ import Radium from 'radium';
 import {
   TextField,
 } from 'material-ui';
-import CardList from './CardList';
+import BoardColumn from './BoardColumn';
 import CardSave from './CardSave';
 import SpinButton from './SpinButton';
 import { DragDropContext } from 'react-dnd';
@@ -106,7 +106,7 @@ export default class DragBoard extends React.Component {
   }
   render() {
     const { board, viewer } = this.props;
-    const { cardLists } = board;
+    const { columns } = board;
     const { addOpened } = this.state;
     return (
       <div style={[styles.container]}>
@@ -126,15 +126,15 @@ export default class DragBoard extends React.Component {
           </div>
         </div>
         <div style={[styles.rowContainer]}>
-          {cardLists.edges.map(({node}) =>
-            <CardList
+          {columns.edges.map(({node}) =>
+            <BoardColumn
               key={node.id}
-              cardList={node}
+              boardColumn={node}
             />
           )}
         </div>
         <div style={styles.addCardContainer}>
-          <CardSave users={viewer.users} toggleCard={this.toggleCard} opened={addOpened} cardList={cardLists.edges[0].node} />
+          <CardSave users={viewer.users} toggleCard={this.toggleCard} opened={addOpened} boardColumn={columns.edges[0].node} />
         </div>
         <SpinButton btnStyle={styles.spinBtn} mouseEnter={this.addCardMouseEnter} />
       </div>

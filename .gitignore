@@ -1,6 +1,7 @@
 build/
 node_modules/
-src/server/data/schema.json
+schema.json
+.env
 
 # Ignore Mac DS_Store files
 .DS_Store

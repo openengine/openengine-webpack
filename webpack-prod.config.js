@@ -1,42 +1,45 @@
+const path = require('path');
+const webpack = require('webpack');
+const assign = require('object-assign');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-var path = require('path');
-var webpack = require('webpack');
-var assign = require('object-assign');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
-
-var defaultConfig = {
-  devtool: 'sourcemap'
+const defaultConfig = {
+  devtool: 'sourcemap',
 };
 
-var frontendConfig = assign({}, defaultConfig, {
+const frontendConfig = assign({}, defaultConfig, {
   devtool: 'source-map',
   entry: [
-    './src/frontend/index.js'
+    './src/frontend/index.js',
   ],
   output: {
-     path: path.join(__dirname, 'build', 'public'),
+    path: path.join(__dirname, 'build', 'public'),
     filename: 'bundle.js',
-    publicPath: '/'
+    publicPath: '/',
   },
   plugins: [
     new HtmlWebpackPlugin({
       title: 'Engine',
       filename: 'index.html',
       template: 'src/frontend/index.template.html',
-      inject: true
+      inject: true,
     }),
     new webpack.optimize.UglifyJsPlugin({
       minimize: true,
       compress: {
-        warnings: false
-      }
-    })
+        warnings: false,
+      },
+    }),
   ],
   resolve: {
-    extensions: ['', '.js', '.jsx']
+    extensions: ['', '.js', '.jsx'],
   },
   module: {
     loaders: [
+      {
+        test: /\.json$/,
+        loader: 'json-loader',
+      },
       { test: /\.jsx$/,
         loaders: ['babel?stage=0&plugins[]=' + path.join(__dirname, 'relayPlugin')],
         include: [path.join(__dirname, 'src', 'frontend'), path.join(__dirname, 'src', 'server/data')],
@@ -47,22 +50,20 @@ var frontendConfig = assign({}, defaultConfig, {
       },
       {
         test: /\.css$/,
-        include: path.join(__dirname, 'src', 'frontend','assets','styles'),
-        loaders: ['style', 'css']
-      }
-
-    ]
-  }
+        include: path.join(__dirname, 'src', 'frontend', 'assets', 'styles'),
+        loaders: ['style', 'css'],
+      },
+    ],
+  },
 });
 
-var serverConfig = assign({}, defaultConfig, {
+const serverConfig = assign({}, defaultConfig, {
   entry: './src/server/index.js',
   output: {
     path: path.join(__dirname, 'build'),
     filename: 'server.js',
-    libraryTarget: 'commonjs2'
+    libraryTarget: 'commonjs2',
   },
-
   target: 'node',
   // do not include polyfills or mocks for node stuff
   node: {
@@ -71,7 +72,7 @@ var serverConfig = assign({}, defaultConfig, {
     process: false,
     Buffer: false,
     __filename: false,
-    __dirname: false
+    __dirname: false,
   },
   // all non-relative modules are external
   // abc -> require('abc')
@@ -80,7 +81,7 @@ var serverConfig = assign({}, defaultConfig, {
   plugins: [
     // enable source-map-support by installing at the head of every chunk
     new webpack.BannerPlugin('require("source-map-support").install();',
-      {raw: true, entryOnly: false})
+      {raw: true, entryOnly: false}),
   ],
 
   module: {
@@ -89,10 +90,10 @@ var serverConfig = assign({}, defaultConfig, {
         // transpile all .js files using babel
         test: /\.js$/,
         exclude: /node_modules/,
-        loader: 'babel?stage=0'
-      }
-    ]
-  }
+        loader: 'babel?stage=0',
+      },
+    ],
+  },
 });
 
 module.exports = [frontendConfig, serverConfig];

@@ -42,27 +42,27 @@ const styles = {
     flex: '1 0 auto',
   },
 
-  cardList: {
+  boardColumn: {
     flex: '1 0 auto',
     boxShadow: '0 0px 2px rgba(0, 0, 0, 0.15)',
   },
 
-  cardListName: {
+  boardColumnName: {
     flex: '1 0 auto',
     fontSize: '1.0rem',
     fontWeight: 100,
     color: '#9E9E9E',
   },
 
-  cardListContainer: (isOver) => ({
+  boardColumnContainer: (isOver) => ({
     minHeight: 500,
     boxShadow: (isOver ? '0px -1px 0px 1px #90A4AE' : '0px 0px 0px 0px #90A4AE'),
   }),
 };
 
-// Used to sort cards in a cardList by the specified field
-const sortCards = (cardList, sortBy) => {
-  return cardList.cards.edges.map(({node}) => node).sort((cardA, cardB) => {
+// Used to sort cards in a boardColumn by the specified field
+const sortCards = (boardColumn, sortBy) => {
+  return boardColumn.cards.edges.map(({node}) => node).sort((cardA, cardB) => {
     if (cardA[sortBy] >= cardB[sortBy]) {
       return 1;
     }
@@ -77,11 +77,11 @@ const columnTarget = {
     return true;
   },
   // When a card is dropped in a column, we want to update
-  // that card's CardList via mutation
+  // that card's BoardColumn via mutation
   drop(props, monitor) {
-    const { cardList } = props;
-    const { card, cardList: fromCardList } = monitor.getItem();
-    const cards = sortCards(cardList, 'cardListRank');
+    const { boardColumn } = props;
+    const { card, boardColumn: fromBoardColumn } = monitor.getItem();
+    const cards = sortCards(boardColumn, 'rank');
     let toRank = 0;
 
     // Dropped on/between cards, set new rank for dropped card
@@ -93,19 +93,19 @@ const columnTarget = {
 
       if (droppedOnCardIndex !== 0) {
         // The new rank of the dropped card will be between the card it was dropped on and the one above it
-        toRank = (droppedOnCardRank + cards[droppedOnCardIndex - 1].cardListRank) / 2;
+        toRank = (droppedOnCardRank + cards[droppedOnCardIndex - 1].rank) / 2;
       }
-    } else { // Dropped into the cardList with either A.) no cards in it, or B.) below all other cards in cardList
+    } else { // Dropped into the boardColumn with either A.) no cards in it, or B.) below all other cards in boardColumn
       if (cards.length > 0) {
-        toRank = cards[cards.length - 1].cardListRank + 1;
+        toRank = cards[cards.length - 1].rank + 1;
       }
     }
 
     Relay.Store.update(
       new MoveCardMutation({
         card: card,
-        fromCardList: fromCardList,
-        toCardList: cardList,
+        fromBoardColumn: fromBoardColumn,
+        toBoardColumn: boardColumn,
         toRank: toRank,
       })
     );
@@ -119,19 +119,19 @@ const columnTarget = {
   draggedItem: monitor.getItem(),
 }))
 @Radium
-class CardList extends React.Component {
+class BoardColumn extends React.Component {
   static propTypes = {
     connectDropTarget: PropTypes.func.isRequired,
     isOver: PropTypes.bool.isRequired,
     isOverOnly: PropTypes.bool.isRequired,
-    cardList: PropTypes.object.isRequired,
+    boardColumn: PropTypes.object.isRequired,
     draggedItem: PropTypes.object,
   };
   render() {
     const { connectDropTarget, isOver, isOverOnly, draggedItem } = this.props;
-    const { cardList } = this.props;
-    const cards = sortCards(cardList, 'cardListRank');
-    // We will put the placeholder in when a card is hovering over the empty part of the cardList.
+    const { boardColumn } = this.props;
+    const cards = sortCards(boardColumn, 'rank');
+    // We will put the placeholder in when a card is hovering over the empty part of the boardColumn.
     let placeHolder = '';
     // if there is a draggedItem that is picked up by the "dropMonitor" put in the placeHolder
     if (draggedItem && isOverOnly) {
@@ -147,20 +147,20 @@ class CardList extends React.Component {
     return (
       <div style={[styles.columnContainer]}>
         <div style={[styles.headerRowContainer]}>
-          <div style={[styles.cardListName]}>
-            {cardList.name}
+          <div style={[styles.boardColumnName]}>
+            {boardColumn.name}
           </div>
         </div>
         <div style={[styles.columnContainer]}>
         {connectDropTarget(
-          <div style={[styles.cardListContainer(isOver)]}>
+          <div style={[styles.boardColumnContainer(isOver)]}>
             {cards.map(card => {
               return (
-                <Paper key={card.id} style={styles.cardList} zDepth={0} rounded={false} >
+                <Paper key={card.id} style={styles.boardColumn} zDepth={0} rounded={false} >
                   <BoardCard
                     card={card}
                     cardIndex={cards.indexOf(card)}
-                    cardList={cardList}
+                    boardColumn={boardColumn}
                     />
                 </Paper>
               );
@@ -173,7 +173,7 @@ class CardList extends React.Component {
     );
   }
 }
-export default Relay.createContainer(CardList, {
+export default Relay.createContainer(BoardColumn, {
   prepareVariables() {
     return {
       limit: Number.MAX_SAFE_INTEGER || 9007199254740991,
@@ -181,23 +181,23 @@ export default Relay.createContainer(CardList, {
   },
 
   fragments: {
-    cardList: () => Relay.QL`
-      fragment on CardList {
+    boardColumn: () => Relay.QL`
+      fragment on BoardColumn {
         id
         name
-        boardRank
+        rank
         cards(first: $limit) {
           edges {
             node {
               id
-              cardListRank,
+              rank,
               ${BoardCard.getFragment('card')},
             }
           }
         },
-        ${MoveCardMutation.getFragment('fromCardList')},
-        ${MoveCardMutation.getFragment('toCardList')},
-        ${DeleteCardMutation.getFragment('cardList')},
+        ${MoveCardMutation.getFragment('fromBoardColumn')},
+        ${MoveCardMutation.getFragment('toBoardColumn')},
+        ${DeleteCardMutation.getFragment('boardColumn')},
       }
     `,
   },

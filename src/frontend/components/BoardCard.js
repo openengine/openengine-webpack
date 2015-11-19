@@ -48,7 +48,7 @@ const cardSource = {
     const height = findDOMNode(component).offsetHeight;
     return {
       card: props.card,
-      cardList: props.cardList,
+      boardColumn: props.boardColumn,
       height: height,
     };
   },
@@ -61,10 +61,10 @@ const cardTarget = {
     }
     return true;
   },
-  // If a card is dropped on another card, send that card's listRank to the cardList drop event
+  // If a card is dropped on another card, send that card's listRank to the boardColumn drop event
   drop(props) {
     return {
-      droppedOnCardRank: props.card.cardListRank,
+      droppedOnCardRank: props.card.rank,
       droppedOnCardIndex: props.cardIndex,
     };
   },
@@ -86,7 +86,7 @@ export default class BoardCard extends Component {
     connectDropTarget: PropTypes.func.isRequired,
     card: PropTypes.object,
     cardIndex: PropTypes.number,
-    cardList: PropTypes.object,
+    boardColumn: PropTypes.object,
     isDragging: PropTypes.bool,
     isOver: PropTypes.bool,
     draggedItem: PropTypes.object,
@@ -101,7 +101,7 @@ export default class BoardCard extends Component {
     case 'delete':
       Relay.Store.update(
       new DeleteCardMutation({
-        cardList: this.props.cardList,
+        boardColumn: this.props.boardColumn,
         card: this.props.card,
       })
     );
@@ -124,7 +124,7 @@ export default class BoardCard extends Component {
       }
     }
     // We will put the placeholder in when a card is hovering over this card. Always above since below
-    // will be taken care of by the CardList parent component (only on empty or below last card)
+    // will be taken care of by the BoardColumn parent component (only on empty or below last card)
     let placeHolder = '';
     // if there is a draggedItem that is picked up by the "dropMonitor" put in the placeHolder
     if (draggedItem) {
@@ -171,7 +171,7 @@ export default Relay.createContainer(BoardCard, {
         id
         name
         assignedTo
-        cardListRank
+        rank
         ${MoveCardMutation.getFragment('card')},
         ${DeleteCardMutation.getFragment('card')},
       }
