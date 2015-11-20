@@ -17,18 +17,18 @@ export default class RemoveCardMutation extends Relay.Mutation {
   getFatQuery() {
     return Relay.QL`
       fragment on RemoveCardPayload {
-        boardColumn { cards },
-        deletedCardId,
+        removedFromBoardColumn { cards },
+        removedCardId,
       }
     `;
   }
   getConfigs() {
     return [{
       type: 'NODE_DELETE',
-      parentName: 'boardColumn',
+      parentName: 'removedFromBoardColumn',
       parentID: this.props.boardColumn.id,
       connectionName: 'cards',
-      deletedIDFieldName: 'deletedCardId',
+      deletedIDFieldName: 'removedCardId',
     }];
   }
   getVariables() {
