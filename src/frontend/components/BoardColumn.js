@@ -4,9 +4,16 @@ import Relay from 'react-relay';
 import BoardCard from './BoardCard';
 import { DragItemTypes } from '../constants';
 import { DropTarget } from 'react-dnd';
+import {
+FlatButton,
+FontIcon,
+Paper,
+TextField,
+} from 'material-ui';
 import Colors from 'material-ui/lib/styles/colors';
 import MoveCardMutation from '../mutations/MoveCardMutation';
 import DeleteCardMutation from '../mutations/DeleteCardMutation';
+import AddCardMutation from '../mutations/AddCardMutation';
 const styles = {
   headerRowContainer: (viewType)=> ({
     display: 'flex',
@@ -39,6 +46,47 @@ const styles = {
   boardColumnContainer: (isOver, viewType) => ({
     minHeight: viewType === 'grid' ? 500 : 20,
     boxShadow: (isOver ? '0px -1px 0px 1px #90A4AE' : '0px 0px 0px 0px #90A4AE'),
+  }),
+  addCardBtnHolder: {
+    alignSelf: 'stretch',
+    textAlign: 'center',
+    flex: '1 1 100%',
+    marginLeft: '0.5rem',
+    marginRight: '0.5rem',
+    marginBottom: '1.0rem',
+  },
+  addCardBtn: {
+    backgroundColor: Colors.grey50,
+    borderRadius: 20,
+    verticalAlign: 'middle',
+    textAlign: 'center',
+    alignSelf: 'center',
+    width: '100%',
+  },
+  addCardBtnIcon: {
+    verticalAlign: 'middle',
+    left: '1.0rem',
+    fontSize: '0.9rem',
+    color: Colors.grey400,
+  },
+  addCardBtnLabel: {
+    color: Colors.grey400,
+    fontSize: '0.8rem',
+    fontWeight: 400,
+    verticalAlign: 'middle',
+    textTransform: 'none',
+    textAlign: 'center',
+  },
+  addCardTmp: (viewType, opened)=>({
+    opacity: opened ? 1 : 0,
+    height: opened ? 'auto' : 0,
+    borderRadius: 5,
+    marginBottom: (viewType === 'grid' && opened) ? '1.0rem' : '0.2rem',
+    marginRight: '0.5rem',
+    marginLeft: '0.5rem',
+    minHeight: (viewType === 'grid' && opened) ? 100 : 0,
+    padding: (viewType === 'grid' && opened) ? 10 : '2px 5px 2px 15px',
+    boxShadow: '0 0px 2px rgba(0, 0, 0, 0.15)',
   }),
 };
 
@@ -110,9 +158,35 @@ class BoardColumn extends React.Component {
     draggedItem: PropTypes.object,
     viewType: PropTypes.string,
   };
+  constructor(props) {
+    super(props);
+    this.addCardInit = this.addCardInit.bind(this);
+    this.addCard = this.addCard.bind(this);
+    this.state = {addOpened: false};
+  }
+  addCard() {
+    this.setState({addOpened: false});
+    const { boardColumn } = this.props;
+    // Add card to this board column
+    Relay.Store.update(
+      new AddCardMutation({
+        boardColumn: boardColumn,
+        userId: '',
+        name: this._addCardName.getValue(),
+        description: '',
+      })
+    );
+    this._addCardName.clearValue();
+    this._addCardName.blur();
+  }
+  addCardInit() {
+    this.setState({addOpened: true});
+    this._addCardName.focus();
+  }
   render() {
     const { connectDropTarget, isOver, isOverOnly, draggedItem } = this.props;
     const { boardColumn, viewType } = this.props;
+    const { addOpened } = this.state;
     const cards = sortCards(boardColumn, 'rank');
     // We will put the placeholder in when a card is hovering over the empty part of the boardColumn.
     let placeHolder = '';
@@ -149,6 +223,15 @@ class BoardColumn extends React.Component {
               );
             })}
             {placeHolder}
+            <Paper style={styles.addCardTmp(viewType, addOpened)} zDepth={0}>
+              <TextField onEnterKeyDown={this.addCard} ref={(ref) => this._addCardName = ref} style={{width: 'auto'}} fullWidth={false} underlineStyle={{borderColor: 'transparent'}}
+              underlineFocusStyle={{borderColor: Colors.brown50}} hintText= "What you working on?"
+                multiLine />
+            </Paper>
+            <div style={styles.addCardBtnHolder}>
+              <FlatButton onClick={this.addCardInit} fullWidth style={styles.addCardBtn} labelStyle={styles.addCardBtnLabel}
+              label="add card" labelPosition="after"><FontIcon style={styles.addCardBtnIcon} className="material-icons">add</FontIcon></FlatButton>
+            </div>
           </div>
         )}
         </div>
@@ -181,6 +264,7 @@ export default Relay.createContainer(BoardColumn, {
         ${MoveCardMutation.getFragment('fromBoardColumn')},
         ${MoveCardMutation.getFragment('toBoardColumn')},
         ${DeleteCardMutation.getFragment('boardColumn')},
+        ${AddCardMutation.getFragment('boardColumn')},
       }
     `,
   },

@@ -142,7 +142,6 @@ export default Relay.createContainer(DragBoard, {
             node {
               id
               ${BoardColumn.getFragment('boardColumn')},
-              ${AddCardMutation.getFragment('boardColumn')},
             }
           }
         }
