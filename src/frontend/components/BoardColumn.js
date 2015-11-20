@@ -171,7 +171,6 @@ class BoardColumn extends React.Component {
     Relay.Store.update(
       new AddCardMutation({
         boardColumn: boardColumn,
-        userId: '',
         name: this._addCardName.getValue(),
         description: '',
       })

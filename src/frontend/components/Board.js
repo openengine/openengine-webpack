@@ -2,11 +2,8 @@ import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
 import BoardColumn from './BoardColumn';
 import Radium from 'radium';
-import AddCardMutation from '../mutations/AddCardMutation';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { DragDropContext } from 'react-dnd';
-import CardSave from './CardSave';
-import SpinButton from './SpinButton';
 import {
 IconButton,
 } from 'material-ui';
@@ -48,22 +45,6 @@ const styles = {
     color: '#9E9E9E',
     marginBottom: 40,
   },
-  spinBtn: {
-    position: 'fixed',
-    bottom: 25,
-    right: 25,
-  },
-  addCardContainer: {
-    position: 'fixed',
-    bottom: -248,
-    right: 100,
-    width: 400,
-    minHeight: 200,
-    backfaceVisibility: 'hidden',
-    transformStyle: 'preserve-3d',
-    transition: 'all .4s ease-in-out',
-    perspective: 600,
-  },
 };
 @Radium
 class Board extends React.Component {
@@ -96,9 +77,9 @@ class Board extends React.Component {
     this.toggleCard(true);
   }
   render() {
-    const { board, viewer } = this.props;
+    const { board } = this.props;
     const { columns } = board;
-    const { addOpened, gridView } = this.state;
+    const { gridView } = this.state;
     return (
       <div style={[styles.container]}>
         <IconButton onClick={this.setGridView} iconStyle={styles.viewIcon(gridView)} iconClassName="material-icons" tooltipPosition="bottom-center"
@@ -114,10 +95,6 @@ class Board extends React.Component {
             />
           )}
         </div>
-        <div style={styles.addCardContainer}>
-          <CardSave users={viewer.users} toggleCard={this.toggleCard} opened={addOpened} boardColumn={columns.edges[0].node} />
-        </div>
-        <SpinButton btnStyle={styles.spinBtn} mouseEnter={this.addCardMouseEnter} />
       </div>
     );
   }

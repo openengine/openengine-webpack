@@ -5,7 +5,6 @@ import {
 export default class AddCardMutation extends Relay.Mutation {
   static propTypes = {
     boardColumn: PropTypes.object,
-    userId: PropTypes.string,
     name: PropTypes.string,
     description: PropTypes.string,
   };
@@ -38,7 +37,6 @@ export default class AddCardMutation extends Relay.Mutation {
   getVariables() {
     return {
       boardColumnId: this.props.boardColumn.id,
-      userId: this.props.userId,
       name: this.props.name,
       description: this.props.description,
     };
