@@ -26,6 +26,13 @@ const styles = {
     padding: 3,
     minHeight: 500,
   },
+  columnContainer: {
+    display: 'flex',
+    flexFlow: 'column nowrap',
+    justifyContent: 'flex-start',
+    alignItems: 'stretch',
+    width: '100%',
+  },
   viewIcon: (isActive) => ({
     color: isActive ? Colors.grey800 : Colors.grey400,
   }),
@@ -98,11 +105,12 @@ class Board extends React.Component {
         tooltip="grid view">apps</IconButton>
        <IconButton onClick={this.setListView} iconStyle={styles.viewIcon(!gridView)} iconClassName="material-icons" tooltipPosition="bottom-center"
         tooltip="list view">menu</IconButton>
-        <div style={[styles.rowContainer]}>
+        <div style={gridView ? styles.rowContainer : styles.columnContainer}>
           {columns.edges.map(({node}) =>
             <BoardColumn
               key={node.id}
               boardColumn={node}
+              viewType={gridView ? 'grid' : 'list'}
             />
           )}
         </div>

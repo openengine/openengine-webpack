@@ -17,16 +17,16 @@ import {
 import MoveCardMutation from '../mutations/MoveCardMutation';
 import DeleteCardMutation from '../mutations/DeleteCardMutation';
 const styles = {
-  card: {
+  card: (viewType)=>({
     borderRadius: 5,
-    marginBottom: '1.0rem',
+    marginBottom: viewType === 'grid' ? '1.0rem' : '0.2rem',
     marginRight: '0.5rem',
     marginLeft: '0.5rem',
-    minHeight: 100,
-    padding: 10,
+    minHeight: viewType === 'grid' ? 100 : 0,
+    padding: viewType === 'grid' ? 10 : '2px 5px 2px 15px',
     flex: '1 0 auto',
     boxShadow: '0 0px 2px rgba(0, 0, 0, 0.15)',
-  },
+  }),
   cardName: {
     fontSize: '0.9rem',
     fontWeight: 300,
@@ -82,6 +82,7 @@ export default class BoardCard extends Component {
     isDragging: PropTypes.bool,
     isOver: PropTypes.bool,
     draggedItem: PropTypes.object,
+    viewType: PropTypes.string,
   };
   constructor(props) {
     super(props);
@@ -103,7 +104,8 @@ export default class BoardCard extends Component {
     }
   }
   render() {
-    const { card, isDragging, isOver, draggedItem, connectDragSource, connectDropTarget } = this.props;
+    const { card, isDragging, isOver, draggedItem, connectDragSource,
+       connectDropTarget, viewType } = this.props;
     // We will put the placeholder in when a card is hovering over this card. Always above since below
     // will be taken care of by the BoardColumn parent component (only on empty or below last card)
     let placeHolder = '';
@@ -124,7 +126,7 @@ export default class BoardCard extends Component {
         cursor: 'move',
       }}>
         {placeHolder}
-        <Paper style={styles.card} zDepth={0}>
+        <Paper style={styles.card(viewType)} zDepth={0}>
           <h1 style={styles.cardName}>{card.name}</h1>
         </Paper>
       </div>

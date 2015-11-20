@@ -8,15 +8,15 @@ import Colors from 'material-ui/lib/styles/colors';
 import MoveCardMutation from '../mutations/MoveCardMutation';
 import DeleteCardMutation from '../mutations/DeleteCardMutation';
 const styles = {
-  headerRowContainer: {
+  headerRowContainer: (viewType)=> ({
     display: 'flex',
     flexFlow: 'row nowrap',
-    justifyContent: 'center',
+    justifyContent: viewType === 'grid' ? 'center' : 'flex-start',
+    paddingLeft: viewType === 'grid' ? 0 : '1.0rem',
     alignItems: 'stretch',
     overflow: 'hidden',
     width: '100%',
-  },
-
+  }),
   columnContainer: {
     display: 'flex',
     flexFlow: 'column nowrap',
@@ -27,7 +27,6 @@ const styles = {
     backgroundColor: Colors.grey100,
     borderRadius: 5,
   },
-
   boardColumnName: {
     flex: '0 1 auto',
     fontSize: '0.8rem',
@@ -37,9 +36,8 @@ const styles = {
     paddingBottom: '1.0rem',
     letterSpacing: 2,
   },
-
-  boardColumnContainer: (isOver) => ({
-    minHeight: 500,
+  boardColumnContainer: (isOver, viewType) => ({
+    minHeight: viewType === 'grid' ? 500 : 20,
     boxShadow: (isOver ? '0px -1px 0px 1px #90A4AE' : '0px 0px 0px 0px #90A4AE'),
   }),
 };
@@ -110,10 +108,11 @@ class BoardColumn extends React.Component {
     isOverOnly: PropTypes.bool.isRequired,
     boardColumn: PropTypes.object.isRequired,
     draggedItem: PropTypes.object,
+    viewType: PropTypes.string,
   };
   render() {
     const { connectDropTarget, isOver, isOverOnly, draggedItem } = this.props;
-    const { boardColumn } = this.props;
+    const { boardColumn, viewType } = this.props;
     const cards = sortCards(boardColumn, 'rank');
     // We will put the placeholder in when a card is hovering over the empty part of the boardColumn.
     let placeHolder = '';
@@ -130,14 +129,14 @@ class BoardColumn extends React.Component {
     }
     return (
       <div style={[styles.columnContainer]}>
-        <div style={[styles.headerRowContainer]}>
+        <div style={[styles.headerRowContainer(viewType)]}>
           <div style={[styles.boardColumnName]}>
             {boardColumn.name}
           </div>
         </div>
         <div style={[styles.columnContainer]}>
         {connectDropTarget(
-          <div style={[styles.boardColumnContainer(isOver)]}>
+          <div style={[styles.boardColumnContainer(isOver, viewType)]}>
             {cards.map(card => {
               return (
                   <BoardCard
@@ -145,6 +144,7 @@ class BoardColumn extends React.Component {
                     card={card}
                     cardIndex={cards.indexOf(card)}
                     boardColumn={boardColumn}
+                    viewType={viewType}
                     />
               );
             })}
