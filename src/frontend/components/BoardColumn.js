@@ -167,12 +167,18 @@ class BoardColumn extends React.Component {
   addCard() {
     this.setState({addOpened: false});
     const { boardColumn } = this.props;
+    const cards = sortCards(boardColumn, 'rank');
+    let rank = 0;
+    if (cards.length > 0) {
+      rank = cards[cards.length - 1].rank + 1;
+    }
     // Add card to this board column
     Relay.Store.update(
       new AddCardMutation({
         boardColumn: boardColumn,
         name: this._addCardName.getValue(),
         description: '',
+        rank: rank,
       })
     );
     this._addCardName.clearValue();

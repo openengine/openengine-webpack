@@ -7,6 +7,7 @@ export default class AddCardMutation extends Relay.Mutation {
     boardColumn: PropTypes.object,
     name: PropTypes.string,
     description: PropTypes.string,
+    rank: PropTypes.number,
   };
   getMutation() {
     return Relay.QL`mutation{addCard}`;
@@ -39,6 +40,7 @@ export default class AddCardMutation extends Relay.Mutation {
       boardColumnId: this.props.boardColumn.id,
       name: this.props.name,
       description: this.props.description,
+      rank: this.props.rank,
     };
   }
   // This mutation decalres a dependency on the boardColumn to which the card it is being added
