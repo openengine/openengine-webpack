@@ -18,7 +18,6 @@ const styles = {
     justifyContent: 'flex-start',
     alignItems: 'stretch',
   },
-
   addCardBack: (isHover) => ({
     backfaceVisibility: 'visible',
     transitionDuration: '.4s',
@@ -26,13 +25,11 @@ const styles = {
     width: '100%',
     transform: isHover ? 'translateY(-258px) translateZ(2px)' : 'translateY(0px) translateZ(2px)',
   }),
-
   paperAdd: {
     width: '100%',
     minHeight: 200,
     padding: 20,
   },
-
   addCardNameRow: {
     display: 'flex',
     flexFlow: 'row nowrap',
@@ -44,7 +41,6 @@ const styles = {
     fontSize: '0.6rem',
     color: Colors.grey500,
   },
-
   addCardName: {
     flex: '0 1 75%',
   },

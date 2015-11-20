@@ -5,17 +5,10 @@ import React, {
 import Radium from 'radium';
 import { findDOMNode } from 'react-dom';
 import Relay from 'react-relay';
-import MaterialCard from 'material-ui/lib/card/card';
 import {
-  CardHeader,
-  Avatar,
-  IconMenu,
-  IconButton,
-  FontIcon,
+  Paper,
 } from 'material-ui';
-import MenuItem from 'material-ui/lib/menus/menu-item';
 import Colors from 'material-ui/lib/styles/colors';
-import { Link } from 'react-router';
 import { DragItemTypes } from '../constants';
 import {
   DragSource,
@@ -24,22 +17,21 @@ import {
 import MoveCardMutation from '../mutations/MoveCardMutation';
 import DeleteCardMutation from '../mutations/DeleteCardMutation';
 const styles = {
-  avatar: {
-    float: 'right',
-    fontSize: '1.0rem',
+  card: {
+    borderRadius: 5,
+    marginBottom: '1.0rem',
+    marginRight: '0.5rem',
+    marginLeft: '0.5rem',
+    minHeight: 100,
+    padding: 10,
+    flex: '1 0 auto',
+    boxShadow: '0 0px 2px rgba(0, 0, 0, 0.15)',
+  },
+  cardName: {
+    fontSize: '0.9rem',
     fontWeight: 300,
-  },
-  optionsMenuContainer: {
-    position: 'absolute',
-    top: -5,
-    right: -5,
-    padding: 0,
-    margin: 0,
-  },
-  optionsMenu: {
-    padding: 0,
-    margin: 0,
-
+    color: Colors.grey700,
+    textAlign: 'left',
   },
 };
 const cardSource = {
@@ -112,17 +104,6 @@ export default class BoardCard extends Component {
   }
   render() {
     const { card, isDragging, isOver, draggedItem, connectDragSource, connectDropTarget } = this.props;
-    let avatar = '?';
-    if (card.assignedTo) {
-      const splitName = card.assignedTo.split(' ');
-      if (splitName.length > 1) {
-        avatar = splitName[0][0] + splitName[1][0];
-      } else {
-        if (splitName.length === 1) {
-          avatar = card.assignedTo.substring(0, 2);
-        }
-      }
-    }
     // We will put the placeholder in when a card is hovering over this card. Always above since below
     // will be taken care of by the BoardColumn parent component (only on empty or below last card)
     let placeHolder = '';
@@ -137,29 +118,15 @@ export default class BoardCard extends Component {
         }}/>
     );
     }
-
-    const menuIcon = (<IconButton iconStyle={{color: Colors.grey500}} onTouchTap={this.optionsExpandClick} tooltip="show/hide card options" tooltipPosition="bottom-left">
-      <FontIcon className="material-icons">more_vert</FontIcon>
-    </IconButton>);
     return connectDragSource(connectDropTarget(
       <div style={{
         display: isDragging ? 'none' : 'block',
         cursor: 'move',
       }}>
-      {placeHolder}
-        <MaterialCard initiallyExpanded={false}>
-          <CardHeader
-            title={<Link to={`/card/${card.id}`}>{card.name}</Link>}
-            titleStyle={{cursor: 'pointer'}}
-            textStyle = {{display: 'block'}}
-            avatar={<div><Avatar style={styles.avatar} backgroundColor={card.assignedTo ? Colors.greenA700 : Colors.grey500}>{avatar}</Avatar></div> }
-            actAsExpander={false}
-            showExpandableButton={false}>
-              <IconMenu style={styles.optionsMenuContainer} menuStyle={styles.optionsMenu} onItemTouchTap={this.cardMenuSelected} iconButtonElement={menuIcon}>
-                 <MenuItem value="delete" innerDivStyle={{paddingLeft: 40}} style={{fontSize: '0.9rem'}} key={'delete_' + card.id} index={0} primaryText="Delete" leftIcon={<FontIcon style={{paddingLeft: 0}} className="material-icons">delete</FontIcon>} />
-              </IconMenu>
-          </CardHeader>
-        </MaterialCard>
+        {placeHolder}
+        <Paper style={styles.card} zDepth={0}>
+          <h1 style={styles.cardName}>{card.name}</h1>
+        </Paper>
       </div>
     ));
   }

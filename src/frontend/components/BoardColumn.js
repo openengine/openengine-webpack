@@ -1,7 +1,6 @@
 import React, { PropTypes } from 'react';
 import Radium from 'radium';
 import Relay from 'react-relay';
-import { Paper } from 'material-ui';
 import BoardCard from './BoardCard';
 import { DragItemTypes } from '../constants';
 import { DropTarget } from 'react-dnd';
@@ -9,21 +8,6 @@ import Colors from 'material-ui/lib/styles/colors';
 import MoveCardMutation from '../mutations/MoveCardMutation';
 import DeleteCardMutation from '../mutations/DeleteCardMutation';
 const styles = {
-  container: {
-    fontFamily: 'Roboto, sans-serif',
-  },
-
-  rowContainer: {
-    display: 'flex',
-    flexFlow: 'row nowrap',
-    justifyContent: 'center',
-    alignItems: 'stretch',
-    overflow: 'hidden',
-    width: '100%',
-    padding: 3,
-    minHeight: 500,
-  },
-
   headerRowContainer: {
     display: 'flex',
     flexFlow: 'row nowrap',
@@ -31,7 +15,6 @@ const styles = {
     alignItems: 'stretch',
     overflow: 'hidden',
     width: '100%',
-    padding: 3,
   },
 
   columnContainer: {
@@ -39,19 +22,20 @@ const styles = {
     flexFlow: 'column nowrap',
     justifyContent: 'flex-start',
     alignItems: 'stretch',
-    flex: '1 0 auto',
-  },
-
-  boardColumn: {
-    flex: '1 0 auto',
-    boxShadow: '0 0px 2px rgba(0, 0, 0, 0.15)',
+    flex: '0 1 auto',
+    margin: '0.3rem',
+    backgroundColor: Colors.grey100,
+    borderRadius: 5,
   },
 
   boardColumnName: {
-    flex: '1 0 auto',
-    fontSize: '1.0rem',
-    fontWeight: 100,
-    color: '#9E9E9E',
+    flex: '0 1 auto',
+    fontSize: '0.8rem',
+    fontWeight: 500,
+    color: Colors.grey500,
+    paddingTop: '1.5rem',
+    paddingBottom: '1.0rem',
+    letterSpacing: 2,
   },
 
   boardColumnContainer: (isOver) => ({
@@ -156,13 +140,12 @@ class BoardColumn extends React.Component {
           <div style={[styles.boardColumnContainer(isOver)]}>
             {cards.map(card => {
               return (
-                <Paper key={card.id} style={styles.boardColumn} zDepth={0} rounded={false} >
                   <BoardCard
+                    key={card.id}
                     card={card}
                     cardIndex={cards.indexOf(card)}
                     boardColumn={boardColumn}
                     />
-                </Paper>
               );
             })}
             {placeHolder}

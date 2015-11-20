@@ -1,25 +1,124 @@
 import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
-import DragBoard from './DragBoard';
 import BoardColumn from './BoardColumn';
+import Radium from 'radium';
 import AddCardMutation from '../mutations/AddCardMutation';
-
+import HTML5Backend from 'react-dnd-html5-backend';
+import { DragDropContext } from 'react-dnd';
+import CardSave from './CardSave';
+import SpinButton from './SpinButton';
+import {
+IconButton,
+} from 'material-ui';
+import Colors from 'material-ui/lib/styles/colors';
+const styles = {
+  container: {
+    fontFamily: 'Roboto, sans-serif',
+    background: '#fff',
+  },
+  rowContainer: {
+    display: 'flex',
+    flexFlow: 'row nowrap',
+    justifyContent: 'flex-start',
+    alignItems: 'stretch',
+    overflow: 'hidden',
+    width: '100%',
+    padding: 3,
+    minHeight: 500,
+  },
+  viewIcon: (isActive) => ({
+    color: isActive ? Colors.grey800 : Colors.grey400,
+  }),
+  boardHeader: {
+    flex: '1 0 auto',
+    fontSize: '1.0rem',
+    fontWeight: 100,
+    color: '#9E9E9E',
+  },
+  boardName: {
+    fontSize: '1.5rem',
+    fontWeight: 100,
+    color: '#9E9E9E',
+    marginBottom: 40,
+  },
+  spinBtn: {
+    position: 'fixed',
+    bottom: 25,
+    right: 25,
+  },
+  addCardContainer: {
+    position: 'fixed',
+    bottom: -248,
+    right: 100,
+    width: 400,
+    minHeight: 200,
+    backfaceVisibility: 'hidden',
+    transformStyle: 'preserve-3d',
+    transition: 'all .4s ease-in-out',
+    perspective: 600,
+  },
+};
+@Radium
 class Board extends React.Component {
   static propTypes = {
     board: PropTypes.object.isRequired,
     viewer: PropTypes.object.isRequired,
   };
+  constructor(props) {
+    super(props);
+    this.toggleCard = this.toggleCard.bind(this);
+    this.setGridView = this.setGridView.bind(this);
+    this.setListView = this.setListView.bind(this);
+    this.toggleView = this.toggleView.bind(this);
+    this.addCardMouseEnter = this.addCardMouseEnter.bind(this);
+    this.state = {addOpened: false, gridView: true};
+  }
+  setGridView() {
+    this.toggleView(true);
+  }
+  setListView() {
+    this.toggleView(false);
+  }
+  toggleView(isGridView) {
+    this.setState({gridView: isGridView});
+  }
+  toggleCard(toggle) {
+    this.setState({addOpened: toggle});
+  }
+  addCardMouseEnter() {
+    this.toggleCard(true);
+  }
   render() {
-    const {board, viewer} = this.props;
+    const { board, viewer } = this.props;
+    const { columns } = board;
+    const { addOpened, gridView } = this.state;
     return (
-      // Right... so we need to seperate out this component because the Drag and Drop context will only work with the default exported "Component" class...
-      // And therefore, an exported Relay Container (as far as I know), will not work directly with React Dnd...
-      <DragBoard board={board} viewer={viewer} />
+      <div style={[styles.container]}>
+        <IconButton onClick={this.setGridView} iconStyle={styles.viewIcon(gridView)} iconClassName="material-icons" tooltipPosition="bottom-center"
+        tooltip="grid view">apps</IconButton>
+       <IconButton onClick={this.setListView} iconStyle={styles.viewIcon(!gridView)} iconClassName="material-icons" tooltipPosition="bottom-center"
+        tooltip="list view">menu</IconButton>
+        <div style={[styles.rowContainer]}>
+          {columns.edges.map(({node}) =>
+            <BoardColumn
+              key={node.id}
+              boardColumn={node}
+            />
+          )}
+        </div>
+        <div style={styles.addCardContainer}>
+          <CardSave users={viewer.users} toggleCard={this.toggleCard} opened={addOpened} boardColumn={columns.edges[0].node} />
+        </div>
+        <SpinButton btnStyle={styles.spinBtn} mouseEnter={this.addCardMouseEnter} />
+      </div>
     );
   }
 }
 
-export default Relay.createContainer(Board, {
+// Wrap the board with the Drag n' Drop Context
+const DragBoard = DragDropContext(HTML5Backend)(Board);
+
+export default Relay.createContainer(DragBoard, {
   prepareVariables({}) {
     return {
       limit: Number.MAX_SAFE_INTEGER || 9007199254740991,
