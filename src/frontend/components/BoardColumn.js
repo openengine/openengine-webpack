@@ -12,7 +12,7 @@ TextField,
 } from 'material-ui';
 import Colors from 'material-ui/lib/styles/colors';
 import MoveCardMutation from '../mutations/MoveCardMutation';
-import DeleteCardMutation from '../mutations/DeleteCardMutation';
+import RemoveCardMutation from '../mutations/RemoveCardMutation';
 import AddCardMutation from '../mutations/AddCardMutation';
 const styles = {
   headerRowContainer: (viewType)=> ({
@@ -268,7 +268,7 @@ export default Relay.createContainer(BoardColumn, {
         },
         ${MoveCardMutation.getFragment('fromBoardColumn')},
         ${MoveCardMutation.getFragment('toBoardColumn')},
-        ${DeleteCardMutation.getFragment('boardColumn')},
+        ${RemoveCardMutation.getFragment('boardColumn')},
         ${AddCardMutation.getFragment('boardColumn')},
       }
     `,

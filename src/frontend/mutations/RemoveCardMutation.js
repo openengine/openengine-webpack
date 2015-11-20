@@ -2,20 +2,21 @@ import Relay from 'react-relay';
 import {
   PropTypes,
 } from 'react';
-export default class DeleteCardMutation extends Relay.Mutation {
+
+export default class RemoveCardMutation extends Relay.Mutation {
   static propTypes = {
     card: PropTypes.object,
     boardColumn: PropTypes.object,
   };
   getMutation() {
-    return Relay.QL`mutation{deleteCard}`;
+    return Relay.QL`mutation{removeCard}`;
   }
   getCollisionKey() {
     return `check_${this.props.card.id}`;
   }
   getFatQuery() {
     return Relay.QL`
-      fragment on DeleteCardPayload {
+      fragment on RemoveCardPayload {
         boardColumn { cards },
         deletedCardId,
       }
@@ -33,10 +34,9 @@ export default class DeleteCardMutation extends Relay.Mutation {
   getVariables() {
     return {
       cardId: this.props.card.id,
-      boardColumnId: this.props.boardColumn.id,
     };
   }
-  // This mutation decalres a dependency on the boardColumn to which the card it is being added
+  // This mutation declares a dependency on the boardColumn to which the card it is being added
   static fragments = {
     card: () => Relay.QL`
       fragment on Card {
