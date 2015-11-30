@@ -3,6 +3,7 @@ import Relay from 'react-relay';
 import BoardColumn from './BoardColumn';
 import Radium from 'radium';
 import HTML5Backend from 'react-dnd-html5-backend';
+import CardDetails from './CardDetails';
 import { DragDropContext } from 'react-dnd';
 import {
 IconButton,
@@ -54,11 +55,10 @@ class Board extends React.Component {
   };
   constructor(props) {
     super(props);
-    this.toggleCard = this.toggleCard.bind(this);
+    this.toggleCardDetails = this.toggleCardDetails.bind(this);
     this.setGridView = this.setGridView.bind(this);
     this.setListView = this.setListView.bind(this);
     this.toggleView = this.toggleView.bind(this);
-    this.addCardMouseEnter = this.addCardMouseEnter.bind(this);
     this.state = {addOpened: false, gridView: true};
   }
   setGridView() {
@@ -70,16 +70,14 @@ class Board extends React.Component {
   toggleView(isGridView) {
     this.setState({gridView: isGridView});
   }
-  toggleCard(toggle) {
-    this.setState({addOpened: toggle});
-  }
-  addCardMouseEnter() {
-    this.toggleCard(true);
+  toggleCardDetails(card) {
+    this.setState({detailsCard: card});
+    this._cardDetails.openCardDetails();
   }
   render() {
-    const { board } = this.props;
+    const { board, viewer } = this.props;
     const { columns } = board;
-    const { gridView } = this.state;
+    const { gridView, detailsCard } = this.state;
     return (
       <div style={[styles.container]}>
         <IconButton onClick={this.setGridView} iconStyle={styles.viewIcon(gridView)} iconClassName="material-icons" tooltipPosition="bottom-center"
@@ -91,10 +89,12 @@ class Board extends React.Component {
             <BoardColumn
               key={node.id}
               boardColumn={node}
+              toggleCardDetails = {this.toggleCardDetails}
               viewType={gridView ? 'grid' : 'list'}
             />
           )}
         </div>
+       <CardDetails users={viewer.users} card={detailsCard} ref={(ref) => this._cardDetails = ref} />
       </div>
     );
   }

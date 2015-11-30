@@ -157,6 +157,7 @@ class BoardColumn extends React.Component {
     boardColumn: PropTypes.object.isRequired,
     draggedItem: PropTypes.object,
     viewType: PropTypes.string,
+    toggleCardDetails: PropTypes.func,
   };
   constructor(props) {
     super(props);
@@ -190,7 +191,7 @@ class BoardColumn extends React.Component {
   }
   render() {
     const { connectDropTarget, isOver, isOverOnly, draggedItem } = this.props;
-    const { boardColumn, viewType } = this.props;
+    const { boardColumn, viewType, toggleCardDetails } = this.props;
     const { addOpened } = this.state;
     const cards = sortCards(boardColumn, 'rank');
     // We will put the placeholder in when a card is hovering over the empty part of the boardColumn.
@@ -218,13 +219,14 @@ class BoardColumn extends React.Component {
           <div style={[styles.boardColumnContainer(isOver, viewType)]}>
             {cards.map(card => {
               return (
-                  <BoardCard
-                    key={card.id}
-                    card={card}
-                    cardIndex={cards.indexOf(card)}
-                    boardColumn={boardColumn}
-                    viewType={viewType}
-                    />
+                <BoardCard
+                  key={card.id}
+                  card={card}
+                  cardIndex={cards.indexOf(card)}
+                  boardColumn={boardColumn}
+                  viewType={viewType}
+                  toggleCardDetails = {toggleCardDetails}
+                />
               );
             })}
             {placeHolder}

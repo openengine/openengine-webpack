@@ -83,11 +83,16 @@ export default class BoardCard extends Component {
     isOver: PropTypes.bool,
     draggedItem: PropTypes.object,
     viewType: PropTypes.string,
+    toggleCardDetails: PropTypes.func,
   };
   constructor(props) {
     super(props);
     this.cardMenuSelected = this.cardMenuSelected.bind(this);
+    this.cardClicked = this.cardClicked.bind(this);
     this.state = {optionsExpanded: false};
+  }
+  cardClicked() {
+    this.props.toggleCardDetails(this.props.card);
   }
   cardMenuSelected(event, item) {
     switch (item.props.value) {
@@ -105,7 +110,7 @@ export default class BoardCard extends Component {
   }
   render() {
     const { card, isDragging, isOver, draggedItem, connectDragSource,
-       connectDropTarget, viewType } = this.props;
+       connectDropTarget, viewType} = this.props;
     // We will put the placeholder in when a card is hovering over this card. Always above since below
     // will be taken care of by the BoardColumn parent component (only on empty or below last card)
     let placeHolder = '';
@@ -123,10 +128,10 @@ export default class BoardCard extends Component {
     return connectDragSource(connectDropTarget(
       <div style={{
         display: isDragging ? 'none' : 'block',
-        cursor: 'move',
+        cursor: isDragging ? 'grabbing' : 'pointer',
       }}>
         {placeHolder}
-        <Paper style={styles.card(viewType)} zDepth={0}>
+        <Paper onClick={this.cardClicked} style={styles.card(viewType)} zDepth={0}>
           <h1 style={styles.cardName}>{card.name}</h1>
         </Paper>
       </div>

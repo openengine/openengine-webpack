@@ -12,20 +12,23 @@ const styles = {
   avatar: {
     fontSize: '0.8rem',
     fontWeight: 300,
+    borderColor: Colors.grey400,
+    borderStyle: 'solid',
+    borderWidth: 1,
+    verticalAlign: 'middle',
   },
-
   dropIcon: {
     verticalAlign: 'middle',
     color: '#fff',
   },
-
   avatarButton: {
     fontSize: '0.7rem',
     color: Colors.grey600,
     textTransform: 'none',
-    textAlign: 'center',
+    textAlign: 'left',
+    verticalAlign: 'middle',
+    minWidth: 0,
   },
-
   menuItem: {
     color: Colors.grey600,
     fontSize: '0.8rem',
@@ -41,7 +44,7 @@ export default class AssignMenu extends React.Component {
     super(props);
     this.itemSelected = this.itemSelected.bind(this);
     this.getSelected = this.getSelected.bind(this);
-    this.state = {selectedAvatar: (<FontIcon style={styles.dropIcon} className="material-icons">arrow_drop_down</FontIcon>), selectedItem: ''};
+    this.state = {selectedAvatar: '', selectedItem: ''};
   }
   getSelected() {
     return this.state.selectedItem;
@@ -50,13 +53,20 @@ export default class AssignMenu extends React.Component {
     this.setState({selectedAvatar: item.props.avatar, selectedItem: item.props.value});
   }
   clearValue() {
-    this.setState({selectedAvatar: (<FontIcon style={styles.dropIcon} className="material-icons">arrow_drop_down</FontIcon>), selectedItem: ''});
+    this.setState({selectedAvatar: '', selectedItem: ''});
   }
   render() {
     const {selectedAvatar} = this.state;
     const {users} = this.props;
+    const iconButtonElement = (
+      <FlatButton style={styles.avatarButton} hoverColor="#ffffff" rippleColor="#ffffff">
+        <Avatar size={30} style={styles.avatar} color={Colors.grey50} backgroundColor="#ffffff">
+        {selectedAvatar}</Avatar>
+      </FlatButton>
+    );
     return (
-      <IconMenu onItemTouchTap={this.itemSelected} iconButtonElement={<FlatButton style={styles.avatarButton} hoverColor="#ffffff" rippleColor="#ffffff"><Avatar size={40} style={styles.avatar} color={Colors.grey50} backgroundColor={Colors.greenA700}>{selectedAvatar}</Avatar></FlatButton>}>
+      <IconMenu openDirection="bottom-left" style={{verticalAlign: 'middle'}} onItemTouchTap={this.itemSelected}
+      iconButtonElement={iconButtonElement}>
         {users.map(user => {
           let avatar = '?';
           const splitName = user.name.split(' ');
@@ -68,10 +78,11 @@ export default class AssignMenu extends React.Component {
             }
           }
           return (
-            <MenuItem key={user.id} avatar={avatar} value={user.id} style={styles.menuItem} >
-            <Avatar size={25} style={styles.avatar} color={Colors.grey50}
-            backgroundColor={Colors.greenA700}>{avatar}
-            </Avatar>&nbsp;{user.name}</MenuItem>
+            <MenuItem index={user.id} key={user.id} avatar={avatar} value={user.id} style={styles.menuItem} >
+              <Avatar size={25} style={styles.avatar} color={Colors.grey50}
+              backgroundColor={Colors.greenA700}>{avatar}
+              </Avatar>&nbsp;{user.name}
+            </MenuItem>
           );
         })
         }
