@@ -72,7 +72,7 @@ class Board extends React.Component {
   }
   toggleCardDetails(card) {
     this.setState({detailsCard: card});
-    this._cardDetails.openCardDetails();
+    this._cardDetails.openCardDetails(card);
   }
   render() {
     const { board, viewer } = this.props;

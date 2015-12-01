@@ -163,6 +163,7 @@ class BoardColumn extends React.Component {
     super(props);
     this.addCardInit = this.addCardInit.bind(this);
     this.addCard = this.addCard.bind(this);
+    this.addCardBlur = this.addCardBlur.bind(this);
     this.state = {addOpened: false};
   }
   addCard() {
@@ -188,6 +189,9 @@ class BoardColumn extends React.Component {
   addCardInit() {
     this.setState({addOpened: true});
     this._addCardName.focus();
+  }
+  addCardBlur() {
+    this.setState({addOpened: false});
   }
   render() {
     const { connectDropTarget, isOver, isOverOnly, draggedItem } = this.props;
@@ -231,9 +235,9 @@ class BoardColumn extends React.Component {
             })}
             {placeHolder}
             <Paper style={styles.addCardTmp(viewType, addOpened)} zDepth={0}>
-              <TextField onEnterKeyDown={this.addCard} ref={(ref) => this._addCardName = ref} style={{width: 'auto'}} fullWidth={false} underlineStyle={{borderColor: 'transparent'}}
+              <TextField onEnterKeyDown={this.addCard} onBlur={this.addCardBlur} ref={(ref) => this._addCardName = ref} underlineStyle={{borderColor: 'transparent'}}
               underlineFocusStyle={{borderColor: Colors.brown50}} hintText= "What you working on?"
-                multiLine />
+                multiLine fullWidth />
             </Paper>
             <div style={styles.addCardBtnHolder}>
               <FlatButton onClick={this.addCardInit} fullWidth style={styles.addCardBtn} labelStyle={styles.addCardBtnLabel}
