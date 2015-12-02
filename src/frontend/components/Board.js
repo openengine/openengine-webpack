@@ -71,6 +71,7 @@ class Board extends React.Component {
     this.setState({gridView: isGridView});
   }
   toggleCardDetails(card) {
+    card.tasks = [{text: 'task 1', status: 'open'}, {text: 'task 2', status: 'open'}, {text: 'task 3', status: 'open'}]
     this.setState({detailsCard: card});
     this._cardDetails.openCardDetails(card);
   }
