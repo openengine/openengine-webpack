@@ -184,6 +184,7 @@ export default class CardDetails extends React.Component {
     this.showAddTaskClick = this.showAddTaskClick.bind(this);
     this.addTaskClick = this.addTaskClick.bind(this);
     this.taskEdit = this.taskEdit.bind(this);
+    this._tasks = {}; // This is to keep a reference to the task edit textBox components
     this.state = {opened: false, nameFocus: false, addTask: false, card: null};
   }
   saveCard() {
@@ -262,11 +263,13 @@ export default class CardDetails extends React.Component {
         </Toolbar>
         <TextField tabIndex={2} ref={(ref) => this._cardDescription = ref} hintStyle={styles.descriptionHint} underlineStyle={ {borderColor: 'transparent' }} style={styles.description} inputStyle={{padding: 5}} fullWidth hintText="Description goes here..." multiLine rows={4} />
         <h2 style={styles.subHeader}>Tasks</h2>
-
         <div style={styles.tasksContainer(showTasksContainer)}>
           <ul style={{listStyleType: 'none', paddingLeft: '0.5rem', marginTop: -5}}>
           { card ? card.tasks.map((task, index) =>
-            <li onTouchTap={this.taskEdit} key={'task_' + index} style={styles.taskListItem}> <div style={styles.taskCheckbox(false)} key={'checkTask_' + index}><Checkbox iconStyle={{paddingRight: 0, marginRight: 5}} /></div><div style={{display: 'inline-block'}}>{task.text}</div></li>
+            <li onTouchTap={this.taskEdit} key={task.id} style={styles.taskListItem}>
+              <div style={styles.taskCheckbox(false)} key={'checkTask_' + index}><Checkbox iconStyle={{paddingRight: 0, marginRight: 5}} /></div>
+              <div style={{display: 'inline-block'}}>{task.text}</div>
+            </li>
           ) : ' '}
           </ul>
           <div style={styles.addTaskContainer(addTask)}>
