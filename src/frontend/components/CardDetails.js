@@ -20,15 +20,23 @@ const styles = {
     width: 'auto',
     padding: 10,
     whiteSpace: 'nowrap',
-    overflow: 'visible',
+    overflowY: 'scroll',
+    overflowX: 'visible',
     transition: 'all .4s ease-in-out',
     position: 'fixed',
     right: 0,
     top: 0,
+    bottom: 0,
     zIndex: 5,
     maxWidth: '50%',
     transform: isOpen ? 'translateX(-1%) translateZ(0px)' : 'translateX(100%) translateZ(0px)',
   }),
+  subHeader: {
+    fontSize: '0.8rem',
+    fontWeight: 400,
+    color: Colors.grey700,
+    textAlign: 'left',
+  },
   cardName: {
     marginTop: '1.5rem',
     marginLeft: '0.2rem',
@@ -52,15 +60,40 @@ const styles = {
     top: '1rem',
     left: '0.5rem',
   },
-  inputStyle: (isFocus) => ({
-    cursor: isFocus ? 'text' : 'url(/img/ic_edit_black_18px.svg), auto',
+  tasksContainer: (tasksOn) => ({
+    transition: 'all .4s ease-in-out',
+    opacity: tasksOn ? 1 : 0,
+    height: tasksOn ? 'auto' : 0,
+    borderColor: Colors.grey200,
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderRadius: 5,
   }),
-  subHeader: {
+  taskListItem: {
+    paddingTop: 5,
+  },
+  taskTxt: (isClosed) => ({
     fontSize: '0.8rem',
     fontWeight: 400,
-    color: Colors.grey700,
-    textAlign: 'left',
-  },
+    color: isClosed ? Colors.grey400 : Colors.grey700,
+    whiteSpace: 'normal',
+    wordWrap: 'break-word',
+    textDecoration: isClosed ? 'line-through' : 'none',
+  }),
+  taskCheckbox: (isChecked)=> ({
+    verticalAlign: 'top',
+    cursor: 'pointer',
+    display: 'inline-block',
+    ':hover': {
+      background: !isChecked ? 'url(/img/ic_done_black_18px.svg) no-repeat 4px center' : '',
+    },
+  }),
+  addTaskContainer: (tasksOn) => ({
+    transition: 'all .4s ease-in-out',
+    opacity: tasksOn ? 1 : 0,
+    height: tasksOn ? 'auto' : 0,
+    paddingLeft: 10,
+  }),
   addTaskBtn: (tasksOn) => ({
     transition: 'all .5s ease-in-out',
     opacity: tasksOn ? 0 : 1,
@@ -76,50 +109,17 @@ const styles = {
     marginLeft: 3,
     textTransform: 'none',
   },
-  tasksContainer: (tasksOn) => ({
-    transition: 'all .4s ease-in-out',
-    opacity: tasksOn ? 1 : 0,
-    height: tasksOn ? 'auto' : 0,
-    borderColor: Colors.grey200,
-    borderStyle: 'solid',
-    borderWidth: 1,
-    borderRadius: 5,
-  }),
-  taskTextBox: {
+  addTaskTextBox: {
     fontSize: '0.8rem',
     fontWeight: 400,
     color: Colors.grey700,
     display: 'block',
   },
-  taskHint: {
+  addTaskHint: {
     fontSize: '0.8rem',
     fontWeight: 400,
     marginLeft: '0.5rem',
   },
-  taskListItem: {
-    paddingTop: 5,
-  },
-  taskTxt: {
-    fontSize: '0.8rem',
-    fontWeight: 400,
-    color: Colors.grey700,
-    whiteSpace: 'normal',
-    wordWrap: 'break-word',
-  },
-  taskCheckbox: (isChecked)=> ({
-    verticalAlign: 'top',
-    cursor: 'pointer',
-    display: 'inline-block',
-    ':hover': {
-      background: !isChecked ? 'url(/img/ic_done_black_18px.svg) no-repeat 4px center' : '',
-    },
-  }),
-  addTaskContainer: (tasksOn) => ({
-    transition: 'all .4s ease-in-out',
-    opacity: tasksOn ? 1 : 0,
-    height: tasksOn ? 'auto' : 0,
-    paddingLeft: 10,
-  }),
   hr: {
     width: '100%',
     borderStyle: 'solid',
@@ -170,15 +170,29 @@ export default class CardDetails extends React.Component {
     super(props);
     this.toggleCardDetails = this.toggleCardDetails.bind(this);
     this.openCardDetails = this.openCardDetails.bind(this);
-    this.saveCard = this.saveCard.bind(this);
     this.addTaskBlur = this.addTaskBlur.bind(this);
     this.showAddTaskClick = this.showAddTaskClick.bind(this);
     this.addTaskClick = this.addTaskClick.bind(this);
-    this.taskEdit = this.taskEdit.bind(this);
+    this.taskChecked = this.taskChecked.bind(this);
+    this.saveCard = this.saveCard.bind(this);
+    this.saveTask = this.saveTask.bind(this);
     this._tasks = {}; // This is to keep a reference to the task edit textBox components
     this.state = {opened: false, nameFocus: false, addTask: false, card: null};
   }
   saveCard() {
+    /* MUTATION: This is where the update card mutation will exist... for updating core attributes like name, description, etc.*/
+    const card = this.state.card;
+    card.name = this._cardName.getValue();
+    card.description = this._cardDescription.getValue();
+    this.setState({card: card });
+  }
+  saveTask(task) {
+    /* MUTATION: This is where the update 'task' mutation will exist... for updating a tasks text*/
+    const card = this.state.card;
+    const index = card.tasks.findIndex((tsk)=>{ return tsk.id === task.id;});
+    const newText = this._tasks[task.id].getValue();
+    card.tasks[index].text = newText;
+    this.setState({card: card });
   }
   openCardDetails(card) {
     this.setState({nameFocus: false, card: card });
@@ -200,8 +214,10 @@ export default class CardDetails extends React.Component {
   addTaskClick() {
     const taskText = this._addTask.getValue();
     if (taskText) {
-      const task = {text: taskText, status: 'open'};
+      /* MUTATION: This is where the add task card mutation will exist... for adding tasks to a card */
       const card = this.state.card;
+      const numTasks = card.tasks.length + 1;
+      const task = {id: card.id + '_task' + numTasks, text: taskText, status: 'open'};
       card.tasks.push(task);
       this._addTask.clearValue();
       this.setState({card: card });
@@ -213,11 +229,13 @@ export default class CardDetails extends React.Component {
       this.setState({addTask: false});
     }
   }
-  taskEdit(event) {
-    if (event.target && event.target.type !== 'checkbox') {
-    }
+  taskChecked(task, event, checked) {
+    /* MUTATION: This is where the change 'task' status card mutation will exist... */
+    const card = this.state.card;
+    const index = card.tasks.findIndex((tsk)=>{ return tsk.id === task.id;});
+    card.tasks[index].status = checked ? 'closed' : 'open';
+    this.setState({card: card });
   }
-
   render() {
     const { opened, addTask, card } = this.state;
     const { users } = this.props;
@@ -227,12 +245,25 @@ export default class CardDetails extends React.Component {
     if (card && card.name) {
       cardName = card.name;
     }
+    // Create TaskList
+    let taskList = '';
+    if (card && card.tasks) {
+      taskList = (card.tasks.map((task, index) =>
+        <li key={'list_' + task.id} style={styles.taskListItem}>
+          <div style={styles.taskCheckbox(task.status === 'closed')} key={'checkTask_' + index}><Checkbox onCheck={this.taskChecked.bind(null, task)} checked={task.status === 'closed'} iconStyle={{paddingRight: 0, marginRight: 5}} /></div>
+          <EditableTextField underlineStyle={{borderColor: 'transparent'}} txtStyle={styles.taskTxt(task.status === 'closed')} value={task.text}
+            style={{display: 'inline-block', paddingTop: 0, marginTop: -12, paddingBottom: 0, marginBottom: 0}} ref={(ref) => this._tasks[task.id] = ref}
+            hintText="What's the task?" text={task.text} btnText="Save" btnClick={this.saveTask.bind(null, task)} />
+       </li>
+     ));
+    }
     return (
       <Paper style={styles.container(opened)} ref={(ref) => this._details = ref}>
         <IconButton onClick={this.toggleCardDetails} style={{position: 'absolute', top: 0, right: 0}}>
           <FontIcon color={Colors.grey300} className="material-icons">close</FontIcon>
         </IconButton>
-        <EditableTextField txtStyle={styles.cardNameTxt} style={styles.cardName} ref={(ref) => this._cardName = ref} hintText="Card name" saveText="Save" text={cardName} />
+        <EditableTextField txtStyle={styles.cardNameTxt} style={styles.cardName} ref={(ref) => this._cardName = ref}
+           hintText="Card name" text={cardName} btnText="Save" btnClick={this.saveCard} />
         <Toolbar style={{backgroundColor: '#ffffff', paddingLeft: 0, overflow: 'visible'}}>
           <ToolbarGroup key={0} float="left">
             <AssignMenu ref={(ref) => this._assignMenu = ref} users={users} />
@@ -248,15 +279,10 @@ export default class CardDetails extends React.Component {
         <h2 style={styles.subHeader}>Tasks</h2>
         <div style={styles.tasksContainer(showTasksContainer)}>
           <ul style={{listStyleType: 'none', paddingLeft: '0.5rem', marginTop: 10}}>
-          { card ? card.tasks.map((task, index) =>
-            <li onTouchTap={this.taskEdit} key={task.id} style={styles.taskListItem}>
-                <div style={styles.taskCheckbox(false)} key={'checkTask_' + index}><Checkbox iconStyle={{paddingRight: 0, marginRight: 5}} /></div>
-                <EditableTextField underlineStyle={{borderColor: 'transparent'}} txtStyle={styles.taskTxt} value={task.text} style={{display: 'inline-block', paddingTop: 0, marginTop: -12, paddingBottom: 0, marginBottom: 0}} ref={(ref) => this._tasks[task.id] = ref} hintText="What's the task?" saveText="Save" text={task.text} />
-          </li>
-          ) : ' '}
+            {taskList}
           </ul>
           <div style={styles.addTaskContainer(addTask)}>
-            <TextField ref={(ref) => this._addTask = ref} onEnterKeyDown={this.addTaskClick} onBlur={this.addTaskBlur} style={styles.taskTextBox} hintStyle={styles.taskHint} fullWidth hintText="What's next?" />
+            <TextField ref={(ref) => this._addTask = ref} onEnterKeyDown={this.addTaskClick} onBlur={this.addTaskBlur} style={styles.addTaskTextBox} hintStyle={styles.addTaskHint} fullWidth hintText="What's next?" />
             <RaisedButton id="addTaskBtn" onTouchTap={this.addTaskClick} labelStyle={{textTransform: 'none'}} label="Add" secondary />
           </div>
         </div>
