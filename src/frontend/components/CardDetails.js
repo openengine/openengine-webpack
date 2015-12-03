@@ -10,12 +10,11 @@ import {
   FlatButton,
   RaisedButton,
   Checkbox,
-  List,
   Avatar,
 } from 'material-ui';
 import AssignMenu from './AssignMenu';
+import EditableTextField from './EditableTextField';
 import Colors from 'material-ui/lib/styles/colors';
-import ListItem from 'material-ui/lib/lists/list-item';
 const styles = {
   container: (isOpen) => ({
     width: 'auto',
@@ -31,22 +30,15 @@ const styles = {
     transform: isOpen ? 'translateX(-1%) translateZ(0px)' : 'translateX(100%) translateZ(0px)',
   }),
   cardName: {
-    fontSize: '1.0rem',
-    fontWeight: 400,
-    color: Colors.grey700,
-    textAlign: 'left',
+    marginTop: '1.5rem',
     marginLeft: '0.2rem',
     marginRight: '2.0rem',
-    whiteSpace: 'normal',
-    wordWrap: 'break-word',
+    marginBottom: '0.5rem',
   },
-  nameTextBox: {
+  cardNameTxt: {
     fontSize: '1.0rem',
     fontWeight: 400,
     color: Colors.grey700,
-    textAlign: 'left',
-    marginLeft: '0.2rem',
-    marginRight: '2.0rem',
     whiteSpace: 'normal',
     wordWrap: 'break-word',
   },
@@ -105,17 +97,17 @@ const styles = {
     marginLeft: '0.5rem',
   },
   taskListItem: {
+    paddingTop: 5,
+  },
+  taskTxt: {
     fontSize: '0.8rem',
     fontWeight: 400,
-    paddingLeft: '0rem',
-    marginLeft: 0,
-    textAlign: 'left',
-    color: Colors.grey500,
-    paddingTop: 15,
-    cursor: 'url(/img/ic_edit_black_18px.svg), auto',
+    color: Colors.grey700,
+    whiteSpace: 'normal',
+    wordWrap: 'break-word',
   },
   taskCheckbox: (isChecked)=> ({
-    verticalAlign: 'middle',
+    verticalAlign: 'top',
     cursor: 'pointer',
     display: 'inline-block',
     ':hover': {
@@ -126,6 +118,7 @@ const styles = {
     transition: 'all .4s ease-in-out',
     opacity: tasksOn ? 1 : 0,
     height: tasksOn ? 'auto' : 0,
+    paddingLeft: 10,
   }),
   hr: {
     width: '100%',
@@ -162,6 +155,7 @@ const styles = {
     color: Colors.grey300,
     lineHeight: '36px',
   },
+
 };
 @Radium
 export default class CardDetails extends React.Component {
@@ -176,10 +170,7 @@ export default class CardDetails extends React.Component {
     super(props);
     this.toggleCardDetails = this.toggleCardDetails.bind(this);
     this.openCardDetails = this.openCardDetails.bind(this);
-    this.nameChange = this.nameChange.bind(this);
     this.saveCard = this.saveCard.bind(this);
-    this.nameFocus = this.nameFocus.bind(this);
-    this.nameBlur = this.nameBlur.bind(this);
     this.addTaskBlur = this.addTaskBlur.bind(this);
     this.showAddTaskClick = this.showAddTaskClick.bind(this);
     this.addTaskClick = this.addTaskClick.bind(this);
@@ -200,17 +191,7 @@ export default class CardDetails extends React.Component {
     }
   }
   toggleCardDetails() {
-  //  this._details.toggle();
     this.setState({opened: !this.state.opened});
-  }
-  nameChange(event) {
-    this.setState({cardDetails: {name: event.target.value}});
-  }
-  nameFocus() {
-    this.setState({nameFocus: true});
-  }
-  nameBlur() {
-    this.setState({nameFocus: false});
   }
   showAddTaskClick() {
     this._addTask.focus();
@@ -234,22 +215,24 @@ export default class CardDetails extends React.Component {
   }
   taskEdit(event) {
     if (event.target && event.target.type !== 'checkbox') {
-
     }
   }
 
   render() {
-    const { opened, nameFocus, addTask, card } = this.state;
+    const { opened, addTask, card } = this.state;
     const { users } = this.props;
     const showTasksContainer = addTask || (card && card.tasks && card.tasks.length);
     const showComments = (card && card.comments && card.comments.length);
+    let cardName = '';
+    if (card && card.name) {
+      cardName = card.name;
+    }
     return (
       <Paper style={styles.container(opened)} ref={(ref) => this._details = ref}>
         <IconButton onClick={this.toggleCardDetails} style={{position: 'absolute', top: 0, right: 0}}>
           <FontIcon color={Colors.grey300} className="material-icons">close</FontIcon>
         </IconButton>
-        <h1 style={[styles.cardName, {visibility: 'hidden', top: 0, height: 0}]}>{card ? card.name : ''} </h1>
-        <TextField tabIndex={1} ref={(ref) => this._cardName = ref} onFocus={this.nameFocus} onBlur={this.nameBlur} onChange={this.nameChange} underlineStyle={ {borderColor: Colors.grey200 }} style={styles.nameTextBox} inputStyle={styles.inputStyle(nameFocus)} fullWidth hintText="Card Name" />
+        <EditableTextField txtStyle={styles.cardNameTxt} style={styles.cardName} ref={(ref) => this._cardName = ref} hintText="Card name" saveText="Save" text={cardName} />
         <Toolbar style={{backgroundColor: '#ffffff', paddingLeft: 0, overflow: 'visible'}}>
           <ToolbarGroup key={0} float="left">
             <AssignMenu ref={(ref) => this._assignMenu = ref} users={users} />
@@ -264,12 +247,12 @@ export default class CardDetails extends React.Component {
         <TextField tabIndex={2} ref={(ref) => this._cardDescription = ref} hintStyle={styles.descriptionHint} underlineStyle={ {borderColor: 'transparent' }} style={styles.description} inputStyle={{padding: 5}} fullWidth hintText="Description goes here..." multiLine rows={4} />
         <h2 style={styles.subHeader}>Tasks</h2>
         <div style={styles.tasksContainer(showTasksContainer)}>
-          <ul style={{listStyleType: 'none', paddingLeft: '0.5rem', marginTop: -5}}>
+          <ul style={{listStyleType: 'none', paddingLeft: '0.5rem', marginTop: 10}}>
           { card ? card.tasks.map((task, index) =>
             <li onTouchTap={this.taskEdit} key={task.id} style={styles.taskListItem}>
-              <div style={styles.taskCheckbox(false)} key={'checkTask_' + index}><Checkbox iconStyle={{paddingRight: 0, marginRight: 5}} /></div>
-              <div style={{display: 'inline-block'}}>{task.text}</div>
-            </li>
+                <div style={styles.taskCheckbox(false)} key={'checkTask_' + index}><Checkbox iconStyle={{paddingRight: 0, marginRight: 5}} /></div>
+                <EditableTextField underlineStyle={{borderColor: 'transparent'}} txtStyle={styles.taskTxt} value={task.text} style={{display: 'inline-block', paddingTop: 0, marginTop: -12, paddingBottom: 0, marginBottom: 0}} ref={(ref) => this._tasks[task.id] = ref} hintText="What's the task?" saveText="Save" text={task.text} />
+          </li>
           ) : ' '}
           </ul>
           <div style={styles.addTaskContainer(addTask)}>
@@ -290,6 +273,10 @@ export default class CardDetails extends React.Component {
     );
   }
 }
+
+// <h1 style={[styles.cardName, {visibility: 'hidden', top: 0, height: 0}]}>{card ? card.name : ''} </h1>
+// <TextField tabIndex={1} ref={(ref) => this._cardName = ref} onFocus={this.nameFocus} onBlur={this.nameBlur} onChange={this.nameChange} underlineStyle={ {borderColor: Colors.grey200 }} style={styles.nameTextBox} inputStyle={styles.inputStyle(nameFocus)} fullWidth hintText="Card Name" />
+//
 
 // <List touch>
 // { card ? card.tasks.map((task, index) =>
