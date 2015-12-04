@@ -15,6 +15,7 @@ import {
 import AssignMenu from './AssignMenu';
 import EditableTextField from './EditableTextField';
 import Colors from 'material-ui/lib/styles/colors';
+import moment from 'moment';
 const styles = {
   container: (isOpen) => ({
     width: 'auto',
@@ -173,6 +174,20 @@ const styles = {
     whiteSpace: 'normal',
     wordWrap: 'break-word',
   },
+  commentPostedBy: {
+    fontSize: '0.9rem',
+    fontWeight: 400,
+    color: Colors.grey700,
+    whiteSpace: 'normal',
+    wordWrap: 'break-word',
+  },
+  commentDate: {
+    fontSize: '0.7rem',
+    fontWeight: 400,
+    color: Colors.grey500,
+    whiteSpace: 'normal',
+    wordWrap: 'break-word',
+  },
   addCommentTextBox: {
     fontSize: '0.8rem',
     fontWeight: 400,
@@ -295,7 +310,7 @@ export default class CardDetails extends React.Component {
       /* MUTATION: This is where the add comment to card mutation will exist...*/
       const card = this.state.card;
       const numComments = card.comments.length + 1;
-      const comment = {id: card.id + '_comment' + numComments, text: commentText, createdAt: new Date().getTime().to_s, postedBy: this.props.currentUser};
+      const comment = {id: card.id + '_comment' + numComments, text: commentText, createdAt: new Date().getTime(), postedBy: this.props.currentUser};
       card.comments.push(comment);
       this._addComment.clearValue();
       this.setState({card: card });
@@ -312,14 +327,17 @@ export default class CardDetails extends React.Component {
     }
     // Get Avatar Initials to be used
     let avatar = '?';
-    const splitName = currentUser.split(' ');
-    if (splitName.length > 1) {
-      avatar = splitName[0][0] + splitName[1][0];
-    } else {
-      if (splitName.length === 1) {
-        avatar = currentUser.substring(0, 2);
+    if (currentUser) {
+      const splitName = currentUser.split(' ');
+      if (splitName.length > 1) {
+        avatar = splitName[0][0] + splitName[1][0];
+      } else {
+        if (splitName.length === 1) {
+          avatar = currentUser.substring(0, 2);
+        }
       }
     }
+
     // Create TaskList
     let taskList = '';
     if (card && card.tasks) {
@@ -339,22 +357,39 @@ export default class CardDetails extends React.Component {
     // Create CommentList
     let commentList = '';
     if (card && card.comments) {
-      commentList = (card.comments.map((comment) =>
-        <li key={'list_' + comment.id} style={styles.commentListItem}>
+      commentList = (card.comments.map((comment) =>{
+        let commentAvatar = '?';
+        const splitName = comment.postedBy.split(' ');
+        if (splitName.length > 1) {
+          commentAvatar = splitName[0][0] + splitName[1][0];
+        } else {
+          if (splitName.length === 1) {
+            commentAvatar = comment.postedBy.substring(0, 2);
+          }
+        }
+        return (<li key={'list_' + comment.id} style={styles.commentListItem}>
           <div style={styles.commentSingleContainer}>
-              <Avatar size={30} style={{fontSize: '0.8rem', flex: '0 0 auto'}} color={Colors.grey50} backgroundColor={Colors.greenA700}>{avatar}</Avatar>
+              <Avatar size={30} style={{fontSize: '0.8rem', flex: '0 0 auto'}} color={Colors.grey50} backgroundColor={Colors.greenA700}>{commentAvatar}</Avatar>
               <div style={styles.commentDataContainer}>
                 <div>
-                  <div style={{display: 'inline-block'}}>{comment.postedBy}</div>
-                  <div style={{display: 'inline-block'}}>{}</div>
+                  <div style={[styles.commentPostedBy, {display: 'inline-block'}]}>{comment.postedBy}</div>
+                  <div style={[styles.commentDate, {display: 'inline-block', marginLeft: 10}]}>{moment(comment.createdAt).calendar(null, {
+                    sameDay: '[Today] [at] h:mm a',
+                    nextDay: '[Tomorrow] [at] h:mm a',
+                    nextWeek: 'dddd [at] h:mm a',
+                    lastDay: '[Yesterday] [at] h:mm a',
+                    lastWeek: '[Last] dddd [at] h:mm a',
+                    sameElse: 'ddd, MMM Do YYYY, [at] h:mm a',
+                  })}
+                 </div>
                 </div>
-                <EditableTextField multiLine style={{position: 'relative'}} underlineStyle={{borderColor: 'transparent'}}
+                <EditableTextField multiLine style={{position: 'relative', marginTop: 5}} underlineStyle={{borderColor: 'transparent'}}
                   txtStyle={styles.commentTxt} value={comment.text} ref={(ref) => this._comments[comment.id] = ref} hintText="Say what?"
                   text={comment.text} btnText="Update" btnClick={this.saveComment.bind(null, comment)} />
               </div>
           </div>
-       </li>
-     ));
+       </li>);
+      }));
     }
     return (
       <Paper style={styles.container(opened)} ref={(ref) => this._details = ref}>
