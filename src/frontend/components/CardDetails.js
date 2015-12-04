@@ -28,7 +28,7 @@ const styles = {
     top: 0,
     bottom: 0,
     zIndex: 5,
-    maxWidth: '50%',
+    maxWidth: '33%',
     transform: isOpen ? 'translateX(-1%) translateZ(0px)' : 'translateX(100%) translateZ(0px)',
   }),
   subHeader: {
@@ -42,6 +42,7 @@ const styles = {
     marginLeft: '0.2rem',
     marginRight: '2.0rem',
     marginBottom: '0.5rem',
+    position: 'relative',
   },
   cardNameTxt: {
     fontSize: '1.0rem',
@@ -70,7 +71,16 @@ const styles = {
     borderRadius: 5,
   }),
   taskListItem: {
-    paddingTop: 5,
+    position: 'relative',
+  },
+  taskSingleContainer: {
+    display: 'flex',
+    flexFlow: 'row nowrap',
+    justifyContent: 'flex-start',
+    alignItems: 'stretch',
+    overflow: 'hidden',
+    width: '100%',
+    position: 'relative',
   },
   taskTxt: (isClosed) => ({
     fontSize: '0.8rem',
@@ -81,11 +91,13 @@ const styles = {
     textDecoration: isClosed ? 'line-through' : 'none',
   }),
   taskCheckbox: (isChecked)=> ({
+    flex: '0 0 auto',
     verticalAlign: 'top',
     cursor: 'pointer',
-    display: 'inline-block',
+    position: 'relative',
+    display: 'block',
     ':hover': {
-      background: !isChecked ? 'url(/img/ic_done_black_18px.svg) no-repeat 4px center' : '',
+      background: !isChecked ? 'url(/img/ic_done_black_18px.svg) no-repeat 3px 2px' : '',
     },
   }),
   addTaskContainer: (tasksOn) => ({
@@ -132,13 +144,40 @@ const styles = {
     opacity: commentsOn ? 1 : 0,
     height: commentsOn ? 'auto' : 0,
   }),
-  commentTextBox: {
+  commentListItem: {
+    position: 'relative',
+  },
+  commentSingleContainer: {
+    display: 'flex',
+    flexFlow: 'row nowrap',
+    justifyContent: 'flex-start',
+    alignItems: 'stretch',
+    overflow: 'hidden',
+    width: '100%',
+  },
+  commentDataContainer: {
+    display: 'flex',
+    flexFlow: 'column nowrap',
+    justifyContent: 'flex-start',
+    alignItems: 'stretch',
+    flex: '1 1 auto',
+    width: '100%',
+    marginLeft: 5,
+  },
+  commentTxt: {
+    fontSize: '0.8rem',
+    fontWeight: 400,
+    color: Colors.grey700,
+    whiteSpace: 'normal',
+    wordWrap: 'break-word',
+  },
+  addCommentTextBox: {
     fontSize: '0.8rem',
     fontWeight: 400,
     color: Colors.grey700,
     marginLeft: 5,
   },
-  commentHint: {
+  addCommentHint: {
     fontSize: '0.8rem',
     fontWeight: 400,
     marginLeft: '0.5rem',
@@ -165,6 +204,7 @@ export default class CardDetails extends React.Component {
     card: PropTypes.object,
     toggleCard: PropTypes.func,
     users: PropTypes.array,
+    currentUser: PropTypes.string,
   }
   constructor(props) {
     super(props);
@@ -176,7 +216,10 @@ export default class CardDetails extends React.Component {
     this.taskChecked = this.taskChecked.bind(this);
     this.saveCard = this.saveCard.bind(this);
     this.saveTask = this.saveTask.bind(this);
+    this.addCommentClick = this.addCommentClick.bind(this);
+    this.saveComment = this.saveComment.bind(this);
     this._tasks = {}; // This is to keep a reference to the task edit textBox components
+    this._comments = {}; // This is to keep a reference to the comment edit textBox components
     this.state = {opened: false, nameFocus: false, addTask: false, card: null};
   }
   saveCard() {
@@ -192,6 +235,14 @@ export default class CardDetails extends React.Component {
     const index = card.tasks.findIndex((tsk)=>{ return tsk.id === task.id;});
     const newText = this._tasks[task.id].getValue();
     card.tasks[index].text = newText;
+    this.setState({card: card });
+  }
+  saveComment(comment) {
+    /* MUTATION: This is where the update 'task' mutation will exist... for updating a tasks text*/
+    const card = this.state.card;
+    const index = card.comments.findIndex((cmt)=>{ return cmt.id === comment.id;});
+    const newText = this._comments[comment.id].getValue();
+    card.comment[index].text = newText;
     this.setState({card: card });
   }
   openCardDetails(card) {
@@ -213,7 +264,7 @@ export default class CardDetails extends React.Component {
   }
   addTaskClick() {
     const taskText = this._addTask.getValue();
-    if (taskText) {
+    if (taskText && taskText.trim()) {
       /* MUTATION: This is where the add task card mutation will exist... for adding tasks to a card */
       const card = this.state.card;
       const numTasks = card.tasks.length + 1;
@@ -236,24 +287,66 @@ export default class CardDetails extends React.Component {
     card.tasks[index].status = checked ? 'closed' : 'open';
     this.setState({card: card });
   }
+  addCommentClick() {
+    const commentText = this._addComment.getValue();
+    if (commentText && commentText.trim()) {
+      /* MUTATION: This is where the add comment to card mutation will exist...*/
+      const card = this.state.card;
+      const numComments = card.comments.length + 1;
+      const comment = {id: card.id + '_comment' + numComments, text: commentText};
+      card.comments.push(comment);
+      this._addComment.clearValue();
+      this.setState({card: card });
+    }
+  }
   render() {
     const { opened, addTask, card } = this.state;
-    const { users } = this.props;
+    const { users, currentUser } = this.props;
     const showTasksContainer = addTask || (card && card.tasks && card.tasks.length);
     const showComments = (card && card.comments && card.comments.length);
     let cardName = '';
     if (card && card.name) {
       cardName = card.name;
     }
+    // Get Avatar Initials to be used
+    let avatar = '?';
+    const splitName = currentUser.split(' ');
+    if (splitName.length > 1) {
+      avatar = splitName[0][0] + splitName[1][0];
+    } else {
+      if (splitName.length === 1) {
+        avatar = currentUser.substring(0, 2);
+      }
+    }
     // Create TaskList
     let taskList = '';
     if (card && card.tasks) {
       taskList = (card.tasks.map((task, index) =>
         <li key={'list_' + task.id} style={styles.taskListItem}>
-          <div style={styles.taskCheckbox(task.status === 'closed')} key={'checkTask_' + index}><Checkbox onCheck={this.taskChecked.bind(null, task)} checked={task.status === 'closed'} iconStyle={{paddingRight: 0, marginRight: 5}} /></div>
+        <div style={styles.taskSingleContainer}>
+          <div style={styles.taskCheckbox(task.status === 'closed')} key={'checkTask_' + index}>
+            <Checkbox onCheck={this.taskChecked.bind(null, task)} checked={task.status === 'closed'} iconStyle={{paddingRight: 0, marginRight: 5}} />
+          </div>
           <EditableTextField underlineStyle={{borderColor: 'transparent'}} txtStyle={styles.taskTxt(task.status === 'closed')} value={task.text}
-            style={{display: 'inline-block', paddingTop: 0, marginTop: -12, paddingBottom: 0, marginBottom: 0}} ref={(ref) => this._tasks[task.id] = ref}
+            style={{position: 'relative', flex: '1 1 auto'}} ref={(ref) => this._tasks[task.id] = ref}
             hintText="What's the task?" text={task.text} btnText="Save" btnClick={this.saveTask.bind(null, task)} />
+        </div>
+       </li>
+     ));
+    }
+    // Create CommentList
+    let commentList = '';
+    if (card && card.comments) {
+      commentList = (card.comments.map((comment) =>
+        <li key={'list_' + comment.id} style={styles.commentListItem}>
+          <div style={styles.commentSingleContainer}>
+              <Avatar size={30} style={{fontSize: '0.8rem', flex: '0 0 auto'}} color={Colors.grey50} backgroundColor={Colors.greenA700}>{avatar}</Avatar>
+              <div style={styles.commentDataContainer}>
+                <EditableTextField multiLine style={{position: 'relative'}} underlineStyle={{borderColor: 'transparent'}}
+                  txtStyle={styles.commentTxt} value={comment.text} ref={(ref) => this._comments[comment.id] = ref} hintText="Say what?"
+                  text={comment.text} btnText="Update" btnClick={this.saveComment.bind(null, comment)} />
+              </div>
+          </div>
        </li>
      ));
     }
@@ -262,7 +355,7 @@ export default class CardDetails extends React.Component {
         <IconButton onClick={this.toggleCardDetails} style={{position: 'absolute', top: 0, right: 0}}>
           <FontIcon color={Colors.grey300} className="material-icons">close</FontIcon>
         </IconButton>
-        <EditableTextField txtStyle={styles.cardNameTxt} style={styles.cardName} ref={(ref) => this._cardName = ref}
+        <EditableTextField under txtStyle={styles.cardNameTxt} underlineStyle={{bottom: 3}} style={styles.cardName} ref={(ref) => this._cardName = ref}
            hintText="Card name" text={cardName} btnText="Save" btnClick={this.saveCard} />
         <Toolbar style={{backgroundColor: '#ffffff', paddingLeft: 0, overflow: 'visible'}}>
           <ToolbarGroup key={0} float="left">
@@ -291,21 +384,14 @@ export default class CardDetails extends React.Component {
         </FlatButton>
         <div style={styles.commentsContainer(showComments)}>
           <h2 style={styles.subHeader}>Comments</h2>
+            <ul style={{listStyleType: 'none', paddingLeft: '0.5rem', marginTop: 10}}>
+              {commentList}
+            </ul>
         </div>
         <hr style={styles.hr} />
-        <Avatar size={30} style={{fontSize: '0.8rem'}} color={Colors.grey50} backgroundColor={Colors.greenA700}>LE</Avatar>
-        <TextField ref={(ref) => this._addComment = ref} style={styles.commentTextBox} hintStyle={styles.commentHint} fullWidth hintText="Add comment..." />
+          <Avatar size={30} style={{fontSize: '0.8rem'}} color={Colors.grey50} backgroundColor={Colors.greenA700}>{avatar}</Avatar>
+          <TextField multiline ref={(ref) => this._addComment = ref} onEnterKeyDown={this.addCommentClick} style={styles.addCommentTextBox} hintStyle={styles.addCommentHint} fullWidth hintText="Add comment..." />
        </Paper>
     );
   }
 }
-
-// <h1 style={[styles.cardName, {visibility: 'hidden', top: 0, height: 0}]}>{card ? card.name : ''} </h1>
-// <TextField tabIndex={1} ref={(ref) => this._cardName = ref} onFocus={this.nameFocus} onBlur={this.nameBlur} onChange={this.nameChange} underlineStyle={ {borderColor: Colors.grey200 }} style={styles.nameTextBox} inputStyle={styles.inputStyle(nameFocus)} fullWidth hintText="Card Name" />
-//
-
-// <List touch>
-// { card ? card.tasks.map((task, index) =>
-//   <ListItem onTouchTap={this.taskEdit} key={'task_' + index} style={styles.taskListItem} leftIcon={<div style={styles.taskCheckbox(false)} key={'checkTask_' + index}><Checkbox /></div>}><div style={{position: 'relative', left: -25}}>{task.text}</div></ListItem>
-// ) : ' '}
-// </List>

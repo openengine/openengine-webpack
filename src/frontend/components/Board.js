@@ -72,6 +72,7 @@ class Board extends React.Component {
   }
   toggleCardDetails(card) {
     card.tasks = [{id: card.id + '_task1', text: 'task 1', status: 'open'}, {id: card.id + '_task2', text: 'task 2', status: 'closed'}, {id: card.id + '_task3', text: 'task 3', status: 'open'}];
+    card.comments = [{id: card.id + '_comment1', text: 'Nice.'}, {id: card.id + '_comment3', text: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magn.'}, {id: card.id + '_comment2', text: 'I like this comment?'}];
     this.setState({detailsCard: card});
     this._cardDetails.openCardDetails(card);
   }
@@ -95,7 +96,7 @@ class Board extends React.Component {
             />
           )}
         </div>
-       <CardDetails users={viewer.users} card={detailsCard} ref={(ref) => this._cardDetails = ref} />
+       <CardDetails users={viewer.users} currentUser={viewer.name} card={detailsCard} ref={(ref) => this._cardDetails = ref} />
       </div>
     );
   }
@@ -127,6 +128,7 @@ export default Relay.createContainer(DragBoard, {
     `,
     viewer: () => Relay.QL`
       fragment on User {
+        name,
         users {
           id
           name
