@@ -146,6 +146,8 @@ const styles = {
   }),
   commentListItem: {
     position: 'relative',
+    paddingTop: 10,
+    paddingBottom: 10,
   },
   commentSingleContainer: {
     display: 'flex',
@@ -242,7 +244,7 @@ export default class CardDetails extends React.Component {
     const card = this.state.card;
     const index = card.comments.findIndex((cmt)=>{ return cmt.id === comment.id;});
     const newText = this._comments[comment.id].getValue();
-    card.comment[index].text = newText;
+    card.comments[index].text = newText;
     this.setState({card: card });
   }
   openCardDetails(card) {
@@ -293,7 +295,7 @@ export default class CardDetails extends React.Component {
       /* MUTATION: This is where the add comment to card mutation will exist...*/
       const card = this.state.card;
       const numComments = card.comments.length + 1;
-      const comment = {id: card.id + '_comment' + numComments, text: commentText};
+      const comment = {id: card.id + '_comment' + numComments, text: commentText, createdAt: new Date().getTime().to_s, postedBy: this.props.currentUser};
       card.comments.push(comment);
       this._addComment.clearValue();
       this.setState({card: card });
@@ -342,6 +344,10 @@ export default class CardDetails extends React.Component {
           <div style={styles.commentSingleContainer}>
               <Avatar size={30} style={{fontSize: '0.8rem', flex: '0 0 auto'}} color={Colors.grey50} backgroundColor={Colors.greenA700}>{avatar}</Avatar>
               <div style={styles.commentDataContainer}>
+                <div>
+                  <div style={{display: 'inline-block'}}>{comment.postedBy}</div>
+                  <div style={{display: 'inline-block'}}>{}</div>
+                </div>
                 <EditableTextField multiLine style={{position: 'relative'}} underlineStyle={{borderColor: 'transparent'}}
                   txtStyle={styles.commentTxt} value={comment.text} ref={(ref) => this._comments[comment.id] = ref} hintText="Say what?"
                   text={comment.text} btnText="Update" btnClick={this.saveComment.bind(null, comment)} />

@@ -5,7 +5,7 @@ import {
   TextField,
   RaisedButton,
 } from 'material-ui';
-
+import Colors from 'material-ui/lib/styles/colors';
 const styles = {
   txtLbl: (isFocus) => ({
     top: 0,
@@ -13,6 +13,9 @@ const styles = {
     height: isFocus ? 'auto' : 0,
     cursor: isFocus ? 'url(/img/ic_edit_black_18px.svg), auto' : 'text',
     lineHeight: '150%',
+    ':hover': {
+      boxShadow: '-2px 0px 0px 0px #CFD8DC',
+    },
   }),
   txt: (isFocus) => ({
     lineHeight: '150%',
@@ -92,9 +95,9 @@ export default class EditableTextField extends React.Component {
     const { text, btnText, style, value, txtStyle, underlineStyle, multiLine } = this.props;
     const { txtFocus } = this.state;
     // Merge the passed in style with the focus style of the textField
-    let fullTxtStyle = styles.txt(txtFocus);
+    let combinedTxtStyle = styles.txt(txtFocus);
     if (txtStyle) {
-      fullTxtStyle = update(txtStyle, {$merge: styles.txt(txtFocus)});
+      combinedTxtStyle = update(txtStyle, {$merge: styles.txt(txtFocus)});
     }
     // We need to override some Material-Ui internal styles using Radium's tyle scope selector if the textbox is Multiline aka textarea
     let multiLineStyle = '';
@@ -109,13 +112,14 @@ export default class EditableTextField extends React.Component {
           }}
         />);
     }
+    const multiLineFocus = (multiLine && !txtFocus);
     return (
       <div className={multiLine ? 'editableMultiLine' : ''} style={style}>
         {multiLineStyle}
         <div onClick={this.txtFocus} style={[txtStyle, styles.txtLbl(!txtFocus)]}>{text}</div>
-        <TextField style={{height: 'auto'}} multiLine={multiLine} onEnterKeyDown={this.enterPressed.bind(this)}
+        <TextField style={{height: 'auto', position: multiLineFocus ? 'absolute' : 'inherit'}} multiLine={multiLine} onEnterKeyDown={this.enterPressed.bind(this)}
           ref={(ref) => this._txt = ref} tabIndex={1} defaultValue={value} onFocus={this.txtFocus} onBlur={this.txtBlur}
-          underlineFocusStyle={{bottom: 3}} underlineStyle={underlineStyle} inputStyle={fullTxtStyle} fullWidth />
+          underlineFocusStyle={{bottom: 3}} underlineStyle={underlineStyle} inputStyle={combinedTxtStyle} fullWidth />
         <div style={styles.editBtn(txtFocus)}>
             <RaisedButton id="editableTxtBtn" fullWidth={false} onClick={this.innerBtnClick} labelStyle={{textTransform: 'none'}} label={btnText} secondary />
         </div>
