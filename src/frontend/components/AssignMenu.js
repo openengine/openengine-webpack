@@ -5,6 +5,7 @@ import {
   IconMenu,
   FontIcon,
   Avatar,
+  AutoComplete,
 } from 'material-ui';
 import MenuItem from 'material-ui/lib/menus/menu-item';
 import Colors from 'material-ui/lib/styles/colors';
@@ -28,6 +29,8 @@ const styles = {
     textAlign: 'left',
     verticalAlign: 'middle',
     minWidth: 0,
+    display: 'inline-block',
+    marginRight: 5,
   },
   menuItem: {
     color: Colors.grey600,
@@ -65,28 +68,77 @@ export default class AssignMenu extends React.Component {
       </FlatButton>
     );
     return (
-      <IconMenu openDirection="bottom-left" style={{verticalAlign: 'middle'}} onItemTouchTap={this.itemSelected}
-      iconButtonElement={iconButtonElement}>
-        {users.map(user => {
-          let avatar = '?';
-          const splitName = user.name.split(' ');
-          if (splitName.length > 1) {
-            avatar = splitName[0][0] + splitName[1][0];
-          } else {
-            if (splitName.length === 1) {
-              avatar = user.name.substring(0, 2);
-            }
+      <div>
+        {iconButtonElement}
+        <AutoComplete
+          fullWidth
+          hintText = "Assign To"
+          onUpdateInput={(t) => {
+            console.log(t);
+          }}
+          showAllItems
+          dataSource={
+            users.map(user => {
+              let avatar = '?';
+              const splitName = user.name.split(' ');
+              if (splitName.length > 1) {
+                avatar = splitName[0][0] + splitName[1][0];
+              } else {
+                if (splitName.length === 1) {
+                  avatar = user.name.substring(0, 2);
+                }
+              }
+              const compObject = (
+                  <AutoComplete.Item index={user.id} key={user.id} avatar={avatar} value={user.name} style={styles.menuItem} >
+                    <Avatar size={25} style={styles.avatar} color={Colors.grey50}
+                    backgroundColor={Colors.greenA700}>{avatar}
+                    </Avatar>&nbsp;{user.name}
+                  </AutoComplete.Item>
+              );
+              return compObject;
+            }).reduce((p, c) => {p[c.props.value] = c; return p;}, {})
           }
-          return (
-            <MenuItem index={user.id} key={user.id} avatar={avatar} value={user.id} style={styles.menuItem} >
-              <Avatar size={25} style={styles.avatar} color={Colors.grey50}
-              backgroundColor={Colors.greenA700}>{avatar}
-              </Avatar>&nbsp;{user.name}
-            </MenuItem>
-          );
-        })
-        }
-      </IconMenu>
-    );
+          filter={(searchText, key) => {
+            return key.toLowerCase().indexOf(searchText.toLowerCase()) !== -1;
+          }}
+          onNewRequest={(t, index) => {console.log('request:' + index);}} />
+      </div>
+  );
   }
 }
+
+// filter={(searchText, key) => {
+//   return key.indexOf(searchText) !== -1;
+// }}
+// filter={(searchText, key) => {
+//   return key.toLowerCase().indexOf(searchText.toLowerCase()) !== -1;
+// }}
+ // .reduce((p, c, i) => {p[i] = c; return p;}, {})
+  // <IconMenu openDirection="bottom-left" style={{verticalAlign: 'middle'}} onItemTouchTap={this.itemSelected}
+  // iconButtonElement={iconButtonElement}>
+  //   {users.map(user => {
+  //     let avatar = '?';
+  //     const splitName = user.name.split(' ');
+  //     if (splitName.length > 1) {
+  //       avatar = splitName[0][0] + splitName[1][0];
+  //     } else {
+  //       if (splitName.length === 1) {
+  //         avatar = user.name.substring(0, 2);
+  //       }
+  //     }
+  //     return (
+  //       <MenuItem index={user.id} key={user.id} avatar={avatar} value={user.id} style={styles.menuItem} >
+  //         <Avatar size={25} style={styles.avatar} color={Colors.grey50}
+  //         backgroundColor={Colors.greenA700}>{avatar}
+  //         </Avatar>&nbsp;{user.name}
+  //       </MenuItem>
+  //     );
+  //   })
+  //   }
+  // </IconMenu>
+
+      //   {
+      //      a:(<AutoComplete.Item primaryText={'a'} secondaryText="&#9786;" />),
+      //      divider:(<AutoComplete.Divider/>),
+      //      b:(<AutoComplete.Item primaryText={'b'} secondaryText="&#9885;" />),
+      // }

@@ -80,6 +80,7 @@ class Board extends React.Component {
     const { board, viewer } = this.props;
     const { columns } = board;
     const { gridView, detailsCard } = this.state;
+    const team = [{name:'Luis Escobedo', id: 'user1'}, {name:'Dave Bryand', id: 'user2'}]
     return (
       <div style={[styles.container]}>
         <IconButton onClick={this.setGridView} iconStyle={styles.viewIcon(gridView)} iconClassName="material-icons" tooltipPosition="bottom-center"
@@ -96,7 +97,7 @@ class Board extends React.Component {
             />
           )}
         </div>
-       <CardDetails users={viewer.users} currentUser={viewer.name} card={detailsCard} ref={(ref) => this._cardDetails = ref} />
+       <CardDetails team={team} currentUser={viewer.name} card={detailsCard} ref={(ref) => this._cardDetails = ref} />
       </div>
     );
   }
@@ -129,10 +130,6 @@ export default Relay.createContainer(DragBoard, {
     viewer: () => Relay.QL`
       fragment on User {
         name,
-        users {
-          id
-          name
-        }
       }
     `,
   },

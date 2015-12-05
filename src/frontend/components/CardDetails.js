@@ -220,7 +220,7 @@ export default class CardDetails extends React.Component {
     boardColumn: PropTypes.object,
     card: PropTypes.object,
     toggleCard: PropTypes.func,
-    users: PropTypes.array,
+    team: PropTypes.array,
     currentUser: PropTypes.string,
   }
   constructor(props) {
@@ -318,7 +318,7 @@ export default class CardDetails extends React.Component {
   }
   render() {
     const { opened, addTask, card } = this.state;
-    const { users, currentUser } = this.props;
+    const { team, currentUser } = this.props;
     const showTasksContainer = addTask || (card && card.tasks && card.tasks.length);
     const showComments = (card && card.comments && card.comments.length);
     let cardName = '';
@@ -400,8 +400,7 @@ export default class CardDetails extends React.Component {
            hintText="Card name" text={cardName} btnText="Save" btnClick={this.saveCard} />
         <Toolbar style={{backgroundColor: '#ffffff', paddingLeft: 0, overflow: 'visible'}}>
           <ToolbarGroup key={0} float="left">
-            <AssignMenu ref={(ref) => this._assignMenu = ref} users={users} />
-            <div style={styles.assignLbl}>Assign to</div>
+            <AssignMenu ref={(ref) => this._assignMenu = ref} users={team} />
           </ToolbarGroup>
           <ToolbarGroup key={1} float="right">
             <FontIcon style={styles.icons} className="material-icons">today</FontIcon>
@@ -436,3 +435,7 @@ export default class CardDetails extends React.Component {
     );
   }
 }
+
+// <EditableTextField multiLine style={styles.description} underlineStyle={{borderColor: 'transparent'}} hintStyle={styles.descriptionHint}
+//   txtStyle={{padding: 5}} value={card.description} ref={(ref) => this._cardDescription = ref} hintText="Description goes here..."
+//   text={card.description} tabIndex={2} rows={4} btnText="Save" btnClick={this.saveCard} />

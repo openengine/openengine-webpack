@@ -41,14 +41,19 @@ export default class EditableTextField extends React.Component {
     style: PropTypes.object,
     txtStyle: PropTypes.object,
     underlineStyle: PropTypes.object,
+    hintStyle: PropTypes.object,
     value: PropTypes.string,
     text: PropTypes.string,
     btnText: PropTypes.string,
     btnClick: PropTypes.func,
     multiLine: PropTypes.bool,
+    rows: PropTypes.number,
+    tabIndex: PropTypes.number,
   };
   static defaultProps = {
     multilLine: false,
+    tabIndex: 0,
+    rows: 1,
   }
   constructor(props) {
     super(props);
@@ -92,7 +97,7 @@ export default class EditableTextField extends React.Component {
     }
   }
   render() {
-    const { text, btnText, style, value, txtStyle, underlineStyle, multiLine } = this.props;
+    const { text, btnText, style, value, txtStyle, underlineStyle, hintStyle, multiLine, tabIndex, rows, } = this.props;
     const { txtFocus } = this.state;
     // Merge the passed in style with the focus style of the textField
     let combinedTxtStyle = styles.txt(txtFocus);
@@ -118,8 +123,8 @@ export default class EditableTextField extends React.Component {
         {multiLineStyle}
         <div onClick={this.txtFocus} style={[txtStyle, styles.txtLbl(!txtFocus)]}>{text}</div>
         <TextField style={{height: 'auto', position: multiLineFocus ? 'absolute' : 'inherit'}} multiLine={multiLine} onEnterKeyDown={this.enterPressed.bind(this)}
-          ref={(ref) => this._txt = ref} tabIndex={1} defaultValue={value} onFocus={this.txtFocus} onBlur={this.txtBlur}
-          underlineFocusStyle={{bottom: 3}} underlineStyle={underlineStyle} inputStyle={combinedTxtStyle} fullWidth />
+          ref={(ref) => this._txt = ref} tabIndex={tabIndex} rows={rows} defaultValue={value} onFocus={this.txtFocus} onBlur={this.txtBlur}
+          underlineFocusStyle={{bottom: 3}} underlineStyle={underlineStyle} inputStyle={combinedTxtStyle} hintStyle={hintStyle} fullWidth />
         <div style={styles.editBtn(txtFocus)}>
             <RaisedButton id="editableTxtBtn" fullWidth={false} onClick={this.innerBtnClick} labelStyle={{textTransform: 'none'}} label={btnText} secondary />
         </div>
