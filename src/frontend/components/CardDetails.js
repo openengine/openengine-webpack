@@ -73,6 +73,8 @@ const styles = {
   }),
   taskListItem: {
     position: 'relative',
+    paddingTop: 5,
+    paddingBottom: 5,
   },
   taskSingleContainer: {
     display: 'flex',
@@ -147,8 +149,8 @@ const styles = {
   }),
   commentListItem: {
     position: 'relative',
-    paddingTop: 10,
-    paddingBottom: 10,
+    paddingTop: 5,
+    paddingBottom: 5,
   },
   commentSingleContainer: {
     display: 'flex',
@@ -347,9 +349,9 @@ export default class CardDetails extends React.Component {
           <div style={styles.taskCheckbox(task.status === 'closed')} key={'checkTask_' + index}>
             <Checkbox onCheck={this.taskChecked.bind(null, task)} checked={task.status === 'closed'} iconStyle={{paddingRight: 0, marginRight: 5}} />
           </div>
-          <EditableTextField underlineStyle={{borderColor: 'transparent'}} txtStyle={styles.taskTxt(task.status === 'closed')} value={task.text}
+          <EditableTextField uniqueKey={'textTask_' + index} underlineStyle={{borderColor: 'transparent', bottom: 3}} underlineFocusStyle={{bottom: 3}} txtContainerStyle={{height: 'auto'}} txtStyle={styles.taskTxt(task.status === 'closed')} value={task.text}
             style={{position: 'relative', flex: '1 1 auto'}} ref={(ref) => this._tasks[task.id] = ref}
-            hintText="What's the task?" text={task.text} btnText="Save" btnClick={this.saveTask.bind(null, task)} />
+            hintText="What's the task?" text={task.text} saveText="Save" onSave={this.saveTask.bind(null, task)} />
         </div>
        </li>
      ));
@@ -383,9 +385,9 @@ export default class CardDetails extends React.Component {
                   })}
                  </div>
                 </div>
-                <EditableTextField multiLine style={{position: 'relative', marginTop: 5}} underlineStyle={{borderColor: 'transparent'}}
+                <EditableTextField multiLine style={{position: 'relative'}} underlineStyle={{borderColor: 'transparent'}}
                   txtStyle={styles.commentTxt} value={comment.text} ref={(ref) => this._comments[comment.id] = ref} hintText="Say what?"
-                  text={comment.text} btnText="Update" btnClick={this.saveComment.bind(null, comment)} />
+                  text={comment.text} saveText="Update" onSave={this.saveComment.bind(null, comment)} />
               </div>
           </div>
        </li>);
@@ -396,8 +398,8 @@ export default class CardDetails extends React.Component {
         <IconButton onClick={this.toggleCardDetails} style={{position: 'absolute', top: 0, right: 0}}>
           <FontIcon color={Colors.grey300} className="material-icons">close</FontIcon>
         </IconButton>
-        <EditableTextField under txtStyle={styles.cardNameTxt} underlineStyle={{bottom: 3}} style={styles.cardName} ref={(ref) => this._cardName = ref}
-           hintText="Card name" text={cardName} btnText="Save" btnClick={this.saveCard} />
+        <EditableTextField multiLine txtStyle={styles.cardNameTxt} underlineStyle={{borderColor: Colors.grey300}} style={styles.cardName} ref={(ref) => this._cardName = ref}
+           hintText="Card name" text={cardName} saveText="Save" onSave={this.saveCard} />
         <Toolbar style={{backgroundColor: '#ffffff', paddingLeft: 0, overflow: 'visible'}}>
           <ToolbarGroup key={0} float="left">
             <AssignMenu ref={(ref) => this._assignMenu = ref} users={team} />
@@ -438,4 +440,4 @@ export default class CardDetails extends React.Component {
 
 // <EditableTextField multiLine style={styles.description} underlineStyle={{borderColor: 'transparent'}} hintStyle={styles.descriptionHint}
 //   txtStyle={{padding: 5}} value={card.description} ref={(ref) => this._cardDescription = ref} hintText="Description goes here..."
-//   text={card.description} tabIndex={2} rows={4} btnText="Save" btnClick={this.saveCard} />
+//   text={card.description} tabIndex={2} rows={4} saveText="Save" onSave={this.saveCard} />

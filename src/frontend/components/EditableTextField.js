@@ -1,37 +1,39 @@
 import React, { PropTypes } from 'react';
 import update from 'react-addons-update';
 import Radium, { Style }from 'radium';
+import debounce from 'debounce';
 import {
   TextField,
-  RaisedButton,
 } from 'material-ui';
 import Colors from 'material-ui/lib/styles/colors';
 const styles = {
-  txtLbl: (isFocus) => ({
+  txtLbl: {
+    visibility: 'hidden',
     top: 0,
-    opacity: isFocus ? 1 : 0,
-    height: isFocus ? 'auto' : 0,
-    cursor: isFocus ? 'url(/img/ic_edit_black_18px.svg), auto' : 'text',
+    height: 0,
+    zIndex: 0,
     lineHeight: '150%',
-    ':hover': {
-      boxShadow: '-2px 0px 0px 0px #CFD8DC',
-    },
-  }),
+  },
   txt: (isFocus) => ({
     lineHeight: '150%',
-    top: 0,
-    verticalAlign: 'top',
-    borderStyle: 'none',
-    height: isFocus ? 'auto' : 0,
-    opacity: isFocus ? 1 : 0,
-    position: isFocus ? 'relative' : 'absolute',
+    cursor: isFocus ? 'text' : 'url(/img/ic_edit_black_18px.svg), auto',
     zIndex: 1,
   }),
-  editBtn: (isFocus) => ({
-    opacity: isFocus ? 1 : 0,
-    height: isFocus ? 'auto' : 0,
-    position: isFocus ? 'relative' : 'absolute',
+  multiTxt: {
+    lineHeight: '150%',
+    zIndex: 1,
+  },
+  txtContainer: {
+    ':hover': { // We need a :hover property so that we can get the ":hover" state from Radium in the class below
+      borderColor: 'inherit',
+    },
+  },
+  underlineFocus: (isEditing, isSaved) => ({
+    borderColor: isEditing ? Colors.amber200 : isSaved ? Colors.green200 : Colors.blueGrey300,
   }),
+  underline: {
+    borderColor: Colors.blueGrey100,
+  },
 };
 
 @Radium
@@ -41,14 +43,17 @@ export default class EditableTextField extends React.Component {
     style: PropTypes.object,
     txtStyle: PropTypes.object,
     underlineStyle: PropTypes.object,
+    underlineFocusStyle: PropTypes.object,
+    txtContainerStyle: PropTypes.object,
     hintStyle: PropTypes.object,
     value: PropTypes.string,
     text: PropTypes.string,
-    btnText: PropTypes.string,
-    btnClick: PropTypes.func,
+    saveText: PropTypes.string,
+    onSave: PropTypes.func,
     multiLine: PropTypes.bool,
     rows: PropTypes.number,
     tabIndex: PropTypes.number,
+    uniqueKey: PropTypes.string,
   };
   static defaultProps = {
     multilLine: false,
@@ -59,11 +64,11 @@ export default class EditableTextField extends React.Component {
     super(props);
     this.txtBlur = this.txtBlur.bind(this);
     this.txtFocus = this.txtFocus.bind(this);
-    this.innerBtnClick = this.innerBtnClick.bind(this);
-    this.enterPressed = this.enterPressed.bind(this);
+    this.innerOnSave = debounce(this.innerOnSave.bind(this), 1000).bind(this);
     this.setValue = this.setValue.bind(this);
     this.getValue = this.getValue.bind(this);
-    this.state = {txtFocus: false, enterKeyPressed: false};
+    this.txtChange = this.txtChange.bind(this);
+    this.state = {txtFocus: false, isEditing: false, isSaved: false};
   }
   setValue(value) {
     this._txt.setValue(value);
@@ -72,38 +77,42 @@ export default class EditableTextField extends React.Component {
     return this._txt.getValue();
   }
   txtFocus() {
-    this.setState({txtFocus: true, enterKeyPressed: false});
+    this.setState({txtFocus: true});
     this._txt.focus();
   }
-  innerBtnClick() {
-    if (this.props.btnClick) {
-      this.props.btnClick.call();
-    }
-    this.setState({txtFocus: false});
+  innerOnSave() {
+    this.setState({isEditing: false, isSaved: true});
+    // if (this.props.onSave) {
+    //   this.props.onSave.call();
+    // }
+    // this.setState({txtFocus: false});
   }
-  enterPressed() {
-    if (!this.props.multiLine) {
-      this.innerBtnClick();
-      // Call blur() in the callback so that we can tell that the enter key has been pressed...
-      this.setState({enterKeyPressed: true}, ()=>{ this._txt.blur(); });
-    }
+  txtChange(event) {
+    this.setState({isEditing: true, isSaved: false});
+    this.innerOnSave();
   }
   txtBlur(event) {
-    // We need to reset the textBox only when we are actually "bluring" off the textBox i.e. not when we press Enter or hit the primary Button..
-    const reset = (!this.state.enterKeyPressed && (!event.relatedTarget || !event.relatedTarget.id.startsWith('editableTxtBtn')));
-    if (reset) {
-      // this._txt.setValue(this.props.text);
-      this.setState({txtFocus: false});
-    }
+    this.setState({txtFocus: false, isEditing: false, isSaved: false});
   }
   render() {
-    const { text, btnText, style, value, txtStyle, underlineStyle, hintStyle, multiLine, tabIndex, rows, } = this.props;
-    const { txtFocus } = this.state;
+    const { text, saveText, style, value, txtStyle, txtContainerStyle, underlineFocusStyle, underlineStyle, hintStyle, multiLine, tabIndex, rows, uniqueKey } = this.props;
+    const { txtFocus, isEditing, isSaved } = this.state;
+    const isTxtHover = Radium.getState(this.state, uniqueKey, ':hover');
+
     // Merge the passed in style with the focus style of the textField
-    let combinedTxtStyle = styles.txt(txtFocus);
+    let combinedTxtStyle = multiLine ? styles.multiTxt : styles.txt(txtFocus);
     if (txtStyle) {
-      combinedTxtStyle = update(txtStyle, {$merge: styles.txt(txtFocus)});
+      combinedTxtStyle = update(txtStyle, {$merge: multiLine ? styles.multiTxt : styles.txt(txtFocus)});
     }
+    let combinedUnderlineStyle = styles.underline;
+    if (underlineStyle) {
+      combinedUnderlineStyle = update(underlineStyle, {$merge: styles.underline});
+    }
+    let combinedUnderlineFocusStyle = styles.underlineFocus(isEditing, isSaved);
+    if (underlineFocusStyle) {
+      combinedUnderlineFocusStyle = update(underlineFocusStyle, {$merge: styles.underlineFocus(isEditing, isSaved)});
+    }
+
     // We need to override some Material-Ui internal styles using Radium's tyle scope selector if the textbox is Multiline aka textarea
     let multiLineStyle = '';
     if (multiLine) {
@@ -111,23 +120,20 @@ export default class EditableTextField extends React.Component {
         <Style scopeSelector=".editableMultiLine"
           rules={{
             textarea: {
-              marginTop: '0px !important',
-              marginBottom: '0px !important',
+              lineHeight: '150% !important',
+              cursor: 'url(/img/ic_edit_black_18px.svg), auto',
+              zIndex: 1,
             },
           }}
         />);
     }
-    const multiLineFocus = (multiLine && !txtFocus);
     return (
-      <div className={multiLine ? 'editableMultiLine' : ''} style={style}>
+      <div key={uniqueKey} className={multiLine ? 'editableMultiLine' : ''} style={[style, styles.txtContainer]}>
         {multiLineStyle}
-        <div onClick={this.txtFocus} style={[txtStyle, styles.txtLbl(!txtFocus)]}>{text}</div>
-        <TextField style={{height: 'auto', position: multiLineFocus ? 'absolute' : 'inherit'}} multiLine={multiLine} onEnterKeyDown={this.enterPressed.bind(this)}
+        <div onClick={this.txtFocus} style={[txtStyle, styles.txtLbl]}>{text}</div>
+        <TextField style={txtContainerStyle} multiLine={multiLine}
           ref={(ref) => this._txt = ref} tabIndex={tabIndex} rows={rows} defaultValue={value} onFocus={this.txtFocus} onBlur={this.txtBlur}
-          underlineFocusStyle={{bottom: 3}} underlineStyle={underlineStyle} inputStyle={combinedTxtStyle} hintStyle={hintStyle} fullWidth />
-        <div style={styles.editBtn(txtFocus)}>
-            <RaisedButton id="editableTxtBtn" fullWidth={false} onClick={this.innerBtnClick} labelStyle={{textTransform: 'none'}} label={btnText} secondary />
-        </div>
+          underlineStyle={isTxtHover ? combinedUnderlineStyle : underlineStyle} onChange={this.txtChange} underlineFocusStyle={combinedUnderlineFocusStyle} inputStyle={combinedTxtStyle} hintStyle={hintStyle} fullWidth />
       </div>
     );
   }
