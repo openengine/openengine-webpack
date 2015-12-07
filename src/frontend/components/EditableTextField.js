@@ -25,7 +25,7 @@ const styles = {
   },
   txtContainer: {
     ':hover': { // We need a :hover property so that we can get the ":hover" state from Radium in the class below
-      borderColor: 'inherit',
+      zIndex: 1,
     },
   },
   underlineFocus: (isEditing, isSaved) => ({
@@ -64,6 +64,8 @@ export default class EditableTextField extends React.Component {
     super(props);
     this.txtBlur = this.txtBlur.bind(this);
     this.txtFocus = this.txtFocus.bind(this);
+    // The save method is 'debounced' to allow for a delay in the saving of the textBox's value for a specified amount of ms while
+    // the user is typing...
     this.innerOnSave = debounce(this.innerOnSave.bind(this), 1000).bind(this);
     this.setValue = this.setValue.bind(this);
     this.getValue = this.getValue.bind(this);
@@ -77,25 +79,27 @@ export default class EditableTextField extends React.Component {
     return this._txt.getValue();
   }
   txtFocus() {
-    this.setState({txtFocus: true});
+    this.setState({txtFocus: true, isSaved: false});
     this._txt.focus();
   }
   innerOnSave() {
+    if (this.props.onSave) {
+      this.props.onSave.call();
+    }
     this.setState({isEditing: false, isSaved: true});
-    // if (this.props.onSave) {
-    //   this.props.onSave.call();
-    // }
-    // this.setState({txtFocus: false});
   }
-  txtChange(event) {
-    this.setState({isEditing: true, isSaved: false});
+  txtChange() {
+    this.setState({isEditing: true});
     this.innerOnSave();
   }
-  txtBlur(event) {
-    this.setState({txtFocus: false, isEditing: false, isSaved: false});
+  txtBlur() {
+    // We also save when the control loses focus...
+    this.innerOnSave();
+    this.setState({txtFocus: false, isSaved: false});
   }
   render() {
-    const { text, saveText, style, value, txtStyle, txtContainerStyle, underlineFocusStyle, underlineStyle, hintStyle, multiLine, tabIndex, rows, uniqueKey } = this.props;
+    const { text, style, value, txtStyle, txtContainerStyle, underlineFocusStyle, underlineStyle, hintStyle,
+      hintText, multiLine, tabIndex, rows, uniqueKey } = this.props;
     const { txtFocus, isEditing, isSaved } = this.state;
     const isTxtHover = Radium.getState(this.state, uniqueKey, ':hover');
 
@@ -133,7 +137,8 @@ export default class EditableTextField extends React.Component {
         <div onClick={this.txtFocus} style={[txtStyle, styles.txtLbl]}>{text}</div>
         <TextField style={txtContainerStyle} multiLine={multiLine}
           ref={(ref) => this._txt = ref} tabIndex={tabIndex} rows={rows} defaultValue={value} onFocus={this.txtFocus} onBlur={this.txtBlur}
-          underlineStyle={isTxtHover ? combinedUnderlineStyle : underlineStyle} onChange={this.txtChange} underlineFocusStyle={combinedUnderlineFocusStyle} inputStyle={combinedTxtStyle} hintStyle={hintStyle} fullWidth />
+          underlineStyle={isTxtHover ? combinedUnderlineStyle : underlineStyle} underlineFocusStyle={combinedUnderlineFocusStyle}
+          inputStyle={combinedTxtStyle} hintStyle={hintStyle} onChange={this.txtChange} hintText={hintText} fullWidth />
       </div>
     );
   }
