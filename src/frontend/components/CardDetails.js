@@ -11,6 +11,7 @@ import {
   RaisedButton,
   Checkbox,
   Avatar,
+  DatePicker,
 } from 'material-ui';
 import AssignMenu from './AssignMenu';
 import EditableTextField from './EditableTextField';
@@ -51,6 +52,45 @@ const styles = {
     color: Colors.grey700,
     whiteSpace: 'normal',
     wordWrap: 'break-word',
+  },
+  toolbar: {
+    display: 'flex',
+    flexFlow: 'row nowrap',
+    justifyContent: 'flex-start',
+    alignItems: 'stretch',
+    overflow: 'visible',
+    width: '100%',
+    backgroundColor: '#ffffff',
+    paddingLeft: 0,
+  },
+  dateBtn: {
+    height: 'auto',
+    display: 'inline-block',
+    margin: 0,
+    minWidth: 0,
+  },
+  dateBtnLbl: (isOpen) => ({
+    fontSize: '0.8rem',
+    fontWeight: 400,
+    color: isOpen ? Colors.grey800 : Colors.grey400,
+    textAlign: 'left',
+    verticalAlign: 'middle',
+    paddingLeft: 0,
+    marginLeft: 0,
+    paddingRight: 0,
+    textTransform: 'none',
+  }),
+  dateBtnIcon: (isOpen) => ({
+    verticalAlign: 'middle',
+    fontSize: '1.4rem',
+    top: -2,
+    color: isOpen ? Colors.grey800 : Colors.grey400,
+  }),
+  icons: {
+    color: Colors.grey400,
+    lineHeight: '36px',
+    float: 'none',
+    paddingLeft: 15,
   },
   description: {
     borderColor: Colors.grey200,
@@ -117,7 +157,7 @@ const styles = {
   addTaskBtnLbl: {
     fontSize: '0.7rem',
     fontWeight: 400,
-    color: Colors.grey300,
+    color: Colors.grey400,
     textAlign: 'left',
     verticalAlign: 'middle',
     paddingLeft: 0,
@@ -209,11 +249,6 @@ const styles = {
     display: 'inline-block',
     marginLeft: 10,
   },
-  icons: {
-    color: Colors.grey300,
-    lineHeight: '36px',
-  },
-
 };
 @Radium
 export default class CardDetails extends React.Component {
@@ -237,9 +272,11 @@ export default class CardDetails extends React.Component {
     this.saveTask = this.saveTask.bind(this);
     this.addCommentClick = this.addCommentClick.bind(this);
     this.saveComment = this.saveComment.bind(this);
+    this.toggleDatePicker = this.toggleDatePicker.bind(this);
+    this.dueDateChange = this.dueDateChange.bind(this);
     this._tasks = {}; // This is to keep a reference to the task edit textBox components
     this._comments = {}; // This is to keep a reference to the comment edit textBox components
-    this.state = {opened: false, nameFocus: false, addTask: false, card: null};
+    this.state = {opened: false, dateOpen: false, addTask: false, card: null};
   }
   saveCard() {
     /* MUTATION: This is where the update card mutation will exist... for updating core attributes like name, description, etc.*/
@@ -265,11 +302,15 @@ export default class CardDetails extends React.Component {
     this.setState({card: card });
   }
   openCardDetails(card) {
-    this.setState({nameFocus: false, card: card });
+    this.setState({card: card, dateOpen: false});
+    this._datePicker.refs.dialogWindow.dismiss();
     this._cardName.setValue(card.name);
     this._cardDescription.setValue('');
     if (card.description) {
       this._cardDescription.setValue(card.description);
+    }
+    if (card.dueDate) {
+      this._datePicker.setDate(moment(card.dueDate).toDate());
     }
     if (!this.state.opened) {
       this.toggleCardDetails();
@@ -319,13 +360,40 @@ export default class CardDetails extends React.Component {
       this.setState({card: card });
     }
   }
+  toggleDatePicker() {
+    // Need to reach into the control and set off the DatePicker window's 'close' event
+    if (!this.state.dateOpen) {
+      this._datePicker.openDialog();
+      this.setState({dateOpen: true });
+    } else {
+      this._datePicker.refs.dialogWindow.dismiss();
+      this.setState({dateOpen: false });
+    }
+  }
+  dueDateChange(event, date) {
+      /* MUTATION: This is where the change 'due date' card mutation will exist... */
+    const card = this.state.card;
+    card.dueDate = moment(date).toISOString();
+    this.setState({card: card });
+    this.setState({dateOpen: false });
+  }
   render() {
-    const { opened, addTask, card } = this.state;
+    const { opened, addTask, card, dateOpen} = this.state;
     const { team, currentUser } = this.props;
     const showTasksContainer = addTask || (card && card.tasks && card.tasks.length);
     const showComments = (card && card.comments && card.comments.length);
     const cardName = card && card.name ? card.name : '';
     const cardDescription = card && card.description ? card.description : '';
+    const cardDateCal = card && card.dueDate ? moment(card.dueDate).calendar(null, {
+      sameDay: '[Due Today]',
+      nextDay: '[Due Tomorrow]',
+      nextWeek: '[Due] dddd',
+      lastDay: '[Due Yesterday]',
+      lastWeek: '[Due Last] dddd',
+      sameElse: '[Due] MMM Do',
+    }) : '';
+    const cardDate = card && card.dueDate ? moment(card.dueDate).toDate() : new Date();
+
     // Get Avatar Initials to be used
     let avatar = '?';
     if (currentUser) {
@@ -400,16 +468,20 @@ export default class CardDetails extends React.Component {
         <EditableTextField multiLine txtStyle={styles.cardNameTxt} value={cardName} underlineStyle={{borderColor: Colors.grey300}}
           style={styles.cardName} ref={(ref) => this._cardName = ref} hintText="Card name" text={cardName}
           onSave={this.saveCard} uniqueKey={'cardName'} />
-        <Toolbar style={{backgroundColor: '#ffffff', paddingLeft: 0, overflow: 'visible'}}>
-          <ToolbarGroup key={0} float="left">
+        <Toolbar style={styles.toolbar}>
+          <ToolbarGroup key={0} style={{flex: '0 1 auto'}}>
             <AssignMenu ref={(ref) => this._assignMenu = ref} users={team} />
           </ToolbarGroup>
-          <ToolbarGroup key={1} float="right">
-            <FontIcon style={styles.icons} className="material-icons">today</FontIcon>
-            <FontIcon style={styles.icons} className="material-icons">attach_file</FontIcon>
-            <FontIcon style={styles.icons} className="material-icons">delete</FontIcon>
+          <ToolbarGroup key={1} style={{flex: '1 0 auto'}}>
+          <FlatButton onTouchTap={this.toggleDatePicker} style={styles.dateBtn} hoverColor={'tranparent'} labelStyle={styles.dateBtnLbl(dateOpen)} label={cardDateCal} labelPosition="after">
+            <FontIcon style={styles.dateBtnIcon(dateOpen)} hoverColor={Colors.grey800} className="material-icons">today</FontIcon>
+          </FlatButton>
+           <FontIcon style={styles.icons} className="material-icons">attach_file</FontIcon>
+           <FontIcon style={styles.icons} className="material-icons">delete</FontIcon>
           </ToolbarGroup>
         </Toolbar>
+        <DatePicker ref={(ref) => this._datePicker = ref} defaultDate={cardDate} autoOk container="inline" onChange={this.dueDateChange} textFieldStyle={{opacity: 0, height: 0, position: 'absolute'}} />
+        <br />
         <EditableTextField multiLine style={styles.description} underlineStyle={{borderColor: 'transparent'}}
           hintStyle={styles.descriptionHint} txtStyle={{paddingLeft: 5}} value={cardDescription}
           ref={(ref) => this._cardDescription = ref} hintText="Description goes here..." text={cardDescription} tabIndex={2}
@@ -425,7 +497,7 @@ export default class CardDetails extends React.Component {
           </div>
         </div>
         <FlatButton onTouchTap={this.showAddTaskClick} style={styles.addTaskBtn(addTask)} hoverColor="transparent" labelStyle={styles.addTaskBtnLbl} label="Add Task" labelPosition="after">
-          <FontIcon style={{verticalAlign: 'middle', fontSize: '0.8rem', top: -2}} color={Colors.grey300} className="material-icons">add</FontIcon>
+          <FontIcon style={{verticalAlign: 'middle', fontSize: '0.8rem', top: -2}} color={Colors.grey400} className="material-icons">add</FontIcon>
         </FlatButton>
         <div style={styles.commentsContainer(showComments)}>
           <h2 style={styles.subHeader}>Comments</h2>
