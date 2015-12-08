@@ -74,6 +74,7 @@ class Board extends React.Component {
     card.tasks = [{id: card.id + '_task1', text: 'task 1', status: 'open'}, {id: card.id + '_task2', text: 'task 2', status: 'closed'}, {id: card.id + '_task3', text: 'task 3', status: 'open'}];
     card.comments = [{id: card.id + '_comment1', postedBy: 'Luis E', text: 'Nice.', createdAt: '2015-11-29T13:15:30Z'}, {id: card.id + '_comment4', postedBy: 'Luis E', text: 'Another one.', createdAt: '2015-09-29T15:15:30Z'}, {id: card.id + '_comment3', postedBy: 'Luis E', createdAt: '2015-12-03T18:37:30Z', text: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magn.'}, {id: card.id + '_comment2', createdAt: '2015-12-04T09:15:30Z', postedBy: 'Luis E', text: 'I like this comment?'}];
     card.dueDate = '2015-12-25';
+    card.assignedTo = {id: 'user1', name: 'Luis Escobedo'};
     this.setState({detailsCard: card});
     this._cardDetails.openCardDetails(card);
   }
@@ -81,7 +82,7 @@ class Board extends React.Component {
     const { board, viewer } = this.props;
     const { columns } = board;
     const { gridView, detailsCard } = this.state;
-    const team = [{name:'Luis Escobedo', id: 'user1'}, {name:'Dave Bryand', id: 'user2'}]
+    const team = [{name:'Luis Escobedo', id: 'user1'}, {name:'Dave Bryand', id: 'user2'}];
     return (
       <div style={[styles.container]}>
         <IconButton onClick={this.setGridView} iconStyle={styles.viewIcon(gridView)} iconClassName="material-icons" tooltipPosition="bottom-center"

@@ -274,6 +274,7 @@ export default class CardDetails extends React.Component {
     this.saveComment = this.saveComment.bind(this);
     this.toggleDatePicker = this.toggleDatePicker.bind(this);
     this.dueDateChange = this.dueDateChange.bind(this);
+    this.assignmentChange = this.assignmentChange.bind(this);
     this._tasks = {}; // This is to keep a reference to the task edit textBox components
     this._comments = {}; // This is to keep a reference to the comment edit textBox components
     this.state = {opened: false, dateOpen: false, addTask: false, card: null};
@@ -313,6 +314,9 @@ export default class CardDetails extends React.Component {
     }
     if (card.dueDate) {
       this._datePicker.setDate(moment(card.dueDate).toDate());
+    }
+    if (card.assignedTo) {
+      this._assignMenu.setValue(card.assignedTo.name);
     }
     if (!this.state.opened) {
       this.toggleCardDetails();
@@ -378,6 +382,12 @@ export default class CardDetails extends React.Component {
     card.dueDate = moment(date).toISOString();
     this.setState({card: card });
     this.setState({dateOpen: false });
+  }
+  assignmentChange(id) {
+    /* MUTATION: This is where the change 'assignment' card mutation will exist... */
+    const card = this.state.card;
+    card.assignedTo = {id: id};
+    this.setState({card: card });
   }
   render() {
     const { opened, addTask, card, dateOpen} = this.state;
@@ -472,7 +482,7 @@ export default class CardDetails extends React.Component {
           onSave={this.saveCard} uniqueKey={'cardName'} />
         <Toolbar style={styles.toolbar}>
           <ToolbarGroup key={0} style={{flex: '0 1 auto'}}>
-            <AssignMenu ref={(ref) => this._assignMenu = ref} users={team} />
+            <AssignMenu ref={(ref) => this._assignMenu = ref} onChange={this.assignmentChange} users={team} />
           </ToolbarGroup>
           <ToolbarGroup key={1} style={{flex: '1 0 auto', paddingTop: 5}}>
             <FlatButton onTouchTap={this.toggleDatePicker} style={styles.dateBtn} hoverColor={'tranparent'} labelStyle={styles.dateBtnLbl(dateOpen)} label={cardDateCal} labelPosition="after">
@@ -483,12 +493,11 @@ export default class CardDetails extends React.Component {
           </ToolbarGroup>
         </Toolbar>
         <DatePicker ref={(ref) => this._datePicker = ref} defaultDate={cardDate} autoOk container="inline" onChange={this.dueDateChange} textFieldStyle={{opacity: 0, height: 0, position: 'absolute'}} />
-        <br />
         <EditableTextField multiLine style={styles.description} underlineStyle={{borderColor: 'transparent'}}
           hintStyle={styles.descriptionHint} txtStyle={{paddingLeft: 5}} value={cardDescription}
           ref={(ref) => this._cardDescription = ref} hintText="Description goes here..." text={cardDescription} tabIndex={2}
-          rows={4} onSave={this.saveCard} uniqueKey={'cardtDescription'} />
-        <h2 style={styles.subHeader}>Tasks</h2>
+          rows={3} onSave={this.saveCard} uniqueKey={'cardtDescription'} />
+        <h2 style={[{marginTop: '1.5rem'}, styles.subHeader]}>Tasks</h2>
         <div style={styles.tasksContainer(showTasksContainer)}>
           <ul style={{listStyleType: 'none', paddingLeft: '0.5rem', marginTop: 10}}>
             {taskList}

@@ -12,7 +12,7 @@ const styles = {
   avatar: {
     fontSize: '0.8rem',
     fontWeight: 300,
-    borderColor: Colors.grey400,
+    borderColor: Colors.grey300,
     borderStyle: 'solid',
     borderWidth: 1,
     verticalAlign: 'middle',
@@ -41,33 +41,55 @@ const styles = {
 export default class AssignMenu extends React.Component {
   static propTypes = {
     users: PropTypes.array,
+    onChange: PropTypes.func,
   }
   constructor(props) {
     super(props);
     this.itemSelected = this.itemSelected.bind(this);
-    this.getSelected = this.getSelected.bind(this);
-    this.state = {selectedAvatar: '', selectedItem: ''};
+    this.setValue = this.setValue.bind(this);
+    this.clearValue = this.clearValue.bind(this);
+    this.openFocus = this.openFocus.bind(this);
+    this.state = {selectedAvatar: ''};
   }
   componentDidMount() {
     // We need to currently set this width in the componentDidMount because material-ui merges the styles attributes
     // for all it's children controls on the AutomComplete, and so we need to set this width to 'auto' to avoid overlapping on the Toolbars...
     findDOMNode(this._autoComplete.refs.searchTextField).style.width = 'auto';
   }
-  getSelected() {
-    return this.state.selectedItem;
+  setValue(value) {
+    this._autoComplete.setValue(value);
+    let avatar = '?';
+    if (value) {
+      const splitName = value.split(' ');
+      if (splitName.length > 1) {
+        avatar = splitName[0][0] + splitName[1][0];
+      } else {
+        if (splitName.length === 1) {
+          avatar = value.substring(0, 2);
+        }
+      }
+    }
+    this.setState({selectedAvatar: avatar});
   }
-  itemSelected(event, item) {
-    this.setState({selectedAvatar: item.props.avatar, selectedItem: item.props.value});
+  itemSelected(item) {
+    if (item.props && item.key) {
+      this.props.onChange.call(item.key);
+      this.setState({selectedAvatar: item.props.avatar});
+    }
   }
   clearValue() {
-    this.setState({selectedAvatar: '', selectedItem: ''});
+    this._autoComplete.setValue('');
+    this.setState({selectedAvatar: ''});
+  }
+  openFocus() {
+    this._autoComplete.refs.searchTextField.focus();
   }
   render() {
     const {selectedAvatar} = this.state;
     const {users} = this.props;
     const iconButtonElement = (
-      <FlatButton style={styles.avatarButton} hoverColor="#ffffff" rippleColor="#ffffff">
-        <Avatar size={30} style={styles.avatar} color={Colors.grey50} backgroundColor="#ffffff">
+      <FlatButton onClick={this.openFocus} style={styles.avatarButton} hoverColor="#ffffff" rippleColor="#ffffff">
+        <Avatar size={30} style={styles.avatar} color={Colors.grey50} backgroundColor={Colors.greenA700}>
         {selectedAvatar}</Avatar>
       </FlatButton>
     );
@@ -87,10 +109,12 @@ export default class AssignMenu extends React.Component {
         <AutoComplete
           fullWidth
           hintText = "Assign To"
+          updateWhenFocused
           animated={false}
           showAllItems
           style={{fontSize: '0.8rem', paddingTop: 0, marginTop: 0, top: 0}}
           ref={(ref) => this._autoComplete = ref}
+          onNewRequest={this.itemSelected}
           dataSource={
             users.map(user => {
               let avatar = '?';
@@ -120,3 +144,7 @@ export default class AssignMenu extends React.Component {
   );
   }
 }
+
+// <IconButton onClick={this.clearValue} iconStyle={{fontSize: '1.1rem'}} style={{position: 'absolute', top: 0, right: 0}}>
+//     <FontIcon color={Colors.blueGrey100} className="material-icons">backspace</FontIcon>
+// </IconButton>
