@@ -289,9 +289,11 @@ export default class CardDetails extends React.Component {
     /* MUTATION: This is where the update 'task' mutation will exist... for updating a tasks text*/
     const card = this.state.card;
     const index = card.tasks.findIndex((tsk)=>{ return tsk.id === task.id;});
-    const newText = this._tasks[task.id].getValue();
-    card.tasks[index].text = newText;
-    this.setState({card: card });
+    if (index !== -1) {
+      const newText = this._tasks[task.id].getValue();
+      card.tasks[index].text = newText;
+      this.setState({card: card });
+    }
   }
   saveComment(comment) {
     /* MUTATION: This is where the update 'task' mutation will exist... for updating a tasks text*/
@@ -472,12 +474,12 @@ export default class CardDetails extends React.Component {
           <ToolbarGroup key={0} style={{flex: '0 1 auto'}}>
             <AssignMenu ref={(ref) => this._assignMenu = ref} users={team} />
           </ToolbarGroup>
-          <ToolbarGroup key={1} style={{flex: '1 0 auto'}}>
-          <FlatButton onTouchTap={this.toggleDatePicker} style={styles.dateBtn} hoverColor={'tranparent'} labelStyle={styles.dateBtnLbl(dateOpen)} label={cardDateCal} labelPosition="after">
-            <FontIcon style={styles.dateBtnIcon(dateOpen)} hoverColor={Colors.grey800} className="material-icons">today</FontIcon>
-          </FlatButton>
-           <FontIcon style={styles.icons} className="material-icons">attach_file</FontIcon>
-           <FontIcon style={styles.icons} className="material-icons">delete</FontIcon>
+          <ToolbarGroup key={1} style={{flex: '1 0 auto', paddingTop: 5}}>
+            <FlatButton onTouchTap={this.toggleDatePicker} style={styles.dateBtn} hoverColor={'tranparent'} labelStyle={styles.dateBtnLbl(dateOpen)} label={cardDateCal} labelPosition="after">
+              <FontIcon style={styles.dateBtnIcon(dateOpen)} hoverColor={Colors.grey800} className="material-icons">today</FontIcon>
+            </FlatButton>
+            <FontIcon style={styles.icons} className="material-icons">attach_file</FontIcon>
+            <FontIcon style={styles.icons} className="material-icons">delete</FontIcon>
           </ToolbarGroup>
         </Toolbar>
         <DatePicker ref={(ref) => this._datePicker = ref} defaultDate={cardDate} autoOk container="inline" onChange={this.dueDateChange} textFieldStyle={{opacity: 0, height: 0, position: 'absolute'}} />

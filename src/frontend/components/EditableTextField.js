@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import update from 'react-addons-update';
-import Radium, { Style }from 'radium';
+import Radium, { Style } from 'radium';
 import debounce from 'debounce';
 import {
   TextField,
