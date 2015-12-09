@@ -100,7 +100,7 @@ class AssignMenu extends React.Component {
     const assignedAvatar = card.assignedTo ? createAvatar(card.assignedTo.name) : '';
     const iconButtonElement = (
       <FlatButton onClick={this.openFocus} style={styles.avatarButton} hoverColor="#ffffff" rippleColor="#ffffff">
-        <Avatar size={30} style={styles.avatar} color={Colors.grey50} backgroundColor={Colors.greenA700}>
+        <Avatar size={30} style={styles.avatar} color={Colors.grey50} backgroundColor={assignedAvatar ? Colors.greenA700 : 'transparent'}>
         {assignedAvatar}</Avatar>
       </FlatButton>
     );

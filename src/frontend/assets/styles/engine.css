@@ -25,16 +25,6 @@ a {
   font-weight: 300;
 }
 
-/***** HACK! This is currently how we will hack "active" tabs on FullCards... would like to change this to inline styles when we roll our own control... */
-.notes_tabs .active{
-  box-shadow: 0px 1px 0px 0px #CE93D8;
-}
-
-.notes_tabs .tabLink{
-}
-
-/***** END NOTES TAB HACK ****/
-
 /********************* ANIMATIONS **********/
 .example-enter {
   opacity: 0.01;
