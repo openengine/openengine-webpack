@@ -9,6 +9,7 @@ import {
   RaisedButton,
   FontIcon,
 } from 'material-ui';
+import AddTaskMutation from '../mutations/AddTaskMutation';
 const styles = {
   tasksContainer: (tasksOn) => ({
     transition: 'all .4s ease-in-out',
@@ -77,6 +78,12 @@ class TaskList extends React.Component {
     const taskText = this._addTask.getValue();
     if (taskText && taskText.trim()) {
       /* MUTATION: This is where the add task card mutation will exist... for adding tasks to a card */
+      // Relay.Store.update(
+      //   new AddTaskMutation({
+      //     card: this.props.card,
+      //     description: taskText.trim(),
+      //   })
+      // );
       this._addTask.clearValue();
     }
     this.setState({addTaskOpened: false});
@@ -135,6 +142,7 @@ export default Relay.createContainer(TaskList, {
             }
           }
         }
+        ${AddTaskMutation.getFragment('card')}
       }
     `,
   },

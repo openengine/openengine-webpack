@@ -3,6 +3,7 @@ import Relay from 'react-relay';
 import Radium from 'radium';
 import EditableTextField from './EditableTextField';
 import Colors from 'material-ui/lib/styles/colors';
+import UpdateTaskMutation from '../mutations/UpdateTaskMutation';
 import {
   Checkbox,
 } from 'material-ui';
@@ -42,24 +43,24 @@ class Task extends React.Component {
   }
   constructor(props) {
     super(props);
-    this.saveTask = this.saveTask.bind(this);
+    this.updateTask = this.updateTask.bind(this);
   }
-  saveTask() {
+  updateTask() {
     /* MUTATION: This is where the update 'task' mutation will exist... for updating a tasks text*/
-  }
-  taskChecked(event, checked) {
-    /* MUTATION: This is where the change 'task' status card mutation will exist... */
-    // const card = this.state.card;
-    // const index = card.tasks.findIndex((tsk)=>{ return tsk.id === task.id;});
-    // card.tasks[index].status = checked ? 'closed' : 'open';
-    // this.setState({card: card });
+    // Relay.Store.update(
+    //   new UpdateTaskMutation({
+    //     task: this.props.task,
+    //     description: this._task.getValue(),
+    //     status: this._taskCheck.isChecked() ? 'closed' : 'open';,
+    //   })
+    // );
   }
   render() {
     const { task } = this.props;
     return (
       <div style={styles.taskSingleContainer}>
         <div style={styles.taskCheckbox(task.status === 'closed')} key={'checkTask_' + task.id}>
-          <Checkbox onCheck={this.taskChecked} checked={task.status === 'closed'} iconStyle={{paddingRight: 0, marginRight: 5}} />
+          <Checkbox ref={(ref) => this._taskCheck = ref} checked={task.status === 'closed'} iconStyle={{paddingRight: 0, marginRight: 5}} />
         </div>
         <EditableTextField uniqueKey={'textTask_' + task.id} underlineStyle={{borderColor: 'transparent', bottom: 3}} underlineFocusStyle={{bottom: 3}}
           txtContainerStyle={{height: 'auto'}} txtStyle={styles.taskTxt(task.status === 'closed')} value={task.description}
@@ -76,6 +77,7 @@ export default Relay.createContainer(Task, {
         id
         description
         status
+        ${UpdateTaskMutation.getFragment('task')}
       }
     `,
   },

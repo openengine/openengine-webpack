@@ -13,6 +13,7 @@ import EditableTextField from './EditableTextField';
 import Colors from 'material-ui/lib/styles/colors';
 import moment from 'moment';
 import RemoveCardMutation from '../mutations/RemoveCardMutation';
+import UpdateCardMutation from '../mutations/UpdateCardMutation';
 import CommentList from './CommentList';
 import TaskList from './TaskList';
 const styles = {
@@ -96,17 +97,21 @@ class CardDetails extends React.Component {
   }
   constructor(props) {
     super(props);
-    this.saveCard = this.saveCard.bind(this);
+    this.updateCardCore = this. updateCardCore.bind(this);
     this.toggleDatePicker = this.toggleDatePicker.bind(this);
     this.dueDateChange = this.dueDateChange.bind(this);
     this.state = {dateOpen: false};
   }
-  saveCard() {
+  updateCardCore() {
     /* MUTATION: This is where the update card mutation will exist... for updating core attributes like name, description, etc.*/
-    // const card = this.state.card;
-    // card.name = this._cardName.getValue();
-    // card.description = this._cardDescription.getValue();
-    // this.setState({card: card });
+    // Relay.Store.update(
+    //   new UpdateCardMutation({
+    //     card: this.props.card,
+    //     name: this._cardName.getValue(),
+    //     description: this._cardDescription.getValue(),
+    //     dueDate: moment(this._datePicker).toISOString(),
+    //   })
+    // );
   }
   toggleDatePicker() {
     // Need to reach into the control and set off the DatePicker window's 'close' event
@@ -118,12 +123,10 @@ class CardDetails extends React.Component {
       this.setState({dateOpen: false });
     }
   }
-  dueDateChange(event, date) {
-      /* MUTATION: This is where the change 'due date' card mutation will exist... */
-    // const card = this.state.card;
-    // card.dueDate = moment(date).toISOString();
-    // this.setState({card: card });
-    // this.setState({dateOpen: false });
+  dueDateChange() {
+    // Mutate Card on changing the due date
+    this.updateCardCore();
+    this.setState({dateOpen: false });
   }
   render() {
     const { dateOpen} = this.state;
@@ -143,7 +146,7 @@ class CardDetails extends React.Component {
       <div>
         <EditableTextField multiLine txtStyle={styles.cardNameTxt} value={card.name} underlineStyle={{borderColor: Colors.grey300}}
           style={styles.cardName} ref={(ref) => this._cardName = ref} hintText="Card name" text={card.name}
-          onSave={this.saveCard} uniqueKey={'cardName'} />
+          onSave={this.updateCardCore} uniqueKey={'cardName'} />
         <Toolbar style={styles.toolbar}>
           <ToolbarGroup key={0} style={{flex: '0 1 auto'}}>
             <AssignMenu ref={(ref) => this._assignMenu = ref} viewer={viewer} card={card} />
@@ -162,7 +165,7 @@ class CardDetails extends React.Component {
         <EditableTextField multiLine style={styles.description} underlineStyle={{borderColor: 'transparent'}}
           hintStyle={styles.descriptionHint} txtStyle={{paddingLeft: 5}} value={card.description}
           ref={(ref) => this._cardDescription = ref} hintText="Description goes here..." text={card.description} tabIndex={2}
-          rows={3} onSave={this.saveCard} uniqueKey={'cardtDescription'} />
+          rows={3} onSave={this.updateCardCore} uniqueKey={'cardtDescription'} />
         <h2 style={[{marginTop: '1.5rem'}, styles.subHeader]}>Tasks</h2>
         <TaskList card={card} />
         <h2 style={[styles.subHeader, {opacity: showComments ? 1 : 0}]}>Comments</h2>
@@ -189,15 +192,13 @@ export default Relay.createContainer(CardDetails, {
       fragment on Card {
         id
         name
-        assignedTo {
-          id
-          name
-        }
+        description
         dueDate
         ${TaskList.getFragment('card')}
         ${CommentList.getFragment('card')}
         ${AssignMenu.getFragment('card')}
         ${RemoveCardMutation.getFragment('card')}
+        ${UpdateCardMutation.getFragment('card')}
       }
     `,
   },

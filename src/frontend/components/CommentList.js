@@ -7,6 +7,7 @@ import {
   TextField,
   Avatar,
 } from 'material-ui';
+import AddCommentMutation from '../mutations/AddCommentMutation';
 const styles = {
   commentsContainer: (commentsOn) => ({
     transition: 'all .4s ease-in-out',
@@ -66,6 +67,13 @@ class CommentList extends React.Component {
     const commentText = this._txtAddComment.getValue();
     if (commentText && commentText.trim()) {
       /* MUTATION: This is where the add comment to card mutation will exist...*/
+      // Relay.Store.update(
+      //   new AddCommentMutation({
+      //     card: this.props.card,
+      //     text: commentText.trim(),
+      //     postedBy: viewer,
+      //   })
+      // );
     }
   }
   render() {
@@ -118,6 +126,7 @@ export default Relay.createContainer(CommentList, {
             }
           }
         }
+        ${AddCommentMutation.getFragment('card')}
       }
     `,
   },

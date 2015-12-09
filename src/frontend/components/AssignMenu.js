@@ -9,6 +9,7 @@ import {
 import { findDOMNode } from 'react-dom';
 import MenuItem from 'material-ui/lib/menus/menu-item';
 import Colors from 'material-ui/lib/styles/colors';
+import AssignCardMutation from '../mutations/AssignCardMutation';
 const styles = {
   avatar: {
     fontSize: '0.8rem',
@@ -61,10 +62,9 @@ class AssignMenu extends React.Component {
   constructor(props) {
     super(props);
     this.itemSelected = this.itemSelected.bind(this);
-    this.setValue = this.setValue.bind(this);
     this.clearValue = this.clearValue.bind(this);
     this.openFocus = this.openFocus.bind(this);
-    this.assignmentChange = this.assignmentChange.bind(this);
+    this.state = {selectedItem: props.card.assignedTo ? props.card.assignedTo : null};
   }
   componentDidMount() {
     // We need to currently set this width in the componentDidMount because material-ui merges the styles attributes
@@ -78,8 +78,13 @@ class AssignMenu extends React.Component {
   }
   itemSelected(item) {
     if (item.props && item.key) {
-      // this.setState({selectedAvatar: item.props.avatar});
-        /* MUTATION: This is where the change 'assignment' card mutation will exist... */
+      /* MUTATION: This is where the change 'assignment' card mutation will exist... */
+      // Relay.Store.update(
+      //   new AssignCardMutation({
+      //     card: this.props.card,
+      //     assignedTo: {id: item.key, name: this._autoComplete.getValue()},
+      //   })
+      // );
     }
   }
   clearValue() {
@@ -88,12 +93,6 @@ class AssignMenu extends React.Component {
   }
   openFocus() {
     this._autoComplete.refs.searchTextField.focus();
-  }
-  assignmentChange() {
-    /* MUTATION: This is where the change 'assignment' card mutation will exist... */
-    // const card = this.state.card;
-    // card.assignedTo = {id: id};
-    // this.setState({card: card });
   }
   render() {
     const {viewer, card} = this.props;
@@ -122,6 +121,7 @@ class AssignMenu extends React.Component {
           updateWhenFocused
           animated={false}
           showAllItems
+          searchText={card.assignedTo ? card.assignedTo.name : ''}
           style={{fontSize: '0.8rem', paddingTop: 0, marginTop: 0, top: 0}}
           ref={(ref) => this._autoComplete = ref}
           onNewRequest={this.itemSelected}
@@ -163,6 +163,7 @@ export default Relay.createContainer(AssignMenu, {
           id
           name
         }
+        ${AssignCardMutation.getFragment('card')}
       }
     `,
   },

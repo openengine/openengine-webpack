@@ -4,6 +4,7 @@ import Radium from 'radium';
 import EditableTextField from './EditableTextField';
 import Colors from 'material-ui/lib/styles/colors';
 import moment from 'moment';
+import UpdateCommentMutation from '../mutations/UpdateCommentMutation';
 import {
   Avatar,
 } from 'material-ui';
@@ -68,10 +69,16 @@ class Comment extends React.Component {
   }
   constructor(props) {
     super(props);
-    this.saveComment = this.saveComment.bind(this);
+    this.updateComment = this.updateComment.bind(this);
   }
-  saveComment() {
-    /* MUTATION: This is where the update 'task' mutation will exist... for updating a tasks text*/
+  updateComment() {
+    /* MUTATION: This is where the update 'comment' mutation will exist... for updating a comment's text*/
+    // Relay.Store.update(
+    //   new UpdateCommentMutation({
+    //     comment: this.props.comment,
+    //     text: this._comment.getValue(),
+    //   })
+    // );
   }
   render() {
     const { comment } = this.props;
@@ -112,6 +119,7 @@ export default Relay.createContainer(Comment, {
         postedBy {
           name
         }
+        ${UpdateCommentMutation.getFragment('comment')}
       }
     `,
   },
