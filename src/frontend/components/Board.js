@@ -7,6 +7,8 @@ import CardDetails from './CardDetails';
 import { DragDropContext } from 'react-dnd';
 import {
 IconButton,
+FontIcon,
+Paper,
 } from 'material-ui';
 import Colors from 'material-ui/lib/styles/colors';
 const styles = {
@@ -46,6 +48,21 @@ const styles = {
     color: '#9E9E9E',
     marginBottom: 40,
   },
+  cardDetailsContainer: (isOpen) => ({
+    width: 'auto',
+    padding: 10,
+    whiteSpace: 'nowrap',
+    overflowY: 'scroll',
+    overflowX: 'visible',
+    transition: 'all .4s ease-in-out',
+    position: 'fixed',
+    right: 0,
+    top: 0,
+    bottom: 0,
+    zIndex: 5,
+    maxWidth: '33%',
+    transform: isOpen ? 'translateX(-1%) translateZ(0px)' : 'translateX(100%) translateZ(0px)',
+  }),
 };
 @Radium
 class Board extends React.Component {
@@ -56,10 +73,11 @@ class Board extends React.Component {
   constructor(props) {
     super(props);
     this.toggleCardDetails = this.toggleCardDetails.bind(this);
+    this.closeCardDetails = this.closeCardDetails.bind(this);
     this.setGridView = this.setGridView.bind(this);
     this.setListView = this.setListView.bind(this);
     this.toggleView = this.toggleView.bind(this);
-    this.state = {addOpened: false, gridView: true};
+    this.state = {cardDetailsOpened: false, gridView: true, detailsCard: null};
   }
   setGridView() {
     this.toggleView(true);
@@ -71,18 +89,22 @@ class Board extends React.Component {
     this.setState({gridView: isGridView});
   }
   toggleCardDetails(card) {
-    card.tasks = [{id: card.id + '_task1', text: 'task 1', status: 'open'}, {id: card.id + '_task2', text: 'task 2', status: 'closed'}, {id: card.id + '_task3', text: 'task 3', status: 'open'}];
-    card.comments = [{id: card.id + '_comment1', postedBy: 'Luis E', text: 'Nice.', createdAt: '2015-11-29T13:15:30Z'}, {id: card.id + '_comment4', postedBy: 'Luis E', text: 'Another one.', createdAt: '2015-09-29T15:15:30Z'}, {id: card.id + '_comment3', postedBy: 'Luis E', createdAt: '2015-12-03T18:37:30Z', text: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magn.'}, {id: card.id + '_comment2', createdAt: '2015-12-04T09:15:30Z', postedBy: 'Luis E', text: 'I like this comment?'}];
-    card.dueDate = '2015-12-25';
-    card.assignedTo = {id: 'user1', name: 'Luis Escobedo'};
-    this.setState({detailsCard: card});
-    this._cardDetails.openCardDetails(card);
+    // Clear out the old card state first before setting a new card state...
+    this.setState({detailsCard: null}, ()=>{
+      this.setState({detailsCard: card, cardDetailsOpened: true});
+    });
+  }
+  closeCardDetails() {
+    this.setState({cardDetailsOpened: false});
   }
   render() {
     const { board, viewer } = this.props;
     const { columns } = board;
-    const { gridView, detailsCard } = this.state;
-    const team = [{name:'Luis Escobedo', id: 'user1'}, {name:'Dave Bryand', id: 'user2'}];
+    const { gridView, detailsCard, cardDetailsOpened } = this.state;
+
+    const cardDetails = detailsCard ? (
+      <CardDetails card={detailsCard} viewer={viewer} ref={(ref) => this._cardDetails = ref} />
+    ) : '';
     return (
       <div style={[styles.container]}>
         <IconButton onClick={this.setGridView} iconStyle={styles.viewIcon(gridView)} iconClassName="material-icons" tooltipPosition="bottom-center"
@@ -99,7 +121,12 @@ class Board extends React.Component {
             />
           )}
         </div>
-       <CardDetails team={team} currentUser={viewer.name} card={detailsCard} ref={(ref) => this._cardDetails = ref} />
+        <Paper style={styles.cardDetailsContainer(cardDetailsOpened)} ref={(ref) => this._details = ref}>
+          <IconButton onClick={this.closeCardDetails} style={{position: 'absolute', top: 0, right: 0}}>
+            <FontIcon color={Colors.grey300} className="material-icons">close</FontIcon>
+          </IconButton>
+          {cardDetails}
+        </Paper>
       </div>
     );
   }
@@ -123,7 +150,7 @@ export default Relay.createContainer(DragBoard, {
           edges {
             node {
               id
-              ${BoardColumn.getFragment('boardColumn')},
+              ${BoardColumn.getFragment('boardColumn')}
             }
           }
         }
@@ -131,7 +158,8 @@ export default Relay.createContainer(DragBoard, {
     `,
     viewer: () => Relay.QL`
       fragment on User {
-        name,
+        id
+        ${CardDetails.getFragment('viewer')}
       }
     `,
   },

@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react';
 import Radium, { Style } from 'radium';
+import Relay from 'react-relay';
 import {
   FlatButton,
   Avatar,
@@ -37,11 +38,25 @@ const styles = {
     textAlign: 'left',
   },
 };
+function createAvatar(name) {
+  let avatar = '?';
+  if (name) {
+    const splitName = name.split(' ');
+    if (splitName.length > 1) {
+      avatar = splitName[0][0] + splitName[1][0];
+    } else {
+      if (splitName.length === 1) {
+        avatar = name.substring(0, 2);
+      }
+    }
+  }
+  return avatar;
+}
 @Radium
-export default class AssignMenu extends React.Component {
+class AssignMenu extends React.Component {
   static propTypes = {
-    users: PropTypes.array,
-    onChange: PropTypes.func,
+    viewer: PropTypes.object,
+    card: PropTypes.object,
   }
   constructor(props) {
     super(props);
@@ -49,7 +64,7 @@ export default class AssignMenu extends React.Component {
     this.setValue = this.setValue.bind(this);
     this.clearValue = this.clearValue.bind(this);
     this.openFocus = this.openFocus.bind(this);
-    this.state = {selectedAvatar: ''};
+    this.assignmentChange = this.assignmentChange.bind(this);
   }
   componentDidMount() {
     // We need to currently set this width in the componentDidMount because material-ui merges the styles attributes
@@ -58,23 +73,13 @@ export default class AssignMenu extends React.Component {
   }
   setValue(value) {
     this._autoComplete.setValue(value);
-    let avatar = '?';
-    if (value) {
-      const splitName = value.split(' ');
-      if (splitName.length > 1) {
-        avatar = splitName[0][0] + splitName[1][0];
-      } else {
-        if (splitName.length === 1) {
-          avatar = value.substring(0, 2);
-        }
-      }
-    }
+    const avatar = createAvatar(value);
     this.setState({selectedAvatar: avatar});
   }
   itemSelected(item) {
     if (item.props && item.key) {
-      this.props.onChange.call(item.key);
-      this.setState({selectedAvatar: item.props.avatar});
+      // this.setState({selectedAvatar: item.props.avatar});
+        /* MUTATION: This is where the change 'assignment' card mutation will exist... */
     }
   }
   clearValue() {
@@ -84,16 +89,21 @@ export default class AssignMenu extends React.Component {
   openFocus() {
     this._autoComplete.refs.searchTextField.focus();
   }
+  assignmentChange() {
+    /* MUTATION: This is where the change 'assignment' card mutation will exist... */
+    // const card = this.state.card;
+    // card.assignedTo = {id: id};
+    // this.setState({card: card });
+  }
   render() {
-    const {selectedAvatar} = this.state;
-    const {users} = this.props;
+    const {viewer, card} = this.props;
+    const assignedAvatar = card.assignedTo ? createAvatar(card.assignedTo.name) : '';
     const iconButtonElement = (
       <FlatButton onClick={this.openFocus} style={styles.avatarButton} hoverColor="#ffffff" rippleColor="#ffffff">
         <Avatar size={30} style={styles.avatar} color={Colors.grey50} backgroundColor={Colors.greenA700}>
-        {selectedAvatar}</Avatar>
+        {assignedAvatar}</Avatar>
       </FlatButton>
     );
-
     const assignStyle = (
         <Style scopeSelector=".assignAutoComplete"
           rules={{
@@ -116,16 +126,8 @@ export default class AssignMenu extends React.Component {
           ref={(ref) => this._autoComplete = ref}
           onNewRequest={this.itemSelected}
           dataSource={
-            users.map(user => {
-              let avatar = '?';
-              const splitName = user.name.split(' ');
-              if (splitName.length > 1) {
-                avatar = splitName[0][0] + splitName[1][0];
-              } else {
-                if (splitName.length === 1) {
-                  avatar = user.name.substring(0, 2);
-                }
-              }
+            viewer.team.map(user => {
+              const avatar = createAvatar(user.name);
               const compObject = (
                   <MenuItem index={user.id} key={user.id} avatar={avatar} value={user.name} style={styles.menuItem} >
                     <Avatar size={25} style={styles.avatar} color={Colors.grey50}
@@ -144,6 +146,27 @@ export default class AssignMenu extends React.Component {
   );
   }
 }
+export default Relay.createContainer(AssignMenu, {
+  fragments: {
+    viewer: () => Relay.QL`
+      fragment on User {
+        team {
+          id
+          name
+        }
+      }
+    `,
+    card: () => Relay.QL`
+      fragment on Card {
+        id
+        assignedTo {
+          id
+          name
+        }
+      }
+    `,
+  },
+});
 
 // <IconButton onClick={this.clearValue} iconStyle={{fontSize: '1.1rem'}} style={{position: 'absolute', top: 0, right: 0}}>
 //     <FontIcon color={Colors.blueGrey100} className="material-icons">backspace</FontIcon>

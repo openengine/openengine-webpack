@@ -14,8 +14,8 @@ import {
   DragSource,
   DropTarget,
 } from 'react-dnd';
+import CardDetails from './CardDetails';
 import MoveCardMutation from '../mutations/MoveCardMutation';
-import RemoveCardMutation from '../mutations/RemoveCardMutation';
 const styles = {
   card: (viewType)=>({
     borderRadius: 5,
@@ -97,12 +97,12 @@ export default class BoardCard extends Component {
   cardMenuSelected(event, item) {
     switch (item.props.value) {
     case 'delete':
-      Relay.Store.update(
-      new RemoveCardMutation({
-        boardColumn: this.props.boardColumn,
-        card: this.props.card,
-      })
-    );
+    //   Relay.Store.update(
+    //   new RemoveCardMutation({
+    //     boardColumn: this.props.boardColumn,
+    //     card: this.props.card,
+    //   })
+    // );
       break;
     default:
 
@@ -146,8 +146,8 @@ export default Relay.createContainer(BoardCard, {
         name
         assignedTo
         rank
+        ${CardDetails.getFragment('card')}
         ${MoveCardMutation.getFragment('card')},
-        ${RemoveCardMutation.getFragment('card')},
       }
     `,
   },
