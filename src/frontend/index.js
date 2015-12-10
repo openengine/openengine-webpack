@@ -1,10 +1,9 @@
-import 'babel/polyfill';
+import 'babel-polyfill';
 import createBrowserHistory from 'history/lib/createBrowserHistory';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Relay from 'react-relay';
-import {Router} from 'react-router';
-import ReactRouterRelay from 'react-router-relay';
+import {RelayRouter} from 'react-router-relay';
 import styles from "./assets/styles/engine.css";
 import routes from './routes';
 Relay.injectNetworkLayer(
@@ -25,8 +24,7 @@ import injectTapEventPlugin from 'react-tap-event-plugin';
 injectTapEventPlugin();
 
 ReactDOM.render(
-  <Router
-    createElement={ReactRouterRelay.createElement}
+  <RelayRouter history={history}
     history={history}
     routes={routes}
   />,

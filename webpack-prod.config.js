@@ -40,13 +40,13 @@ const frontendConfig = assign({}, defaultConfig, {
         test: /\.json$/,
         loader: 'json-loader',
       },
-      { test: /\.jsx$/,
-        loaders: ['babel?stage=0&plugins[]=' + path.join(__dirname, 'relayPlugin')],
-        include: [path.join(__dirname, 'src', 'frontend'), path.join(__dirname, 'src', 'server/data')],
-      },
       { test: /\.js$/,
-        loaders: ['babel?stage=0&plugins[]=' + path.join(__dirname, 'relayPlugin')],
-        include: [path.join(__dirname, 'src', 'frontend'), path.join(__dirname, 'src', 'server/data')],
+        loader: 'babel',
+        query: {
+          presets: ['es2015', 'stage-0', 'react'],
+          plugins: [path.join(__dirname, 'relayPlugin'), 'transform-decorators-legacy'],
+        },
+        include: [path.join(__dirname, 'src', 'frontend')],
       },
       {
         test: /\.css$/,
@@ -90,7 +90,11 @@ const serverConfig = assign({}, defaultConfig, {
         // transpile all .js files using babel
         test: /\.js$/,
         exclude: /node_modules/,
-        loader: 'babel?stage=0',
+        loader: 'babel',
+        query: {
+          presets: ['es2015', 'stage-0'],
+          plugins: ['transform-decorators-legacy'],
+        },
       },
     ],
   },

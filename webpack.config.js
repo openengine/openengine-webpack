@@ -46,7 +46,7 @@ const frontendConfig = assign({}, defaultConfig, {
       {
         test: /\.js$/,
         include: [path.join(__dirname, 'src', 'frontend')],
-        loaders: ['react-hot', 'babel?stage=1&plugins[]=' + path.join(__dirname, 'relayPlugin')],
+        loaders: ['react-hot', 'babel?presets[]=react,presets[]=es2015,presets[]=stage-0&plugins[]=' + path.join(__dirname, 'relayPlugin') + ',plugins[]=transform-decorators-legacy'],
       },
       {
         test: /\.css$/,
