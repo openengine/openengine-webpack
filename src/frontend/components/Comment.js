@@ -73,12 +73,12 @@ class Comment extends React.Component {
   }
   updateComment() {
     /* MUTATION: This is where the update 'comment' mutation will exist... for updating a comment's text*/
-    // Relay.Store.update(
-    //   new UpdateCommentMutation({
-    //     comment: this.props.comment,
-    //     text: this._comment.getValue(),
-    //   })
-    // );
+    Relay.Store.update(
+      new UpdateCommentMutation({
+        comment: this.props.comment,
+        text: this._comment.getValue(),
+      })
+    );
   }
   render() {
     const { comment } = this.props;
@@ -103,7 +103,7 @@ class Comment extends React.Component {
             </div>
             <EditableTextField multiLine style={{position: 'relative'}} underlineStyle={{borderColor: 'transparent'}}
               txtStyle={styles.commentTxt} value={comment.text} ref={(ref) => this._comment = ref} hintText="Say what?"
-              text={comment.text} onSave={this.saveComment} />
+              text={comment.text} onSave={this.updateComment} />
           </div>
       </div>
   );
