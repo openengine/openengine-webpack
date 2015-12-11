@@ -47,13 +47,13 @@ class Task extends React.Component {
   }
   updateTask() {
     /* MUTATION: This is where the update 'task' mutation will exist... for updating a tasks text*/
-    // Relay.Store.update(
-    //   new UpdateTaskMutation({
-    //     task: this.props.task,
-    //     name: this._task.getValue(),
-    //     status: this._taskCheck.isChecked() ? 'closed' : 'open';,
-    //   })
-    // );
+    Relay.Store.update(
+      new UpdateTaskMutation({
+        task: this.props.task,
+        name: this._task.getValue(),
+        status: this._taskCheck.isChecked() ? 'closed' : 'open',
+      })
+    );
   }
   render() {
     const { task } = this.props;
@@ -65,7 +65,7 @@ class Task extends React.Component {
         <EditableTextField uniqueKey={'textTask_' + task.id} underlineStyle={{borderColor: 'transparent', bottom: 3}} underlineFocusStyle={{bottom: 3}}
           txtContainerStyle={{height: 'auto'}} txtStyle={styles.taskTxt(task.status === 'closed')} value={task.name}
           style={{position: 'relative', flex: '1 1 auto'}} ref={(ref) => this._task = ref}
-          hintText="What's the task?" hintStyle={{bottom: 0, fontSize: '0.8rem'}} text={task.name} onSave={this.saveTask} />
+          hintText="What's the task?" hintStyle={{bottom: 0, fontSize: '0.8rem'}} text={task.name} onSave={this.updateTask} />
       </div>
   );
   }
