@@ -31,7 +31,7 @@ export default class UpdateTaskMutation extends Relay.Mutation {
   getVariables() {
     return {
       id: this.props.task.id,
-      description: this.props.description,
+      name: this.props.name,
       status: this.props.status,
     };
   }
@@ -41,7 +41,7 @@ export default class UpdateTaskMutation extends Relay.Mutation {
     return {
       updatedTask: {
         id: this.props.task.id,
-        description: this.props.description,
+        name: this.props.name,
         status: this.props.status,
       },
     };

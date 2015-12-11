@@ -104,14 +104,16 @@ class CardDetails extends React.Component {
   }
   updateCardCore() {
     /* MUTATION: This is where the update card mutation will exist... for updating core attributes like name, description, etc.*/
-    // Relay.Store.update(
-    //   new UpdateCardMutation({
-    //     card: this.props.card,
-    //     name: this._cardName.getValue(),
-    //     description: this._cardDescription.getValue(),
-    //     dueDate: moment(this._datePicker).toISOString(),
-    //   })
-    // );
+    if (this._cardName) {
+      Relay.Store.update(
+        new UpdateCardMutation({
+          card: this.props.card,
+          name: this._cardName.getValue(),
+          description: this._cardDescription.getValue(),
+          dueDate: moment(this._datePicker).toISOString(),
+        })
+      );
+    }
   }
   toggleDatePicker() {
     // Need to reach into the control and set off the DatePicker window's 'close' event

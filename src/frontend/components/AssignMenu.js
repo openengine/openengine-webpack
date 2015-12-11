@@ -139,7 +139,8 @@ class AssignMenu extends React.Component {
             }).reduce((p, c) => {p[c.props.value] = c; return p;}, {})
           }
           filter={(searchText, key) => {
-            return key.toLowerCase().startsWith(searchText.toLowerCase());
+            const searchAble = searchText ? searchText.toLowerCase() : '';
+            return key ? key.toLowerCase().startsWith(searchAble) : false;
           }}
           />
       </div>

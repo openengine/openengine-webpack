@@ -5,7 +5,7 @@ import {
 export default class AddTaskMutation extends Relay.Mutation {
   static propTypes = {
     card: PropTypes.object,
-    description: PropTypes.string,
+    name: PropTypes.string,
   };
   getMutation() {
     return Relay.QL`mutation{addTask}`;
@@ -36,7 +36,7 @@ export default class AddTaskMutation extends Relay.Mutation {
   getVariables() {
     return {
       cardId: this.props.card.id,
-      description: this.props.description,
+      name: this.props.name,
     };
   }
   getOptimisticResponse() {
@@ -46,7 +46,7 @@ export default class AddTaskMutation extends Relay.Mutation {
       },
       newTaskEdge: {
         node: {
-          description: this.props.description,
+          name: this.props.name,
           status: 'open',
         },
       },

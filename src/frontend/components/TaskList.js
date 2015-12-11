@@ -78,12 +78,12 @@ class TaskList extends React.Component {
     const taskText = this._addTask.getValue();
     if (taskText && taskText.trim()) {
       /* MUTATION: This is where the add task card mutation will exist... for adding tasks to a card */
-      // Relay.Store.update(
-      //   new AddTaskMutation({
-      //     card: this.props.card,
-      //     description: taskText.trim(),
-      //   })
-      // );
+      Relay.Store.update(
+        new AddTaskMutation({
+          card: this.props.card,
+          name: taskText.trim(),
+        })
+      );
       this._addTask.clearValue();
     }
     this.setState({addTaskOpened: false});

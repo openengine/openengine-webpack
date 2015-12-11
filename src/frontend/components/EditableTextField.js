@@ -72,6 +72,9 @@ export default class EditableTextField extends React.Component {
     this.txtChange = this.txtChange.bind(this);
     this.state = {txtFocus: false, isEditing: false, isSaved: false};
   }
+  componentWillReceiveProps() {
+    this.setState({isEditing: false, isSaved: true});
+  }
   setValue(value) {
     this._txt.setValue(value);
   }
@@ -86,7 +89,6 @@ export default class EditableTextField extends React.Component {
     if (this.props.onSave) {
       this.props.onSave.call();
     }
-    this.setState({isEditing: false, isSaved: true});
   }
   txtChange() {
     this.setState({isEditing: true});

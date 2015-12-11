@@ -50,7 +50,7 @@ class Task extends React.Component {
     // Relay.Store.update(
     //   new UpdateTaskMutation({
     //     task: this.props.task,
-    //     description: this._task.getValue(),
+    //     name: this._task.getValue(),
     //     status: this._taskCheck.isChecked() ? 'closed' : 'open';,
     //   })
     // );
@@ -63,9 +63,9 @@ class Task extends React.Component {
           <Checkbox ref={(ref) => this._taskCheck = ref} checked={task.status === 'closed'} iconStyle={{paddingRight: 0, marginRight: 5}} />
         </div>
         <EditableTextField uniqueKey={'textTask_' + task.id} underlineStyle={{borderColor: 'transparent', bottom: 3}} underlineFocusStyle={{bottom: 3}}
-          txtContainerStyle={{height: 'auto'}} txtStyle={styles.taskTxt(task.status === 'closed')} value={task.description}
+          txtContainerStyle={{height: 'auto'}} txtStyle={styles.taskTxt(task.status === 'closed')} value={task.name}
           style={{position: 'relative', flex: '1 1 auto'}} ref={(ref) => this._task = ref}
-          hintText="What's the task?" hintStyle={{bottom: 0, fontSize: '0.8rem'}} text={task.description} onSave={this.saveTask} />
+          hintText="What's the task?" hintStyle={{bottom: 0, fontSize: '0.8rem'}} text={task.name} onSave={this.saveTask} />
       </div>
   );
   }
@@ -75,7 +75,7 @@ export default Relay.createContainer(Task, {
     task: () => Relay.QL`
       fragment on Task {
         id
-        description
+        name
         status
         ${UpdateTaskMutation.getFragment('task')}
       }
