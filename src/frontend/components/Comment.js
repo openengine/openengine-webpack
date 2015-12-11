@@ -91,7 +91,7 @@ class Comment extends React.Component {
           <div style={styles.commentDataContainer}>
             <div>
               <div style={[styles.commentPostedBy, {display: 'inline-block'}]}>{comment.postedBy.name}</div>
-              <div style={[styles.commentDate, {display: 'inline-block', marginLeft: 10}]}>{moment(comment.createdAt).calendar(null, {
+              <div style={[styles.commentDate, {display: 'inline-block', marginLeft: 10}]}>{moment(comment.postedOn).calendar(null, {
                 sameDay: '[Today] [at] h:mm a',
                 nextDay: '[Tomorrow] [at] h:mm a',
                 nextWeek: 'dddd [at] h:mm a',
@@ -115,7 +115,7 @@ export default Relay.createContainer(Comment, {
       fragment on Comment {
         id
         text
-        createdAt
+        postedOn
         postedBy {
           name
         }

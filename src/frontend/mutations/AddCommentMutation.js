@@ -39,7 +39,6 @@ export default class AddCommentMutation extends Relay.Mutation {
     return {
       cardId: this.props.card.id,
       text: this.props.text,
-      postedBy: this.props.postedBy,
     };
   }
   getOptimisticResponse() {
@@ -51,7 +50,7 @@ export default class AddCommentMutation extends Relay.Mutation {
         node: {
           text: this.props.text,
           postedBy: this.props.postedBy,
-          createdAt: moment().toISOString(),
+          postedOn: moment().toISOString(),
         },
       },
     };

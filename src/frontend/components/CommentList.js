@@ -67,13 +67,13 @@ class CommentList extends React.Component {
     const commentText = this._txtAddComment.getValue();
     if (commentText && commentText.trim()) {
       /* MUTATION: This is where the add comment to card mutation will exist...*/
-      // Relay.Store.update(
-      //   new AddCommentMutation({
-      //     card: this.props.card,
-      //     text: commentText.trim(),
-      //     postedBy: viewer,
-      //   })
-      // );
+      Relay.Store.update(
+        new AddCommentMutation({
+          card: this.props.card,
+          text: commentText.trim(),
+          postedBy: this.props.viewer,
+        })
+      );
     }
   }
   render() {
