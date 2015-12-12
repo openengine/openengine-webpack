@@ -79,12 +79,12 @@ class AssignMenu extends React.Component {
   itemSelected(item) {
     if (item.props && item.key) {
       /* MUTATION: This is where the change 'assignment' card mutation will exist... */
-      // Relay.Store.update(
-      //   new AssignCardMutation({
-      //     card: this.props.card,
-      //     assignedTo: {id: item.key, name: this._autoComplete.getValue()},
-      //   })
-      // );
+      Relay.Store.update(
+        new AssignCardMutation({
+          card: this.props.card,
+          assignedTo: {id: item.key, name: this._autoComplete.getValue()},
+        })
+      );
     }
   }
   clearValue() {

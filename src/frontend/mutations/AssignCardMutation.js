@@ -5,6 +5,7 @@ import {
 export default class AssignCardMutation extends Relay.Mutation {
   static propTypes = {
     card: PropTypes.object,
+    assignedTo: PropTypes.object,
   };
   getMutation() {
     return Relay.QL`mutation{assignCard}`;
@@ -15,7 +16,7 @@ export default class AssignCardMutation extends Relay.Mutation {
   getFatQuery() {
     return Relay.QL`
       fragment on AssignCardPayload {
-        savedCard {
+        updatedCard {
           assignedTo
         }
       }
@@ -25,22 +26,22 @@ export default class AssignCardMutation extends Relay.Mutation {
     return [{
       type: 'FIELDS_CHANGE',
       fieldIDs: {
-        savedCard: this.props.card.id,
+        updatedCard: this.props.card.id,
       },
     },
   ];
   }
   getVariables() {
     return {
-      id: this.props.card.id,
-      assignedTo: this.props.assignedTo,
+      cardId: this.props.card.id,
+      assignedToId: this.props.assignedTo.id,
     };
   }
   // Let's craft an optimistic response that mimics the shape of the
   // SaveCardPayload, as well as the values we expect to receive.
   getOptimisticResponse() {
     return {
-      savedCard: {
+      updatedCard: {
         id: this.props.card.id,
         assignedTo: this.props.assignedTo,
       },
