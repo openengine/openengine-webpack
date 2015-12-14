@@ -29,7 +29,7 @@ const styles = {
     flexFlow: 'column nowrap',
     justifyContent: 'flex-start',
     alignItems: 'stretch',
-    flex: '0 1 auto',
+    flex: '1 0 auto',
     margin: '0.3rem',
     backgroundColor: Colors.grey100,
     borderRadius: 5,
@@ -92,14 +92,14 @@ const styles = {
 
 // Used to sort cards in a boardColumn by the specified field
 const sortCards = (boardColumn, sortBy) => {
-  return boardColumn.cards.edges.map(({node}) => node).sort((cardA, cardB) => {
+  return boardColumn.cards ? boardColumn.cards.edges.map(({node}) => node).sort((cardA, cardB) => {
     if (cardA[sortBy] >= cardB[sortBy]) {
       return 1;
     }
     if (cardA[sortBy] < cardB[sortBy]) {
       return -1;
     }
-  });
+  }) : [];
 };
 
 const columnTarget = {
