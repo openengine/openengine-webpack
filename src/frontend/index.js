@@ -4,7 +4,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Relay from 'react-relay';
 import {RelayRouter} from 'react-router-relay';
-import styles from "./assets/styles/engine.css";
 import routes from './routes';
 Relay.injectNetworkLayer(
   new Relay.DefaultNetworkLayer(process.env.GRAPHQL_SERVER, {

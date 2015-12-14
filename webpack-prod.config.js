@@ -48,11 +48,6 @@ const frontendConfig = assign({}, defaultConfig, {
         },
         include: [path.join(__dirname, 'src', 'frontend')],
       },
-      {
-        test: /\.css$/,
-        include: path.join(__dirname, 'src', 'frontend', 'assets', 'styles'),
-        loaders: ['style', 'css'],
-      },
     ],
   },
 });

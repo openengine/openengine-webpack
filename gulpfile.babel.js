@@ -49,7 +49,6 @@ gulp.task('set-dev-env', () => {
 // Copy all static assets, also concatinates css files into 1 file
 gulp.task('copy-assets', ['clean-build'], () => {
   gulp.src(path.join(__dirname, './src/frontend/assets/img/**')).pipe(gulp.dest(path.join(__dirname, buildDir, 'public', 'img')));
-  // gulp.src(path.join(__dirname, './src/frontend/assets/styles/**')).pipe(concatCss("engine.css")).pipe(gulp.dest(path.join(__dirname,'build','public','css')));
 });
 // Runs our combined production tasks using the webpack-prod.config.js file
 gulp.task('production-run', () => {
