@@ -113,7 +113,6 @@ class TaskList extends React.Component {
           <div style={styles.addTaskContainer(addTaskOpened)}>
             <TextField ref={(ref) => this._addTask = ref} onEnterKeyDown={this.addTask} onBlur={this.addTaskBlur}
             style={styles.addTaskTextBox} hintStyle={styles.addTaskHint} fullWidth hintText="What's next?" />
-            <RaisedButton id="addTaskBtn" onTouchTap={this.addTask} labelStyle={{textTransform: 'none'}} label="Add" secondary />
           </div>
         </div>
         <FlatButton onTouchTap={this.showAddTask} style={styles.addTaskBtn(addTaskOpened)} hoverColor="transparent"
