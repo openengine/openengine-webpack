@@ -49,6 +49,7 @@
     "react-dnd-html5-backend": "^2.0.0",
     "react-dom": "^0.14.0",
     "react-hot-loader": "^1.2.8",
+    "react-motion": "^0.3.1",
     "react-relay": "^0.6.0",
     "react-router": "^1.0.2",
     "react-router-relay": "^0.8.0",

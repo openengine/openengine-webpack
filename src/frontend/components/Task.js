@@ -44,6 +44,7 @@ class Task extends React.Component {
   constructor(props) {
     super(props);
     this.updateTask = this.updateTask.bind(this);
+    this.taskChecked = this.taskChecked.bind(this);
   }
   updateTask() {
     /* MUTATION: This is where the update 'task' mutation will exist... for updating a tasks text*/
@@ -55,12 +56,16 @@ class Task extends React.Component {
       })
     );
   }
+  taskChecked(event, checked) {
+   /* MUTATION: This is where the change 'task' status card mutation will exist... */
+   this.updateTask();
+ }
   render() {
     const { task } = this.props;
     return (
       <div style={styles.taskSingleContainer}>
         <div style={styles.taskCheckbox(task.status === 'closed')} key={'checkTask_' + task.id}>
-          <Checkbox ref={(ref) => this._taskCheck = ref} checked={task.status === 'closed'} iconStyle={{paddingRight: 0, marginRight: 5}} />
+          <Checkbox ref={(ref) => this._taskCheck = ref} onCheck={this.taskChecked} checked={task.status === 'closed'} iconStyle={{paddingRight: 0, marginRight: 5}} />
         </div>
         <EditableTextField uniqueKey={'textTask_' + task.id} underlineStyle={{borderColor: 'transparent', bottom: 3}} underlineFocusStyle={{bottom: 3}}
           txtContainerStyle={{height: 'auto'}} txtStyle={styles.taskTxt(task.status === 'closed')} value={task.name}
