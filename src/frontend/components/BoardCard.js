@@ -14,6 +14,7 @@ import {
   DragSource,
   DropTarget,
 } from 'react-dnd';
+import {Motion, spring} from 'react-motion';
 import CardDetails from './CardDetails';
 import MoveCardMutation from '../mutations/MoveCardMutation';
 const styles = {
@@ -80,6 +81,7 @@ export default class BoardCard extends Component {
     cardIndex: PropTypes.number,
     boardColumn: PropTypes.object,
     isDragging: PropTypes.bool,
+    clientOffset: PropTypes.object,
     isOver: PropTypes.bool,
     draggedItem: PropTypes.object,
     viewType: PropTypes.string,
@@ -87,30 +89,33 @@ export default class BoardCard extends Component {
   };
   constructor(props) {
     super(props);
-    this.cardMenuSelected = this.cardMenuSelected.bind(this);
     this.cardClicked = this.cardClicked.bind(this);
-    this.state = {optionsExpanded: false};
+    this.handleTouchStart = this.handleTouchStart.bind(this);
+    this.handleMouseUp = this.handleMouseUp.bind(this);
+    this.handleMouseDown = this.handleMouseDown.bind(this);
+    this.state = {optionsExpanded: false, isPressed: false};
+  }
+  componentDidMount() {
+    window.addEventListener('touchend', this.handleMouseUp);
+    window.addEventListener('mouseup', this.handleMouseUp);
   }
   cardClicked() {
     this.props.toggleCardDetails(this.props.card);
   }
-  cardMenuSelected(event, item) {
-    switch (item.props.value) {
-    case 'delete':
-    //   Relay.Store.update(
-    //   new RemoveCardMutation({
-    //     boardColumn: this.props.boardColumn,
-    //     card: this.props.card,
-    //   })
-    // );
-      break;
-    default:
-
-    }
+  handleTouchStart() {
+    this.handleMouseDown();
+  }
+  handleMouseDown() {
+    this.setState({ isPressed: true});
+  }
+  handleMouseUp() {
+    this.setState({isPressed: false});
   }
   render() {
     const { card, isDragging, isOver, draggedItem, connectDragSource,
-       connectDropTarget, viewType} = this.props;
+       connectDropTarget, viewType } = this.props;
+    const { isPressed } = this.state;
+
     // We will put the placeholder in when a card is hovering over this card. Always above since below
     // will be taken care of by the BoardColumn parent component (only on empty or below last card)
     let placeHolder = '';
@@ -125,15 +130,64 @@ export default class BoardCard extends Component {
         }}/>
     );
     }
+
+    const springConfig = [300, 50];
+    let style = {
+        scale: spring(1, springConfig),
+        shadow: spring(1, springConfig),
+        height: spring(0, springConfig),
+    };
+
+    if (isDragging) {
+      style = {
+          scale: 0,
+          shadow: spring(0, springConfig),
+          height: spring(0, springConfig),
+        };
+    } else {
+      if (isPressed) {
+        style = {
+            scale: spring(1.1, springConfig),
+            shadow: spring(16, springConfig),
+            height: spring(0, springConfig),
+          };
+      }
+    }
+    if (draggedItem && draggedItem.card.id!==card.id && isOver) {
+      style = {
+          scale: spring(1, springConfig),
+          shadow: spring(1, springConfig),
+          height: spring(draggedItem.height, springConfig),
+      };
+    }
+
     return connectDragSource(connectDropTarget(
-      <div style={{
-        display: isDragging ? 'none' : 'block',
-        cursor: isDragging ? 'grabbing' : 'pointer',
-      }}>
-        {placeHolder}
-        <Paper onClick={this.cardClicked} style={styles.card(viewType)} zDepth={0}>
-          <h1 style={styles.cardName}>{card.name}</h1>
-        </Paper>
+      <div>
+        <Motion style={style} key={card.id}>
+              {({scale, shadow, height}) =>
+                <div
+                  onMouseDown={this.handleMouseDown}
+                  onMouseUp={this.handleMouseUp}
+                  onTouchEnd={this.handleMouseUp}
+                  onTouchStart={this.handleTouchStart}
+                  style={{
+                    boxShadow: `rgba(0, 0, 0, 0.2) 0px ${shadow}px ${2 * shadow}px 0px`,
+                    transform: `scale(${scale})`,
+                    WebkitTransform: `scale(${scale})`,
+                    cursor: isDragging ? 'grabbing' : 'pointer',
+                    height: isDragging ? 0 : 'auto',
+                  }}>
+                    <div style={{
+                      width: '100%',
+                      height: height,
+                      background: Colors.blueGrey50,
+                    }}/>
+                    <Paper onClick={this.cardClicked} style={styles.card(viewType)} zDepth={0}>
+                      <h1 style={styles.cardName}>{card.name}</h1>
+                    </Paper>
+                </div>
+              }
+        </Motion>
       </div>
     ));
   }
