@@ -198,6 +198,7 @@ class BoardColumn extends React.Component {
     const { boardColumn, viewType, toggleCardDetails } = this.props;
     const { addOpened } = this.state;
     const cards = sortCards(boardColumn, 'rank');
+
     // We will put the placeholder in when a card is hovering over the empty part of the boardColumn.
     let placeHolder = '';
     // if there is a draggedItem that is picked up by the "dropMonitor" put in the placeHolder
