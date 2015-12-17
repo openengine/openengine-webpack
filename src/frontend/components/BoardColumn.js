@@ -10,6 +10,7 @@ FontIcon,
 Paper,
 TextField,
 } from 'material-ui';
+import {Motion, spring} from 'react-motion';
 import Colors from 'material-ui/lib/styles/colors';
 import MoveCardMutation from '../mutations/MoveCardMutation';
 import RemoveCardMutation from '../mutations/RemoveCardMutation';
@@ -199,18 +200,18 @@ class BoardColumn extends React.Component {
     const { addOpened } = this.state;
     const cards = sortCards(boardColumn, 'rank');
 
+    const springConfig = [300, 50];
+    let hoverStyle = {
+        height: spring(0, springConfig),
+    };
+
     // We will put the placeholder in when a card is hovering over the empty part of the boardColumn.
     let placeHolder = '';
     // if there is a draggedItem that is picked up by the "dropMonitor" put in the placeHolder
     if (draggedItem && isOverOnly) {
-      placeHolder = (
-        <div style={{
-          display: isOverOnly ? 'block' : 'none',
-          width: '100%',
-          height: draggedItem.height,
-          background: Colors.blueGrey50,
-        }}/>
-    );
+      hoverStyle = {
+          height: spring(draggedItem.height, springConfig),
+      };
     }
     return (
       <div style={[styles.columnContainer]}>
@@ -234,7 +235,15 @@ class BoardColumn extends React.Component {
                 />
               );
             })}
-            {placeHolder}
+            <Motion style={hoverStyle} key={boardColumn.id}>
+                  {({height}) =>
+                  <div style={{
+                    width: '100%',
+                    height: height,
+                    background: Colors.blueGrey50,
+                  }}/>
+                }
+          </Motion>
             <Paper style={styles.addCardTmp(viewType, addOpened)} zDepth={0}>
               <TextField onEnterKeyDown={this.addCard} onBlur={this.addCardBlur} ref={(ref) => this._addCardName = ref} underlineStyle={{borderColor: 'transparent'}}
               underlineFocusStyle={{borderColor: Colors.brown50}} hintText= "What you working on?"
