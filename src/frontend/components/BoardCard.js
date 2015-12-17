@@ -119,8 +119,11 @@ export default class BoardCard extends Component {
     this.state = {optionsExpanded: false, isPressed: false};
   }
   componentDidMount() {
-    window.addEventListener('touchend', this.handleMouseUp);
-    window.addEventListener('mouseup', this.handleMouseUp);
+  //  window.addEventListener('touchend', this.handleMouseUp);
+  //  window.addEventListener('mouseup', this.handleMouseUp);
+  }
+  componentWillUnmount(){
+    this.setState({isPressed: false});
   }
   cardClicked() {
     this.props.toggleCardDetails(this.props.card);
@@ -128,39 +131,25 @@ export default class BoardCard extends Component {
   handleTouchStart() {
     this.handleMouseDown();
   }
+
   handleMouseDown() {
     this.setState({ isPressed: true});
   }
   handleMouseUp() {
-    this.setState({isPressed: false});
+     this.setState({isPressed: false});
   }
   render() {
     const { card, isDragging, isOver, draggedItem, connectDragSource,
        connectDropTarget, viewType, cardIndex, boardColumn, offsetDifference } = this.props;
     const { isPressed } = this.state;
 
-    // We will put the placeholder in when a card is hovering over this card. Always above since below
-    // will be taken care of by the BoardColumn parent component (only on empty or below last card)
-    let placeHolder = '';
-    // if there is a draggedItem that is picked up by the "dropMonitor" put in the placeHolder
-    if (draggedItem) {
-      placeHolder = (
-        <div style={{
-          display: isOver ? 'block' : 'none',
-          width: '100%',
-          height: draggedItem.height,
-          background: Colors.blueGrey50,
-        }}/>
-    );
-    }
-
+    // configuration for our animations
     const springConfig = [300, 50];
     let style = {
         scale: spring(1, springConfig),
         shadow: spring(1, springConfig),
         height: spring(0, springConfig),
     };
-
     if (isDragging) {
       style = {
           scale: 0,

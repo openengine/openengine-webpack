@@ -10,7 +10,7 @@ FontIcon,
 Paper,
 TextField,
 } from 'material-ui';
-import {Motion, spring} from 'react-motion';
+import {TransitionMotion, Motion, spring} from 'react-motion';
 import Colors from 'material-ui/lib/styles/colors';
 import MoveCardMutation from '../mutations/MoveCardMutation';
 import RemoveCardMutation from '../mutations/RemoveCardMutation';
@@ -165,6 +165,10 @@ class BoardColumn extends React.Component {
     this.addCardInit = this.addCardInit.bind(this);
     this.addCard = this.addCard.bind(this);
     this.addCardBlur = this.addCardBlur.bind(this);
+    this.willEnter = this.willEnter.bind(this);
+    this.willLeave = this.willLeave.bind(this);
+    this.getDefaultStyles = this.getDefaultStyles.bind(this);
+    this.gettStyles = this.getStyles.bind(this);
     this.state = {addOpened: false};
   }
   addCard() {
@@ -194,6 +198,45 @@ class BoardColumn extends React.Component {
   addCardBlur() {
     this.setState({addOpened: false});
   }
+  getDefaultStyles(){
+    let configs = {};
+    const { boardColumn } = this.props;
+    if (boardColumn.cards && boardColumn.cards.edges) {
+      boardColumn.cards.edges.map(({node}) => {
+        configs[node.id] = {
+          height: spring(0),
+          opacity: spring(1),
+        };
+      });
+    }
+
+    return configs;
+  }
+  getStyles(){
+    let configs = {};
+    const { boardColumn } = this.props;
+    if (boardColumn.cards && boardColumn.cards.edges) {
+        boardColumn.cards.edges.map(({node}) => {
+        configs[node.id] = {
+          height: spring(100, [300, 50]),
+          opacity: spring(1, [300, 50]),
+        };
+      });
+    }
+    return configs;
+  }
+  willEnter(key) {
+    return {
+      height: spring(0),
+      opacity: spring(1),
+    };
+  }
+  willLeave(key, style) {
+    return {
+      height: spring(0),
+      opacity: spring(0),
+    };
+  }
   render() {
     const { connectDropTarget, isOver, isOverOnly, draggedItem } = this.props;
     const { boardColumn, viewType, toggleCardDetails } = this.props;
@@ -205,14 +248,13 @@ class BoardColumn extends React.Component {
         height: spring(0, springConfig),
     };
 
-    // We will put the placeholder in when a card is hovering over the empty part of the boardColumn.
-    let placeHolder = '';
     // if there is a draggedItem that is picked up by the "dropMonitor" put in the placeHolder
     if (draggedItem && isOverOnly) {
       hoverStyle = {
           height: spring(draggedItem.height, springConfig),
       };
     }
+
     return (
       <div style={[styles.columnContainer]}>
         <div style={[styles.headerRowContainer(viewType)]}>
@@ -223,18 +265,29 @@ class BoardColumn extends React.Component {
         <div style={[styles.columnContainer]}>
         {connectDropTarget(
           <div style={[styles.boardColumnContainer(isOver, viewType)]}>
-            {cards.map(card => {
-              return (
-                <BoardCard
-                  key={card.id}
-                  card={card}
-                  cardIndex={cards.indexOf(card)}
-                  boardColumn={boardColumn}
-                  viewType={viewType}
-                  toggleCardDetails = {toggleCardDetails}
-                />
-              );
-            })}
+            <TransitionMotion defaultStyles={this.getDefaultStyles()} styles={this.getStyles()} willLeave={this.willLeave}
+              willEnter={this.willEnter}>
+               {configs =>
+                 <div>
+                  {cards.map(card => {
+                    const config = configs[card.id];
+                    const {...style} = config;
+                    return (
+                      <div style={style}>
+                        <BoardCard
+                          key={card.id}
+                          card={card}
+                          cardIndex={cards.indexOf(card)}
+                          boardColumn={boardColumn}
+                          viewType={viewType}
+                          toggleCardDetails = {toggleCardDetails}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              }
+            </TransitionMotion>
             <Motion style={hoverStyle} key={boardColumn.id}>
                   {({height}) =>
                   <div style={{
