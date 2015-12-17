@@ -109,6 +109,8 @@ export default class BoardCard extends Component {
     draggedItem: PropTypes.object,
     viewType: PropTypes.string,
     toggleCardDetails: PropTypes.func,
+    style: PropTypes.object,
+    setStyle: PropTypes.func,
   };
   constructor(props) {
     super(props);
@@ -118,10 +120,15 @@ export default class BoardCard extends Component {
     this.handleMouseDown = this.handleMouseDown.bind(this);
     this.state = {optionsExpanded: false, isPressed: false};
   }
-  componentDidMount() {
-  //  window.addEventListener('touchend', this.handleMouseUp);
-  //  window.addEventListener('mouseup', this.handleMouseUp);
+  componentWillReceiveProps(nextProps){
+    const {card, setStyle } = this.props;
+    const height = findDOMNode(this._wholeMotion).offsetHeight;
+    const paperHeight = findDOMNode(this._paper).offsetHeight;
+    if (nextProps.style.dataHeight < paperHeight) {
+      setStyle(card, paperHeight);
+    }
   }
+
   componentWillUnmount(){
     this.setState({isPressed: false});
   }
@@ -140,25 +147,25 @@ export default class BoardCard extends Component {
   }
   render() {
     const { card, isDragging, isOver, draggedItem, connectDragSource,
-       connectDropTarget, viewType, cardIndex, boardColumn, offsetDifference } = this.props;
+       connectDropTarget, viewType, cardIndex, boardColumn, offsetDifference, style } = this.props;
     const { isPressed } = this.state;
 
     // configuration for our animations
     const springConfig = [300, 50];
-    let style = {
+    let cardStyle = {
         scale: spring(1, springConfig),
         shadow: spring(1, springConfig),
         height: spring(0, springConfig),
     };
     if (isDragging) {
-      style = {
+      cardStyle = {
           scale: 0,
           shadow: spring(0, springConfig),
           height: spring(0, springConfig),
         };
     } else {
       if (isPressed) {
-        style = {
+        cardStyle = {
             scale: spring(1.1, springConfig),
             shadow: spring(16, springConfig),
             height: spring(0, springConfig),
@@ -167,7 +174,7 @@ export default class BoardCard extends Component {
     }
 
     if (draggedItem && draggedItem.card.id!==card.id && isOver) {
-      style = {
+      cardStyle = {
           scale: spring(1, springConfig),
           shadow: spring(1, springConfig),
           height: spring(draggedItem.height, springConfig),
@@ -179,8 +186,7 @@ export default class BoardCard extends Component {
     const isNextCard = (draggedItem && boardColumn.id === draggedItem.boardColumn.id && cardIndex === draggedItem.index + 1);
 
     if (draggedItem && draggedItem.card.id!==card.id && isOver && isNextCard) {
-      console.log("HoverMode: ")
-      style = {
+      cardStyle = {
           scale: spring(1, springConfig),
           shadow: spring(1, springConfig),
           height: draggedItem.height,
@@ -191,32 +197,37 @@ export default class BoardCard extends Component {
     let isOverSelf = false;
     if (draggedItem && draggedItem.card.id===card.id && isOver) {
       isOverSelf = true;
-      style = {
+      cardStyle = {
           scale:  spring(1, springConfig),
           shadow: spring(0, springConfig),
           height: 0,
       };
     }
 
+    let overAllHeight = (isDragging && !isOverSelf) ? 0 : style.height;
+
     return connectDragSource(connectDropTarget(
       <div>
-        <Motion style={style} key={card.id}>
+        <Motion style={cardStyle} key={card.id}>
               {({scale, shadow, height}) =>
                 <div
                   onMouseDown={this.handleMouseDown}
                   onMouseUp={this.handleMouseUp}
                   onTouchEnd={this.handleMouseUp}
                   onTouchStart={this.handleTouchStart}
+                  ref={(ref) => this._wholeMotion = ref}
                   style={{
                     cursor: isDragging ? 'grabbing' : 'pointer',
-                    height: (isDragging && !isOverSelf) ? 0 : 'auto',
+                    height: overAllHeight,
+                    opacity: style.opacity,
+                    paddingBottom: style.paddingBottom,
                   }}>
                     <div style={{
                       width: '100%',
                       height: height,
                       background: Colors.blueGrey50,
                     }}/>
-                  <Paper onClick={this.cardClicked} style={{
+                  <Paper ref={(ref) => this._paper = ref} onClick={this.cardClicked} style={{
                           borderRadius: 5,
                           marginBottom: viewType === 'grid' ? '1.0rem' : '0.2rem',
                           marginRight: '0.5rem',

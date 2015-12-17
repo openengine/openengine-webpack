@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react';
+import update from 'react/lib/update';
 import Radium from 'radium';
 import Relay from 'react-relay';
 import BoardCard from './BoardCard';
@@ -168,8 +169,9 @@ class BoardColumn extends React.Component {
     this.willEnter = this.willEnter.bind(this);
     this.willLeave = this.willLeave.bind(this);
     this.getDefaultStyles = this.getDefaultStyles.bind(this);
-    this.gettStyles = this.getStyles.bind(this);
-    this.state = {addOpened: false};
+    this.getStyles = this.getStyles.bind(this);
+    this.setStyle = this.setStyle.bind(this);
+    this.state = {addOpened: false, cardHeights: {}};
   }
   addCard() {
     this.setState({addOpened: false});
@@ -198,6 +200,13 @@ class BoardColumn extends React.Component {
   addCardBlur() {
     this.setState({addOpened: false});
   }
+  setStyle(card, height){
+    const { cardHeights }= this.state
+    if (!cardHeights[card.id] || height > cardHeights[card.id]){
+       cardHeights[card.id] = height;
+       this.setState({cardHeights: cardHeights});
+    }
+  }
   getDefaultStyles(){
     let configs = {};
     const { boardColumn } = this.props;
@@ -206,6 +215,8 @@ class BoardColumn extends React.Component {
         configs[node.id] = {
           height: spring(0),
           opacity: spring(1),
+          paddingBottom: spring(0),
+          dataHeight: 50
         };
       });
     }
@@ -214,12 +225,18 @@ class BoardColumn extends React.Component {
   }
   getStyles(){
     let configs = {};
+    const { cardHeights }= this.state
     const { boardColumn } = this.props;
     if (boardColumn.cards && boardColumn.cards.edges) {
         boardColumn.cards.edges.map(({node}) => {
+      //  console.log('CARDHEIGHT SET:', cardHeights[node.id]);
+        const cardHeight = cardHeights[node.id] ? cardHeights[node.id] : 50;
+      //  console.log("HEIGHT DEF for : ", node.name, ' , height: ', cardHeight)
         configs[node.id] = {
-          height: spring(100, [300, 50]),
-          opacity: spring(1, [300, 50]),
+          height: spring(cardHeight, [120, 14]),
+          opacity: spring(1, [120, 14]),
+          paddingBottom: spring(10, [120, 14]),
+          dataHeight: cardHeight
         };
       });
     }
@@ -227,14 +244,18 @@ class BoardColumn extends React.Component {
   }
   willEnter(key) {
     return {
-      height: spring(0),
+      height: spring(0), // start at 0, gradually expand
       opacity: spring(1),
+      paddingBottom: spring(0),
+      dataHeight: 50,
     };
   }
   willLeave(key, style) {
     return {
       height: spring(0),
-      opacity: spring(0),
+      opacity: spring(0), // make opacity reach 0, after which we can kill the key
+      paddingBottom: spring(0),
+      dataHeight: 50
     };
   }
   render() {
@@ -273,16 +294,16 @@ class BoardColumn extends React.Component {
                     const config = configs[card.id];
                     const {...style} = config;
                     return (
-                      <div style={style}>
                         <BoardCard
                           key={card.id}
+                          style={style}
                           card={card}
                           cardIndex={cards.indexOf(card)}
                           boardColumn={boardColumn}
+                          setStyle={this.setStyle}
                           viewType={viewType}
                           toggleCardDetails = {toggleCardDetails}
                         />
-                      </div>
                     );
                   })}
                 </div>
@@ -330,6 +351,7 @@ export default Relay.createContainer(BoardColumn, {
           edges {
             node {
               id
+              name
               rank,
               ${BoardCard.getFragment('card')},
             }
