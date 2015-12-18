@@ -33,7 +33,7 @@ const styles = {
     alignItems: 'stretch',
     flex: '1 0 auto',
     margin: '0.3rem',
-    backgroundColor: Colors.grey100,
+    backgroundColor: Colors.blueGrey50,
     borderRadius: 5,
   },
   boardColumnName: {
@@ -47,7 +47,7 @@ const styles = {
   },
   boardColumnContainer: (isOver, viewType) => ({
     minHeight: viewType === 'grid' ? 500 : 20,
-    boxShadow: (isOver ? '0px -1px 0px 1px #90A4AE' : '0px 0px 0px 0px #90A4AE'),
+    boxShadow: (isOver ? '0px 0px 0px 1px #90A4AE' : '0px 0px 0px 0px #90A4AE'),
   }),
   addCardBtnHolder: {
     alignSelf: 'stretch',
@@ -119,10 +119,8 @@ const columnTarget = {
     // Dropped on/between cards, set new rank for dropped card
     if (monitor.didDrop()) {
       const { droppedOnCardIndex, droppedOnCardRank } = monitor.getDropResult();
-
       // If it was dropped on the top card, just set rank less than the top card
       toRank = droppedOnCardRank - 1.0;
-
       if (droppedOnCardIndex !== 0) {
         // The new rank of the dropped card will be between the card it was dropped on and the one above it
         toRank = (droppedOnCardRank + cards[droppedOnCardIndex - 1].rank) / 2;
@@ -216,6 +214,7 @@ class BoardColumn extends React.Component {
           height: spring(0),
           opacity: spring(1),
           paddingBottom: spring(0),
+          paddingTop: spring(0),
           dataHeight: 50
         };
       });
@@ -235,7 +234,8 @@ class BoardColumn extends React.Component {
         configs[node.id] = {
           height: spring(cardHeight, [120, 14]),
           opacity: spring(1, [120, 14]),
-          paddingBottom: spring(10, [120, 14]),
+          paddingBottom: spring(5, [120, 14]),
+          paddingTop: spring(5, [120, 14]),
           dataHeight: cardHeight
         };
       });
@@ -247,6 +247,7 @@ class BoardColumn extends React.Component {
       height: spring(0), // start at 0, gradually expand
       opacity: spring(1),
       paddingBottom: spring(0),
+      paddingTop: spring(0),
       dataHeight: 50,
     };
   }
@@ -255,6 +256,7 @@ class BoardColumn extends React.Component {
       height: spring(0),
       opacity: spring(0), // make opacity reach 0, after which we can kill the key
       paddingBottom: spring(0),
+      paddingTop: spring(0),
       dataHeight: 50
     };
   }
@@ -314,7 +316,7 @@ class BoardColumn extends React.Component {
                   <div style={{
                     width: '100%',
                     height: height,
-                    background: Colors.blueGrey50,
+                    background: Colors.blueGrey100,
                   }}/>
                 }
           </Motion>

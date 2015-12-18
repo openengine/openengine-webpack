@@ -40,12 +40,18 @@ const cardSource = {
   beginDrag(props, monitor, component) {
     // Send the height of the dragged card to show the correct sized placeHolder
     const height = findDOMNode(component).offsetHeight;
+    component.setState({isTheDragged: true});
     return {
       card: props.card,
       boardColumn: props.boardColumn,
       height: height,
       index: props.cardIndex,
     };
+  },
+  endDrag(props, monitor, component) {
+    if(monitor.didDrop()){
+        component.setState({hasDropped: true});
+    }
   },
 };
 const cardTarget = {
@@ -55,25 +61,6 @@ const cardTarget = {
       return false;
     }
     return true;
-  },
-  hover(props, monitor) {
-    const { card: draggedCard } = monitor.getItem();
-    const { card: overCard, cardIndex } = props;
-
-    if (draggedCard.id !== overCard.id) {
-        //console.log('card hover: ', cardIndex, " : " ,hoverMode);
-    //  console.log("HOVER: ", cardIndex);
-    //  monitor.getItem().hoverIndex = cardIndex;
-      // const from = {id: draggedId, status: draggedStatus};
-      // const to = {index: overIndex, status: overStatus }
-      //
-      // props.moveCard(from, to);
-      //
-      // if(draggedStatus!==overStatus) {
-      //   // So I think this might actually be frowned upon (mutating here)... but it works for now.
-      //     monitor.getItem().currentStatus = overStatus;
-      // }
-    }
   },
   // If a card is dropped on another card, send that card's listRank to the boardColumn drop event
   drop(props) {
@@ -93,6 +80,7 @@ const cardTarget = {
 @DragSource(DragItemTypes.BOARDCARD, cardSource, (connect, monitor) => ({
   connectDragSource: connect.dragSource(),
   isDragging: monitor.isDragging(),
+
 }))
 @Radium
 export default class BoardCard extends Component {
@@ -118,7 +106,7 @@ export default class BoardCard extends Component {
     this.handleTouchStart = this.handleTouchStart.bind(this);
     this.handleMouseUp = this.handleMouseUp.bind(this);
     this.handleMouseDown = this.handleMouseDown.bind(this);
-    this.state = {optionsExpanded: false, isPressed: false};
+    this.state = {optionsExpanded: false, isPressed: false, isTheDragged: false, hasDropped: false};
   }
   componentWillReceiveProps(nextProps){
     const {card, setStyle } = this.props;
@@ -128,9 +116,14 @@ export default class BoardCard extends Component {
       setStyle(card, paperHeight);
     }
   }
-
+  componentDidMount() {
+   window.addEventListener('touchend', this.handleMouseUp);
+   window.addEventListener('mouseup', this.handleMouseUp);
+  }
   componentWillUnmount(){
     this.setState({isPressed: false});
+    window.removeEventListener('touchend', this.handleMouseUp);
+    window.removeEventListener('mouseup', this.handleMouseUp);
   }
   cardClicked() {
     this.props.toggleCardDetails(this.props.card);
@@ -148,7 +141,7 @@ export default class BoardCard extends Component {
   render() {
     const { card, isDragging, isOver, draggedItem, connectDragSource,
        connectDropTarget, viewType, cardIndex, boardColumn, offsetDifference, style } = this.props;
-    const { isPressed } = this.state;
+    const { isPressed, isTheDragged, hasDropped } = this.state;
 
     // configuration for our animations
     const springConfig = [300, 50];
@@ -193,7 +186,6 @@ export default class BoardCard extends Component {
       };
     }
 
-
     let isOverSelf = false;
     if (draggedItem && draggedItem.card.id===card.id && isOver) {
       isOverSelf = true;
@@ -204,12 +196,21 @@ export default class BoardCard extends Component {
       };
     }
 
-    let overAllHeight = (isDragging && !isOverSelf) ? 0 : style.height;
+    let overAllHeight = hasDropped || (isDragging && !isOverSelf) ? 0 : style.height;
+    let overAllOpacity = (hasDropped || isDragging || isOverSelf) ? 0 : style.opacity;
+    let overAllPaddingBottom = isDragging || hasDropped ? 0 : style.paddingBottom;
+    let overAllPaddingTop= isDragging || hasDropped ? 0 : style.paddingTop;
 
     return connectDragSource(connectDropTarget(
       <div>
         <Motion style={cardStyle} key={card.id}>
               {({scale, shadow, height}) =>
+              <div>
+                <div style={{
+                  width: '100%',
+                  height: height,
+                  background: Colors.blueGrey100,
+                }}/>
                 <div
                   onMouseDown={this.handleMouseDown}
                   onMouseUp={this.handleMouseUp}
@@ -219,30 +220,24 @@ export default class BoardCard extends Component {
                   style={{
                     cursor: isDragging ? 'grabbing' : 'pointer',
                     height: overAllHeight,
-                    opacity: style.opacity,
-                    paddingBottom: style.paddingBottom,
+                    opacity: overAllOpacity,
+                    paddingBottom: overAllPaddingBottom,
+                    paddingTop: overAllPaddingTop,
                   }}>
-                    <div style={{
-                      width: '100%',
-                      height: height,
-                      background: Colors.blueGrey50,
-                    }}/>
                   <Paper ref={(ref) => this._paper = ref} onClick={this.cardClicked} style={{
                           borderRadius: 5,
                           marginBottom: viewType === 'grid' ? '1.0rem' : '0.2rem',
                           marginRight: '0.5rem',
                           marginLeft: '0.5rem',
                           minHeight: viewType === 'grid' ? 100 : 0,
-                          opacity: isOverSelf ? 0 : 1,
                           padding: viewType === 'grid' ? 10 : '2px 5px 2px 15px',
                           flex: '1 0 auto',
                           boxShadow: `rgba(0, 0, 0, 0.2) 0px ${shadow}px ${2 * shadow}px 0px`,
-                          transform: `scale(${scale})`,
-                          WebkitTransform: `scale(${scale})`,
                       }} zDepth={0}>
                       <h1 style={styles.cardName}>{card.name}</h1>
                     </Paper>
                 </div>
+              </div>
               }
         </Motion>
       </div>
