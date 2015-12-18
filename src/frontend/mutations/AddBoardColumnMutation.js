@@ -9,6 +9,7 @@ export default class AddBoardColumnMutation extends Relay.Mutation {
     rank: PropTypes.number,
   };
   getMutation() {
+    // TODO: WORKS????????????
     return Relay.QL`mutation{addBoardColumn}`;
   }
   getCollisionKey() {
