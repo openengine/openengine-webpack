@@ -50,8 +50,9 @@ const cardSource = {
   },
   endDrag(props, monitor, component) {
     if(monitor.didDrop()){
-        component.setState({hasDropped: true});
+      component.setState({hasDropped: true});
     }
+    props.setDragCounter(true);
   },
 };
 const cardTarget = {
@@ -61,6 +62,13 @@ const cardTarget = {
       return false;
     }
     return true;
+  },
+  hover(props, monitor) {
+    const { card, index, boardColumn } = monitor.getItem();
+    // We set this board column's drag counter so that we know when to turn the initial card's placeholder animation back on.
+    if (props.boardColumn.id===boardColumn.id && props.cardIndex === index && props.getDragCounter() < 2) {
+      props.setDragCounter();
+    }
   },
   // If a card is dropped on another card, send that card's listRank to the boardColumn drop event
   drop(props) {
@@ -99,6 +107,8 @@ export default class BoardCard extends Component {
     toggleCardDetails: PropTypes.func,
     style: PropTypes.object,
     setStyle: PropTypes.func,
+    setDragCounter: PropTypes.func,
+    getDragCounter: PropTypes.func,
   };
   constructor(props) {
     super(props);
@@ -140,7 +150,7 @@ export default class BoardCard extends Component {
   }
   render() {
     const { card, isDragging, isOver, draggedItem, connectDragSource,
-       connectDropTarget, viewType, cardIndex, boardColumn, offsetDifference, style } = this.props;
+       connectDropTarget, viewType, cardIndex, boardColumn, offsetDifference, style, getDragCounter } = this.props;
     const { isPressed, isTheDragged, hasDropped } = this.state;
 
     // configuration for our animations
@@ -174,30 +184,27 @@ export default class BoardCard extends Component {
       };
     }
 
-    // There is a special case that happens since our "placeholders" are on top of each card. Once dragging begins, the card immediately below
-    // the dragged card will need to have its placeholder initially "hidden" otherwise a sudden jerky upward movement of the card below will take place
-    const isNextCard = (draggedItem && boardColumn.id === draggedItem.boardColumn.id && cardIndex === draggedItem.index + 1);
-
-    if (draggedItem && draggedItem.card.id!==card.id && isOver && isNextCard) {
+    // We need to check if the current "Dragged" card is hovering over itself so that we can set it to initially expand it's placeHolder without animations
+    const isOverSelf = draggedItem && draggedItem.card.id===card.id && isOver;
+    if (isOverSelf && getDragCounter() < 2) {
       cardStyle = {
-          scale: spring(1, springConfig),
-          shadow: spring(1, springConfig),
+          scale:  spring(1, springConfig),
+          shadow: spring(0, springConfig),
           height: draggedItem.height,
       };
     }
 
-    let isOverSelf = false;
-    if (draggedItem && draggedItem.card.id===card.id && isOver) {
-      isOverSelf = true;
+    // Once the drag counter has been incremented, it is safe to turn on the animations on the dragged card's placeholder again
+    if (isOverSelf && getDragCounter() > 1) {
       cardStyle = {
           scale:  spring(1, springConfig),
           shadow: spring(0, springConfig),
-          height: 0,
+          height: spring(draggedItem.height, springConfig),
       };
     }
 
-    let overAllHeight = hasDropped || (isDragging && !isOverSelf) ? 0 : style.height;
-    let overAllOpacity = (hasDropped || isDragging || isOverSelf) ? 0 : style.opacity;
+    let overAllHeight = hasDropped || isDragging || isOverSelf ? 0 : style.height;
+    let overAllOpacity = hasDropped || isDragging || isOverSelf ? 0 : style.opacity;
     let overAllPaddingBottom = isDragging || hasDropped ? 0 : style.paddingBottom;
     let overAllPaddingTop= isDragging || hasDropped ? 0 : style.paddingTop;
 
@@ -223,6 +230,7 @@ export default class BoardCard extends Component {
                     opacity: overAllOpacity,
                     paddingBottom: overAllPaddingBottom,
                     paddingTop: overAllPaddingTop,
+
                   }}>
                   <Paper ref={(ref) => this._paper = ref} onClick={this.cardClicked} style={{
                           borderRadius: 5,

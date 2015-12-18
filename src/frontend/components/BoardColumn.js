@@ -169,7 +169,9 @@ class BoardColumn extends React.Component {
     this.getDefaultStyles = this.getDefaultStyles.bind(this);
     this.getStyles = this.getStyles.bind(this);
     this.setStyle = this.setStyle.bind(this);
-    this.state = {addOpened: false, cardHeights: {}};
+    this.getDragCounter = this.getDragCounter.bind(this);
+    this.setDragCounter = this.setDragCounter.bind(this);
+    this.state = {addOpened: false, cardHeights: {}, dragCounter: 0};
   }
   addCard() {
     this.setState({addOpened: false});
@@ -197,6 +199,19 @@ class BoardColumn extends React.Component {
   }
   addCardBlur() {
     this.setState({addOpened: false});
+  }
+  // This function help by telling us that a drag action has started on a column
+  setDragCounter(reset) {
+    if(reset) {
+      this.setState({dragCounter: 0});
+    }
+    else {
+      this.setState({dragCounter: this.state.dragCounter + 1});
+    }
+  }
+    // This functions helps by telling us that a drag action has started on a column
+  getDragCounter() {
+    return this.state.dragCounter;
   }
   setStyle(card, height){
     const { cardHeights }= this.state
@@ -301,6 +316,8 @@ class BoardColumn extends React.Component {
                           style={style}
                           card={card}
                           cardIndex={cards.indexOf(card)}
+                          getDragCounter = {this.getDragCounter}
+                          setDragCounter = {this.setDragCounter}
                           boardColumn={boardColumn}
                           setStyle={this.setStyle}
                           viewType={viewType}
