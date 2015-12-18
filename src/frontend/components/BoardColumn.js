@@ -356,7 +356,7 @@ class BoardColumn extends React.Component {
 export default Relay.createContainer(BoardColumn, {
   prepareVariables() {
     return {
-      limit: Number.MAX_SAFE_INTEGER || 9007199254740991,
+      limit: 100,
     };
   },
 
