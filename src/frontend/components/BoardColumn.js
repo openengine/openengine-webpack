@@ -1,5 +1,4 @@
 import React, { PropTypes } from 'react';
-import update from 'react/lib/update';
 import Radium from 'radium';
 import Relay from 'react-relay';
 import BoardCard from './BoardCard';
@@ -173,6 +172,60 @@ class BoardColumn extends React.Component {
     this.setDragCounter = this.setDragCounter.bind(this);
     this.state = {addOpened: false, cardHeights: {}, dragCounter: 0};
   }
+  // This function help by telling us that a drag action has started on a column
+  setDragCounter(reset) {
+    if (reset) {
+      this.setState({dragCounter: 0});
+    } else {
+      this.setState({dragCounter: this.state.dragCounter + 1});
+    }
+  }
+    // This functions helps by telling us that a drag action has started on a column
+  getDragCounter() {
+    return this.state.dragCounter;
+  }
+  setStyle(card, height, viewChange) {
+    const { cardHeights } = this.state;
+    if (!cardHeights[card.id] || height > cardHeights[card.id] || viewChange) {
+      cardHeights[card.id] = height;
+      this.setState({cardHeights: cardHeights});
+    }
+  }
+  getDefaultStyles() {
+    const configs = {};
+    const { boardColumn } = this.props;
+    if (boardColumn.cards && boardColumn.cards.edges) {
+      boardColumn.cards.edges.map(({node}) => {
+        configs[node.id] = {
+          height: spring(0),
+          opacity: spring(1),
+          paddingBottom: spring(0),
+          paddingTop: spring(0),
+          dataHeight: 50,
+        };
+      });
+    }
+
+    return configs;
+  }
+  getStyles() {
+    const configs = {};
+    const { cardHeights } = this.state;
+    const { boardColumn } = this.props;
+    if (boardColumn.cards && boardColumn.cards.edges) {
+      boardColumn.cards.edges.map(({node}) => {
+        const cardHeight = cardHeights[node.id] ? cardHeights[node.id] : 50;
+        configs[node.id] = {
+          height: spring(cardHeight, [120, 14]),
+          opacity: spring(1, [120, 14]),
+          paddingBottom: spring(5, [120, 14]),
+          paddingTop: spring(5, [120, 14]),
+          dataHeight: cardHeight,
+        };
+      });
+    }
+    return configs;
+  }
   addCard() {
     this.setState({addOpened: false});
     const { boardColumn } = this.props;
@@ -200,64 +253,7 @@ class BoardColumn extends React.Component {
   addCardBlur() {
     this.setState({addOpened: false});
   }
-  // This function help by telling us that a drag action has started on a column
-  setDragCounter(reset) {
-    if(reset) {
-      this.setState({dragCounter: 0});
-    }
-    else {
-      this.setState({dragCounter: this.state.dragCounter + 1});
-    }
-  }
-    // This functions helps by telling us that a drag action has started on a column
-  getDragCounter() {
-    return this.state.dragCounter;
-  }
-  setStyle(card, height){
-    const { cardHeights }= this.state
-    if (!cardHeights[card.id] || height > cardHeights[card.id]){
-       cardHeights[card.id] = height;
-       this.setState({cardHeights: cardHeights});
-    }
-  }
-  getDefaultStyles(){
-    let configs = {};
-    const { boardColumn } = this.props;
-    if (boardColumn.cards && boardColumn.cards.edges) {
-      boardColumn.cards.edges.map(({node}) => {
-        configs[node.id] = {
-          height: spring(0),
-          opacity: spring(1),
-          paddingBottom: spring(0),
-          paddingTop: spring(0),
-          dataHeight: 50
-        };
-      });
-    }
-
-    return configs;
-  }
-  getStyles(){
-    let configs = {};
-    const { cardHeights }= this.state
-    const { boardColumn } = this.props;
-    if (boardColumn.cards && boardColumn.cards.edges) {
-        boardColumn.cards.edges.map(({node}) => {
-      //  console.log('CARDHEIGHT SET:', cardHeights[node.id]);
-        const cardHeight = cardHeights[node.id] ? cardHeights[node.id] : 50;
-      //  console.log("HEIGHT DEF for : ", node.name, ' , height: ', cardHeight)
-        configs[node.id] = {
-          height: spring(cardHeight, [120, 14]),
-          opacity: spring(1, [120, 14]),
-          paddingBottom: spring(5, [120, 14]),
-          paddingTop: spring(5, [120, 14]),
-          dataHeight: cardHeight
-        };
-      });
-    }
-    return configs;
-  }
-  willEnter(key) {
+  willEnter() {
     return {
       height: spring(0), // start at 0, gradually expand
       opacity: spring(1),
@@ -266,13 +262,13 @@ class BoardColumn extends React.Component {
       dataHeight: 50,
     };
   }
-  willLeave(key, style) {
+  willLeave() {
     return {
       height: spring(0),
       opacity: spring(0), // make opacity reach 0, after which we can kill the key
       paddingBottom: spring(0),
       paddingTop: spring(0),
-      dataHeight: 50
+      dataHeight: 50,
     };
   }
   render() {
@@ -283,13 +279,13 @@ class BoardColumn extends React.Component {
 
     const springConfig = [300, 50];
     let hoverStyle = {
-        height: spring(0, springConfig),
+      height: spring(0, springConfig),
     };
 
     // if there is a draggedItem that is picked up by the "dropMonitor" put in the placeHolder
     if (draggedItem && isOverOnly) {
       hoverStyle = {
-          height: spring(draggedItem.height, springConfig),
+        height: spring(draggedItem.height, springConfig),
       };
     }
 
@@ -311,16 +307,14 @@ class BoardColumn extends React.Component {
                     const config = configs[card.id];
                     const {...style} = config;
                     return (
-                        <BoardCard
+                      <BoardCard
                           key={card.id}
-                          style={style}
                           card={card}
                           cardIndex={cards.indexOf(card)}
-                          getDragCounter = {this.getDragCounter}
-                          setDragCounter = {this.setDragCounter}
                           boardColumn={boardColumn}
-                          setStyle={this.setStyle}
                           viewType={viewType}
+                          style={style}
+                          setStyle={this.setStyle}
                           toggleCardDetails = {toggleCardDetails}
                         />
                     );
@@ -330,11 +324,20 @@ class BoardColumn extends React.Component {
             </TransitionMotion>
             <Motion style={hoverStyle} key={boardColumn.id}>
                   {({height}) =>
-                  <div style={{
-                    width: '100%',
-                    height: height,
-                    background: Colors.blueGrey100,
-                  }}/>
+                  <div
+                    style={{
+                      borderRadius: 5,
+                      backgroundColor: Colors.blueGrey100,
+                      borderWidth: 0,
+                      borderStyle: 'dotted',
+                      borderColor: Colors.blueGrey100,
+                      marginRight: '0.5rem',
+                      marginLeft: '0.5rem',
+                      height: height,
+                      marginBottom: '0.2rem',
+                      marginTop: '0.2rem',
+                      flex: '1 1 auto',
+                    }} />
                 }
           </Motion>
             <Paper style={styles.addCardTmp(viewType, addOpened)} zDepth={0}>
