@@ -241,7 +241,7 @@ const DragBoard = DragDropContext(HTML5Backend)(Board);
 export default Relay.createContainer(DragBoard, {
   prepareVariables({}) {
     return {
-      limit: Number.MAX_SAFE_INTEGER || 9007199254740991,
+      limit: 100,
     };
   },
 
