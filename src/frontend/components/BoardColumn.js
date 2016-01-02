@@ -25,13 +25,24 @@ const styles = {
     overflow: 'hidden',
     width: '100%',
   }),
+  wholeColumnContainer: (viewType)=> ({
+    display: 'flex',
+    flexFlow: 'column nowrap',
+    justifyContent: 'flex-start',
+    alignItems: 'stretch',
+    flex: '1 0 auto',
+    margin: '0.2rem',
+    backgroundColor: Colors.blueGrey50,
+    borderRadius: 5,
+    maxWidth: viewType === 'grid' ? '25%' : '100%',
+  }),
   columnContainer: {
     display: 'flex',
     flexFlow: 'column nowrap',
     justifyContent: 'flex-start',
     alignItems: 'stretch',
     flex: '1 0 auto',
-    margin: '0.3rem',
+    margin: '0.2rem',
     backgroundColor: Colors.blueGrey50,
     borderRadius: 5,
   },
@@ -168,25 +179,15 @@ class BoardColumn extends React.Component {
     this.getDefaultStyles = this.getDefaultStyles.bind(this);
     this.getStyles = this.getStyles.bind(this);
     this.setStyle = this.setStyle.bind(this);
-    this.getDragCounter = this.getDragCounter.bind(this);
-    this.setDragCounter = this.setDragCounter.bind(this);
-    this.state = {addOpened: false, cardHeights: {}, dragCounter: 0};
+    this.state = {addOpened: false, cardHeights: {}};
   }
-  // This function help by telling us that a drag action has started on a column
-  setDragCounter(reset) {
-    if (reset) {
-      this.setState({dragCounter: 0});
-    } else {
-      this.setState({dragCounter: this.state.dragCounter + 1});
-    }
-  }
-    // This functions helps by telling us that a drag action has started on a column
-  getDragCounter() {
-    return this.state.dragCounter;
-  }
-  setStyle(card, height, viewChange) {
+  setStyle(card, height) {
+    // We need to set the height of the cards AS they are being created so that we can animate to those actual heights
+    // since animations do not work with "auto" heights yet.
     const { cardHeights } = this.state;
-    if (!cardHeights[card.id] || height > cardHeights[card.id] || viewChange) {
+    const { viewType } = this.props;
+    // We only do this with viewType "Grid" since "list view" can keep its card heights as "auto"
+    if (viewType === 'grid' && (!cardHeights[card.id] || height > cardHeights[card.id])) {
       cardHeights[card.id] = height;
       this.setState({cardHeights: cardHeights});
     }
@@ -220,7 +221,7 @@ class BoardColumn extends React.Component {
           opacity: spring(1, [120, 14]),
           paddingBottom: spring(5, [120, 14]),
           paddingTop: spring(5, [120, 14]),
-          dataHeight: cardHeight,
+          dataHeight: cardHeight, // This is used for reference in each BoardCard component so that we know when to stop updating the animated height
         };
       });
     }
@@ -290,7 +291,7 @@ class BoardColumn extends React.Component {
     }
 
     return (
-      <div style={[styles.columnContainer]}>
+      <div style={[styles.wholeColumnContainer(viewType)]}>
         <div style={[styles.headerRowContainer(viewType)]}>
           <div style={[styles.boardColumnName]}>
             {boardColumn.name}

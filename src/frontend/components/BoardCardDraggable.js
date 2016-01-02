@@ -22,6 +22,10 @@ const styles = {
     fontWeight: 300,
     color: Colors.grey700,
     textAlign: 'left',
+    wordWrap: 'normal',
+    wordBreak: 'normal',
+    overflow: 'auto',
+    maxWidth: '100%',
   },
 };
 const cardSource = {
@@ -74,20 +78,14 @@ class BoardCardDraggable extends Component {
     window.addEventListener('mouseup', this.handleMouseUp);
   }
   componentWillReceiveProps(nextProps) {
-    const {card, setStyle} = this.props;
+    const {card, setStyle, viewType} = this.props;
     const paperHeight = findDOMNode(this._paper).offsetHeight;
-    if (nextProps.style.dataHeight < paperHeight) {
-      setStyle(card, paperHeight, false);
+    // If the reference height is less than the height of the actual boardCard and its content,
+    // then set the reference height to the new boardCard height
+    if (viewType === 'grid' && nextProps.style.dataHeight < paperHeight) {
+      setStyle(card, paperHeight);
     }
     this.setState({isPressed: false});
-  }
-  componentDidUpdate(prevProps) {
-    const {card, setStyle, viewType } = this.props;
-    const paperHeight = findDOMNode(this._paper).offsetHeight;
-    if (prevProps.viewType !== viewType) {
-    //  console.log("Height: ", paperHeight, viewType);
-      // setStyle(card, paperHeight, true);
-    }
   }
   componentWillUnmount() {
     this.setState({isPressed: false});
@@ -116,7 +114,7 @@ class BoardCardDraggable extends Component {
     let cardStyle = { // The default animation style for all our cards
       scale: spring(1, springConfig),
       shadow: spring(1, springConfig),
-      opacity: spring(1, springConfig),
+      opacity: style.opacity,
       borderWidth: spring(0, springConfig),
       height: style.height,
     };
@@ -124,7 +122,7 @@ class BoardCardDraggable extends Component {
     // ******* DragSource Animatin Styles (when the card in question is being dragged)
     if (isPressed) {
       cardStyle = {
-        scale: spring(1.1, springConfig),
+        scale: viewType === 'grid' ? spring(1.1, springConfig) : spring(1.01, springConfig),
         shadow: spring(16, springConfig),
         opacity: spring(1, springConfig),
         borderWidth: spring(0, springConfig),
@@ -173,7 +171,7 @@ class BoardCardDraggable extends Component {
                   ref={(ref) => this._wholeMotion = ref}
                   style={{
                     cursor: isDragging ? 'grabbing' : 'pointer',
-                    height: height,
+                    height: viewType === 'grid' ? height : 'auto',
                     paddingBottom: style.paddingBottom,
                     paddingTop: style.paddingTop,
                   }}>
